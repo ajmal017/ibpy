@@ -37,7 +37,9 @@
 
     <bw enteringTime="" enteringPrice="185.016" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="SEDG" price = "219.394"/>
+
         <option expiry="20200918" strike="190" multiplier="100" price = "34.378"/></bw>
+
 
     <bw enteringTime="" enteringPrice="117.416" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="SITE" price = "128.305"/>
@@ -49,7 +51,9 @@
 
     <bw enteringTime="" enteringPrice="322.981" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="SPY" price = "333.954"/>
+
         <option expiry="20200918" strike="332" multiplier="100" price = "10.973"/></bw>
+
 
     <bw enteringTime="" enteringPrice="37.658" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="TTGT" price = "39.425"/>

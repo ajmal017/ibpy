@@ -72,6 +72,9 @@ class IBapi(EWrapper, EClient):
 date_time_str = '2020-09-18 22:00:00.000000'
 date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
 
+date_time_str = '2020-09-18 22:00:00.000000'
+date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
+
 def run_loop():
     app.run()
 
@@ -91,8 +94,10 @@ mainLogger.info('Started')
 
 initialTickerId = 4100
 
+
 tv=[]
 itv=[]
+
 
 tickerId = initialTickerId
 for bw in ccdict["coveredCalls"]["bw"]:
@@ -125,14 +130,17 @@ time.sleep(10) #Sleep interval to allow time for connection to server
 allfinished = False
 while allfinished == False:
     allfinished = True
+
     for bw in ccdict["coveredCalls"]["bw"]:
         while bw["tickerId"] not in endflag:
             time.sleep(1)
         if endflag[bw["tickerId"]] == False:
+
             allfinished = False
 
 close_price = lambda x,ti: x[ti][-1]
 pr = {}
+
 
 
 #initial timevalues:
@@ -202,6 +210,7 @@ for bwnum,bw in enumerate(ccdict["coveredCalls"]["bw"]):
 # cc.set_opt_price(pr["option"].close)
 # tv = cc.getTimevalue()
 # print ("timevalue of IBKR is ",tv)
+
 
 
 app.disconnect()
