@@ -7,6 +7,7 @@ from ibapi.order import *
 from ibapi.ticktype import TickTypeEnum
 
 import datetime
+from covcall import covered_call
 
 import threading
 import time
@@ -94,12 +95,17 @@ def option():
     contract.multiplier = "100"
     return contract
 
+date_time_str = '2020-09-18 22:00:00.000000'
+date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
+
+cc = covered_call(underlyer(), "C", 50, date_time_obj)
+
 tickerIds = [4102,4103]
 
 i=0
 app.reqHistoricalData(tickerIds[i], option(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
 i = i + 1
-app.reqHistoricalData(tickerIds[i], stock(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
+app.reqHistoricalData(tickerIds[i], underlyer(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
 
 
 time.sleep(1) #Sleep interval to allow time for incoming price data
@@ -111,9 +117,14 @@ while allfinished == False:
         if endflag[i] == False:
             allfinished = False
 
-#time.sleep(10) #Sleep interval to allow time for incoming price data
+close_price = lambda x,ti: x[ti][-1]
+pr = {}
+pr["stock"]  = close_price(bars, 4103)
+pr["option"] = close_price(bars, 4102)
 
-x = bars
-
+cc.set_stk_price(pr["stock"].close)
+cc.set_opt_price(pr["option"].close)
+tv = cc.getTimevalue()
+print ("timevalue of IBKR is ",tv)
 app.disconnect()
 
