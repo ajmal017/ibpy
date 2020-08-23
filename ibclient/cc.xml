@@ -1,70 +1,66 @@
 <coveredCalls>
     <bw enteringTime="" enteringPrice="77.522" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="AMD" price = "86.385"/>
-        <option expiry="200918" strike="95" multiplier="100" price = "8.862"/></bw>
+        <option expiry="20200918" strike="95" multiplier="100" price = "8.862"/></bw>
 
     <bw enteringTime="" enteringPrice="104.087" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="CDNS" price = "110.304"/>
-        <option expiry="200918" strike="" multiplier="100" price = "6.216"/></bw>
+        <option expiry="20200918" strike="105" multiplier="100" price = "6.216"/></bw>
 
     <bw enteringTime="" enteringPrice="93.075" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="CHD" price = "96.434"/>
-        <option expiry="200918" strike="95" multiplier="100" price = "3.358"/></bw>
+        <option expiry="20200918" strike="95" multiplier="100" price = "3.358"/></bw>
 
     <bw enteringTime="" enteringPrice="62.421" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="DHI" price = "67.705"/>
-        <option expiry="200918" strike="70" multiplier="100" price = "5.283"/></bw>
+        <option expiry="20200918" strike="70" multiplier="100" price = "5.283"/></bw>
 
     <bw enteringTime="" enteringPrice="51.873" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="FIX" price = "53.245"/>
-        <option expiry="200918" strike="55" multiplier="100" price = "1.372"/></bw>
+        <option expiry="20200918" strike="55" multiplier="100" price = "1.372"/></bw>
 
     <bw enteringTime="" enteringPrice="48.171" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="KL" price = "53.904"/>
-        <option expiry="200918" strike="" multiplier="100" price = "5.732"/></bw>
+        <option expiry="20200918" strike="50" multiplier="100" price = "5.732"/></bw>
 
     <bw enteringTime="" enteringPrice="191.556" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="KLAC" price = "211.854"/>
-        <option expiry="200918" strike="195" multiplier="100" price = "20.298"/></bw>
+        <option expiry="20200918" strike="195" multiplier="100" price = "20.298"/></bw>
 
     <bw enteringTime="" enteringPrice="90.601" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="MTH" price = "99.894"/>
-        <option expiry="200918" strike="97.5" multiplier="100" price = "9.292"/></bw>
+        <option expiry="20200918" strike="97.5" multiplier="100" price = "9.292"/></bw>
 
     <bw enteringTime="" enteringPrice="34.145" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="SAIL" price = "36.994"/>
-        <option expiry="200918" strike="35" multiplier="100" price = "2.848"/></bw>
+        <option expiry="20200918" strike="35" multiplier="100" price = "2.848"/></bw>
 
     <bw enteringTime="" enteringPrice="185.016" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="SEDG" price = "219.394"/>
-        <option expiry="200918" strike="" multiplier="100" price = "34.378"/></bw>
+        <option expiry="20200918" strike="190" multiplier="100" price = "34.378"/></bw>
 
     <bw enteringTime="" enteringPrice="117.416" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="SITE" price = "128.305"/>
-        <option expiry="200918" strike="125" multiplier="100" price = "10.88"/></bw>
+        <option expiry="20200918" strike="125" multiplier="100" price = "10.88"/></bw>
 
     <bw enteringTime="" enteringPrice="23.811" commission="" quantity="3">
         <underlyer type="STK" tickerSymbol="SLV" price = "26.746"/>
-        <option expiry="200918" strike="24" multiplier="100" price = "2.935"/></bw>
+        <option expiry="20200918" strike="24" multiplier="100" price = "2.935"/></bw>
 
     <bw enteringTime="" enteringPrice="322.981" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="SPY" price = "333.954"/>
-        <option expiry="200918" strike="332" multiplier="100" price = "10.973"/></bw>
-
-    <bw enteringTime="" enteringPrice="37.658" commission="" quantity="2">
-        <underlyer type="STK" tickerSymbol="" price = ""/>
-        <option expiry="200918" strike="" multiplier="100" price = ""/></bw>
+        <option expiry="20200918" strike="332" multiplier="100" price = "10.973"/></bw>
 
     <bw enteringTime="" enteringPrice="37.658" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="TTGT" price = "39.425"/>
-        <option expiry="200918" strike="40" multiplier="100" price = "1.767"/></bw>
+        <option expiry="20200918" strike="40" multiplier="100" price = "1.767"/></bw>
 
     <bw enteringTime="" enteringPrice="24.2221" commission="" quantity="3">
         <underlyer type="STK" tickerSymbol="VIRT" price = "25.095"/>
-        <option expiry="200918" strike="25" multiplier="100" price = "0.873"/></bw>
+        <option expiry="20200918" strike="25" multiplier="100" price = "0.873"/></bw>
 
     <bw enteringTime="" enteringPrice="102.851" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="XLV" price = "105.894"/>
-        <option expiry="200918" strike="106" multiplier="100" price = "3.043"/></bw>
+        <option expiry="20200918" strike="106" multiplier="100" price = "3.043"/></bw>
 
 </coveredCalls>

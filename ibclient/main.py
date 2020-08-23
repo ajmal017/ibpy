@@ -5,12 +5,20 @@ from ibapi.contract import Contract
 from ibapi.order_condition import Create, OrderCondition
 from ibapi.order import *
 from ibapi.ticktype import TickTypeEnum
+import logger as logger
+from globals import globvars
 
 import datetime
 from covcall import covered_call
 
 import threading
 import time
+
+import xmltodict
+
+with open('cc.xml') as fd:
+    ccdict = xmltodict.parse(fd.read())
+
 bars = {}
 endflag = {}
 
@@ -61,12 +69,16 @@ class IBapi(EWrapper, EClient):
         print('Order Executed: ', reqId, contract.symbol, contract.secType, contract.currency, execution.execId,
               execution.orderId, execution.shares, execution.lastLiquidity)
 
+date_time_str = '2020-09-18 22:00:00.000000'
+date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
 
 def run_loop():
     app.run()
 
+globvars.init_globvars()
+
 app = IBapi()
-app.connect('127.0.0.1', 7497, 2)
+app.connect('127.0.0.1', 4002, 2)
 
 #Start the socket in a thread
 api_thread = threading.Thread(target=run_loop, daemon=True)
@@ -74,57 +86,123 @@ api_thread.start()
 
 time.sleep(1) #Sleep interval to allow time for connection to server
 
+mainLogger = logger.initMainLogger()
+mainLogger.info('Started')
 
-def underlyer():
-    contract = Contract()
-    contract.symbol = "IBKR"
-    contract.secType = "STK"
-    contract.exchange = "SMART"
-    contract.currency = "USD"
-    return contract
+initialTickerId = 4100
 
-def option():
-    contract = Contract()
-    contract.symbol = "IBKR"
-    contract.secType = "OPT"
-    contract.exchange = "SMART"
-    contract.currency = "USD"
-    contract.lastTradeDateOrContractMonth = "20200918"
-    contract.strike = "50"
-    contract.right = "Call"
-    contract.multiplier = "100"
-    return contract
+tv=[]
+itv=[]
 
-date_time_str = '2020-09-18 22:00:00.000000'
-date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
+tickerId = initialTickerId
+for bw in ccdict["coveredCalls"]["bw"]:
+    bw["tickerId"] = tickerId
 
-cc = covered_call(underlyer(), "C", 50, date_time_obj)
+    underlyer = Contract()
+    underlyer.symbol = bw["underlyer"]["@tickerSymbol"]
+    underlyer.secType = "STK"
+    underlyer.exchange = "SMART"
+    underlyer.currency = "USD"
 
-tickerIds = [4102,4103]
+    option = Contract()
+    option.symbol = bw["underlyer"]["@tickerSymbol"]
+    option.secType = "OPT"
+    option.exchange = "SMART"
+    option.currency = "USD"
+    option.lastTradeDateOrContractMonth = bw["option"]["@expiry"]
+    option.strike = bw["option"]["@strike"]
+    option.right = "Call"
+    option.multiplier = "100"
 
-i=0
-app.reqHistoricalData(tickerIds[i], option(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
-i = i + 1
-app.reqHistoricalData(tickerIds[i], underlyer(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
+    app.reqHistoricalData(bw["tickerId"], option, "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
+    app.reqHistoricalData(bw["tickerId"]+1, underlyer, "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
+    tv.append(0)
+    itv.append(0)
+    tickerId += 2
 
-
-time.sleep(1) #Sleep interval to allow time for incoming price data
+time.sleep(10) #Sleep interval to allow time for connection to server
 
 allfinished = False
 while allfinished == False:
     allfinished = True
-    for i in tickerIds:
-        if endflag[i] == False:
+    for bw in ccdict["coveredCalls"]["bw"]:
+        while bw["tickerId"] not in endflag:
+            time.sleep(1)
+        if endflag[bw["tickerId"]] == False:
             allfinished = False
 
 close_price = lambda x,ti: x[ti][-1]
 pr = {}
-pr["stock"]  = close_price(bars, 4103)
-pr["option"] = close_price(bars, 4102)
 
-cc.set_stk_price(pr["stock"].close)
-cc.set_opt_price(pr["option"].close)
-tv = cc.getTimevalue()
-print ("timevalue of IBKR is ",tv)
+
+#initial timevalues:
+for bwnum,bw in enumerate(ccdict["coveredCalls"]["bw"]):
+    underlyer = Contract()
+    underlyer.symbol = bw["underlyer"]["@tickerSymbol"]
+    underlyer.secType = "STK"
+    underlyer.exchange = "SMART"
+    underlyer.currency = "USD"
+    cc = covered_call(underlyer, "C", float(bw["option"]["@strike"]), date_time_obj)
+    cc.set_stk_price(float(bw["underlyer"]["@price"]))
+    cc.set_opt_price(float(bw["option"]["@price"]))
+    itv[bwnum] = cc.getTimevalue()
+    mainLogger.info('initial timevalue of %s is %f',underlyer.symbol,itv[bwnum])
+
+tickerId = initialTickerId
+for bwnum,bw in enumerate(ccdict["coveredCalls"]["bw"]):
+    pr["option"]  = close_price(bars, tickerId)
+    pr["stock"] = close_price(bars, tickerId+1)
+
+    underlyer = Contract()
+    underlyer.symbol = bw["underlyer"]["@tickerSymbol"]
+    underlyer.secType = "STK"
+    underlyer.exchange = "SMART"
+
+    cc = covered_call(underlyer, "C", float(bw["option"]["@strike"]), date_time_obj)
+
+    cc.set_stk_price(pr["stock"].close)
+    cc.set_opt_price(pr["option"].close)
+    tv[bwnum] = cc.getTimevalue()
+    mainLogger.info ("timevalue of %s is %f",underlyer.symbol,tv[bwnum])
+    tickerId +=2
+
+for bwnum,bw in enumerate(ccdict["coveredCalls"]["bw"]):
+    mainLogger.info ("timevalue of %s is down to %f pct (from %f to %f)",bw["underlyer"]["@tickerSymbol"],100*tv[bwnum]/itv[bwnum], itv[bwnum], tv[bwnum])
+
+
+
+#
+# cc = covered_call(underlyer(), "C", 50, date_time_obj)
+#
+# tickerIds = [4102,4103]
+#
+# i=0
+# app.reqHistoricalData(tickerIds[i], option(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
+# i = i + 1
+# app.reqHistoricalData(tickerIds[i], underlyer(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
+#
+#
+# time.sleep(1) #Sleep interval to allow time for incoming price data
+#
+# allfinished = False
+# while allfinished == False:
+#     allfinished = True
+#     for i in tickerIds:
+#         while i not in endflag:
+#             time.sleep(1)
+#         if endflag[i] == False:
+#             allfinished = False
+#
+# close_price = lambda x,ti: x[ti][-1]
+# pr = {}
+# pr["stock"]  = close_price(bars, 4103)
+# pr["option"] = close_price(bars, 4102)
+#
+# cc.set_stk_price(pr["stock"].close)
+# cc.set_opt_price(pr["option"].close)
+# tv = cc.getTimevalue()
+# print ("timevalue of IBKR is ",tv)
+
+
 app.disconnect()
 
