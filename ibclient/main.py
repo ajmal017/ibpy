@@ -10,17 +10,25 @@ import datetime
 
 import threading
 import time
+bars = {}
+endflag = {}
 
 class IBapi(EWrapper, EClient):
     def __init__(self):
         EClient.__init__(self, self)
 
     def historicalData(self, reqId, bar):
+        if reqId not in bars:
+            bars[reqId] = []
         print(reqId, "BarData.", bar)
+        bars[reqId].append(bar)
 
     def historicalDataEnd(self, reqId: int, start: str, end: str):
+        if reqId not in endflag:
+            endflag[reqId] = False
         super().historicalDataEnd(reqId, start, end)
         print("HistoricalDataEnd. ReqId:", reqId, "from", start, "to", end)
+        endflag[reqId] = True
 
     def historicalDataUpdate(self, reqId: int, bar):
         print("HistoricalDataUpdate. ReqId:", reqId, "BarData.", bar)
@@ -66,7 +74,7 @@ api_thread.start()
 time.sleep(1) #Sleep interval to allow time for connection to server
 
 
-def stock():
+def underlyer():
     contract = Contract()
     contract.symbol = "IBKR"
     contract.secType = "STK"
@@ -86,16 +94,26 @@ def option():
     contract.multiplier = "100"
     return contract
 
+tickerIds = [4102,4103]
 
-app.reqHistoricalData(4102, option(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
-app.reqHistoricalData(4103, stock(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
-covcall = {}
-#covcall["option" = ]
-getCombiData()
+i=0
+app.reqHistoricalData(tickerIds[i], option(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
+i = i + 1
+app.reqHistoricalData(tickerIds[i], stock(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
 
-#app.reqHistoricalData(4102, etf(), queryTime, "5 d", "1 hour", "MIDPOINT", 1, 1, False, [])
-#app.reqHistoricalData(4103, USStockAtSmart(), queryTime, "5 d", "1 hour", "MIDPOINT", 1, 1, False, [])
 
-time.sleep(10) #Sleep interval to allow time for incoming price data
+time.sleep(1) #Sleep interval to allow time for incoming price data
+
+allfinished = False
+while allfinished == False:
+    allfinished = True
+    for i in tickerIds:
+        if endflag[i] == False:
+            allfinished = False
+
+#time.sleep(10) #Sleep interval to allow time for incoming price data
+
+x = bars
+
 app.disconnect()
 
