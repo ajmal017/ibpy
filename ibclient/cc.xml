@@ -5,7 +5,7 @@
 
     <bw enteringTime="" enteringPrice="104.087" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="CDNS" price = "110.304"/>
-        <option expiry="200918" strike="" multiplier="100" price = "6.216"/></bw>
+        <option expiry="200918" strike="105" multiplier="100" price = "6.216"/></bw>
 
     <bw enteringTime="" enteringPrice="93.075" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="CHD" price = "96.434"/>
@@ -21,7 +21,7 @@
 
     <bw enteringTime="" enteringPrice="48.171" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="KL" price = "53.904"/>
-        <option expiry="200918" strike="" multiplier="100" price = "5.732"/></bw>
+        <option expiry="200918" strike="50" multiplier="100" price = "5.732"/></bw>
 
     <bw enteringTime="" enteringPrice="191.556" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="KLAC" price = "211.854"/>
@@ -37,7 +37,7 @@
 
     <bw enteringTime="" enteringPrice="185.016" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="SEDG" price = "219.394"/>
-        <option expiry="200918" strike="" multiplier="100" price = "34.378"/></bw>
+        <option expiry="200918" strike="190" multiplier="100" price = "34.378"/></bw>
 
     <bw enteringTime="" enteringPrice="117.416" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="SITE" price = "128.305"/>
@@ -50,10 +50,6 @@
     <bw enteringTime="" enteringPrice="322.981" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="SPY" price = "333.954"/>
         <option expiry="200918" strike="332" multiplier="100" price = "10.973"/></bw>
-
-    <bw enteringTime="" enteringPrice="37.658" commission="" quantity="2">
-        <underlyer type="STK" tickerSymbol="" price = ""/>
-        <option expiry="200918" strike="" multiplier="100" price = ""/></bw>
 
     <bw enteringTime="" enteringPrice="37.658" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="TTGT" price = "39.425"/>

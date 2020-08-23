@@ -5,12 +5,20 @@ from ibapi.contract import Contract
 from ibapi.order_condition import Create, OrderCondition
 from ibapi.order import *
 from ibapi.ticktype import TickTypeEnum
+import logger as logger
+from globals import globvars
 
 import datetime
 from covcall import covered_call
 
 import threading
 import time
+
+import xmltodict
+
+with open('cc.xml') as fd:
+    ccdict = xmltodict.parse(fd.read())
+
 bars = {}
 endflag = {}
 
@@ -62,11 +70,35 @@ class IBapi(EWrapper, EClient):
               execution.orderId, execution.shares, execution.lastLiquidity)
 
 
+date_time_str = '2020-09-18 22:00:00.000000'
+date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
+
 def run_loop():
     app.run()
 
+globvars.init_globvars()
+
+mainLogger = logger.initMainLogger()
+mainLogger.info('Started')
+
+#initial timevalues:
+for bw in ccdict["coveredCalls"]["bw"]:
+    underlyer = Contract()
+    underlyer.symbol = bw["underlyer"]["@tickerSymbol"]
+    underlyer.secType = "STK"
+    underlyer.exchange = "SMART"
+    underlyer.currency = "USD"
+    cc = covered_call(underlyer, "C", float(bw["option"]["@strike"]), date_time_obj)
+    cc.set_stk_price(float(bw["underlyer"]["@price"]))
+    cc.set_opt_price(float(bw["option"]["@price"]))
+    tv = cc.getTimevalue()
+    mainLogger.info('timevalue of %s is %f',underlyer.symbol,tv)
+
+
+
+
 app = IBapi()
-app.connect('127.0.0.1', 7497, 2)
+app.connect('127.0.0.1', 4002, 2)
 
 #Start the socket in a thread
 api_thread = threading.Thread(target=run_loop, daemon=True)
@@ -95,8 +127,6 @@ def option():
     contract.multiplier = "100"
     return contract
 
-date_time_str = '2020-09-18 22:00:00.000000'
-date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
 
 cc = covered_call(underlyer(), "C", 50, date_time_obj)
 
@@ -114,6 +144,8 @@ allfinished = False
 while allfinished == False:
     allfinished = True
     for i in tickerIds:
+        while i not in endflag:
+            time.sleep(1)
         if endflag[i] == False:
             allfinished = False
 
@@ -126,5 +158,7 @@ cc.set_stk_price(pr["stock"].close)
 cc.set_opt_price(pr["option"].close)
 tv = cc.getTimevalue()
 print ("timevalue of IBKR is ",tv)
+
+
 app.disconnect()
 
