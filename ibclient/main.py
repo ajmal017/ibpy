@@ -81,7 +81,7 @@ def run_loop():
 globvars.init_globvars()
 
 app = IBapi()
-app.connect('127.0.0.1', 4002, 2)
+app.connect('127.0.0.1', 7495, 3)
 
 #Start the socket in a thread
 api_thread = threading.Thread(target=run_loop, daemon=True)
@@ -119,8 +119,10 @@ for bw in ccdict["coveredCalls"]["bw"]:
     option.right = "Call"
     option.multiplier = "100"
 
-    app.reqHistoricalData(bw["tickerId"], option, "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
-    app.reqHistoricalData(bw["tickerId"]+1, underlyer, "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
+    now = datetime.datetime.now()
+    dt = now.strftime("%Y%m%d %H:%M:00")
+    app.reqHistoricalData(bw["tickerId"], option, dt, "30 S", "5 secs", "MIDPOINT", 1, 1, False, [])
+    app.reqHistoricalData(bw["tickerId"]+1, underlyer, dt, "30 S", "5 secs", "MIDPOINT", 1, 1, False, [])
     tv.append(0)
     itv.append(0)
     tickerId += 2
@@ -154,7 +156,7 @@ for bwnum,bw in enumerate(ccdict["coveredCalls"]["bw"]):
     cc.set_stk_price(float(bw["underlyer"]["@price"]))
     cc.set_opt_price(float(bw["option"]["@price"]))
     itv[bwnum] = cc.getTimevalue()
-    mainLogger.info('initial timevalue of %s is %f',underlyer.symbol,itv[bwnum])
+    #mainLogger.info('initial timevalue of %s is %f',underlyer.symbol,itv[bwnum])
 
 tickerId = initialTickerId
 for bwnum,bw in enumerate(ccdict["coveredCalls"]["bw"]):
@@ -171,47 +173,11 @@ for bwnum,bw in enumerate(ccdict["coveredCalls"]["bw"]):
     cc.set_stk_price(pr["stock"].close)
     cc.set_opt_price(pr["option"].close)
     tv[bwnum] = cc.getTimevalue()
-    mainLogger.info ("timevalue of %s is %f",underlyer.symbol,tv[bwnum])
+    #mainLogger.info ("timevalue of %s is %f",underlyer.symbol,tv[bwnum])
     tickerId +=2
 
 for bwnum,bw in enumerate(ccdict["coveredCalls"]["bw"]):
     mainLogger.info ("timevalue of %s is down to %f pct (from %f to %f)",bw["underlyer"]["@tickerSymbol"],100*tv[bwnum]/itv[bwnum], itv[bwnum], tv[bwnum])
-
-
-
-#
-# cc = covered_call(underlyer(), "C", 50, date_time_obj)
-#
-# tickerIds = [4102,4103]
-#
-# i=0
-# app.reqHistoricalData(tickerIds[i], option(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
-# i = i + 1
-# app.reqHistoricalData(tickerIds[i], underlyer(), "20200823 10:50:25", "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
-#
-#
-# time.sleep(1) #Sleep interval to allow time for incoming price data
-#
-# allfinished = False
-# while allfinished == False:
-#     allfinished = True
-#     for i in tickerIds:
-#         while i not in endflag:
-#             time.sleep(1)
-#         if endflag[i] == False:
-#             allfinished = False
-#
-# close_price = lambda x,ti: x[ti][-1]
-# pr = {}
-# pr["stock"]  = close_price(bars, 4103)
-# pr["option"] = close_price(bars, 4102)
-#
-# cc.set_stk_price(pr["stock"].close)
-# cc.set_opt_price(pr["option"].close)
-# tv = cc.getTimevalue()
-# print ("timevalue of IBKR is ",tv)
-
-
 
 app.disconnect()
 

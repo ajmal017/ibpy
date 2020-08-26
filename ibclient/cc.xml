@@ -31,15 +31,13 @@
         <underlyer type="STK" tickerSymbol="MTH" price = "99.894"/>
         <option expiry="20200918" strike="97.5" multiplier="100" price = "9.292"/></bw>
 
-    <bw enteringTime="" enteringPrice="34.145" commission="" quantity="1">
-        <underlyer type="STK" tickerSymbol="SAIL" price = "36.994"/>
-        <option expiry="20200918" strike="35" multiplier="100" price = "2.848"/></bw>
+    <bw enteringTime="" enteringPrice="34.46" commission="" quantity="2">
+        <underlyer type="STK" tickerSymbol="SAIL" price = "38.242"/>
+        <option expiry="20200918" strike="35" multiplier="100" price = "3.789"/></bw>
 
     <bw enteringTime="" enteringPrice="185.016" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="SEDG" price = "219.394"/>
-
         <option expiry="20200918" strike="190" multiplier="100" price = "34.378"/></bw>
-
 
     <bw enteringTime="" enteringPrice="117.416" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="SITE" price = "128.305"/>
@@ -51,9 +49,7 @@
 
     <bw enteringTime="" enteringPrice="322.981" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="SPY" price = "333.954"/>
-
         <option expiry="20200918" strike="332" multiplier="100" price = "10.973"/></bw>
-
 
     <bw enteringTime="" enteringPrice="37.658" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="TTGT" price = "39.425"/>
@@ -66,5 +62,22 @@
     <bw enteringTime="" enteringPrice="102.851" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="XLV" price = "105.894"/>
         <option expiry="20200918" strike="106" multiplier="100" price = "3.043"/></bw>
+
+    <bw enteringTime="2020 AUG 25 18:04:34" enteringPrice="143.12" commission="1.48" quantity="1">
+        <underlyer type="STK" tickerSymbol="RGEN" price = "147.474"/>
+        <option expiry="20200918" strike="150" multiplier="100" price = "4.338"/></bw>
+
+    <bw enteringTime="2020 AUG 25 20:48:29" enteringPrice="126.21" commission="1.48" quantity="1">
+        <underlyer type="STK" tickerSymbol="FTNT" price = "132.44"/>
+        <option expiry="20200918" strike="130" multiplier="100" price = "6.24"/></bw>
+
+<!--   <bw enteringTime="2020 " enteringPrice="" commission="" quantity="">-->
+<!--        <underlyer type="STK" tickerSymbol="" price = ""/>-->
+<!--        <option expiry="" strike="" multiplier="100" price = ""/></bw>-->
+
+<!--    Direkt aus IBKR Mobile abgelesen:-->
+    <bw enteringTime="2020 AUG 24 18:56:26" enteringPrice="186.32" commission="1.49" quantity="1">
+        <underlyer type="STK" tickerSymbol="PYPL" price = "198.18"/>
+        <option expiry="20200918" strike="190" multiplier="100" price = "11.86"/></bw>
 
 </coveredCalls>
