@@ -81,7 +81,7 @@ def run_loop():
 globvars.init_globvars()
 
 app = IBapi()
-app.connect('127.0.0.1', 7495, 3)
+app.connect('127.0.0.1', 4002, 3)
 
 #Start the socket in a thread
 api_thread = threading.Thread(target=run_loop, daemon=True)
