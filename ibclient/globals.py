@@ -81,16 +81,6 @@ class globvars:
         globvars.sleepmodcntr                         = 0
         globvars.logfilename                         = "mainLog.log"
 
-        globvars.pcnprevstate                = const.POLARIONSTATEISUNDEF
-        globvars.pcnstate                    = const.POLARIONSTATEISUNDEF
-        globvars.gstprevstate                = const.GSTISUNDEF
-        globvars.gststate                    = const.GSTISUNDEF
-        globvars.opcprevstate                = const.OPCUNDEF
-        globvars.opcstate                    = const.OPCUNDEF
-        globvars.testprevstate               = const.TESTSTATE_UNDEF
-        globvars.teststate                   = const.TESTSTATE_UNDEF
-        globvars.bmdprevmode                 = const.OBFBISUNDEF
-        globvars.bmdmode                     = const.OBFBISUNDEF
 
     def set_teststate(status):
         globvars.testprevstate = globvars.teststate

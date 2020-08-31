@@ -44,8 +44,13 @@ class IBapi(EWrapper, EClient):
 
 
     def tickPrice(self, reqId, tickType, price, attrib):
-        if tickType == 2 and reqId == 1:
-            print('The current ask price is: ', price)
+        #if tickType == 2 and reqId == 1:
+            print('The current ask price of ', tickerData[reqId]["underlyer"]["@tickerSymbol"], " is ",price)
+
+            cc = covered_call(underlyer, "C", float(bw["option"]["@strike"]), date_time_obj)
+            cc.set_stk_price(tickerData[reqId]["underlyer"]["@price"])
+
+
 
 
     def nextValidId(self, orderId: int):
@@ -81,7 +86,7 @@ def run_loop():
 globvars.init_globvars()
 
 app = IBapi()
-app.connect('127.0.0.1', 4002, 3)
+app.connect('127.0.0.1', 7495, 3)
 
 #Start the socket in a thread
 api_thread = threading.Thread(target=run_loop, daemon=True)
@@ -97,10 +102,12 @@ initialTickerId = 4100
 
 tv=[]
 itv=[]
+tickerData = {}
 
-
+mainLogger.info('Started')
 tickerId = initialTickerId
 for bw in ccdict["coveredCalls"]["bw"]:
+    mainLogger.info("querying no. %s: %s",bw["@id"], bw["underlyer"]["@tickerSymbol"])
     bw["tickerId"] = tickerId
 
     underlyer = Contract()
@@ -121,8 +128,13 @@ for bw in ccdict["coveredCalls"]["bw"]:
 
     now = datetime.datetime.now()
     dt = now.strftime("%Y%m%d %H:%M:00")
-    app.reqHistoricalData(bw["tickerId"], option, dt, "30 S", "5 secs", "MIDPOINT", 1, 1, False, [])
-    app.reqHistoricalData(bw["tickerId"]+1, underlyer, dt, "30 S", "5 secs", "MIDPOINT", 1, 1, False, [])
+    dt = now.strftime("%Y%m%d 22:00:00")
+    tickerData[bw["tickerId"]] = bw
+    #Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
+    #Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
+#    app.reqHistoricalData(bw["tickerId"], option, dt, "60 S", "10 secs", "MIDPOINT", 1, 1, False, [])
+#    app.reqHistoricalData(bw["tickerId"]+1, underlyer, dt, "60 S", "10 secs", "MIDPOINT", 1, 1, False, [])
+    app.reqMktData(bw["tickerId"], underlyer, "", False, False, [])
     tv.append(0)
     itv.append(0)
     tickerId += 2
@@ -134,11 +146,17 @@ while allfinished == False:
     allfinished = True
 
     for bw in ccdict["coveredCalls"]["bw"]:
-        while bw["tickerId"] not in endflag:
+        cntr = 0
+        while bw["tickerId"] not in endflag and cntr < 5:
+            cntr += 1
             time.sleep(1)
-        if endflag[bw["tickerId"]] == False:
+        if cntr == 5:
+            print ("timeout on ", bw["underlyer"]["@tickerSymbol"])
+            endflag[bw["tickerId"]] = True
 
-            allfinished = False
+        if bw["tickerId"] in endflag:
+            if endflag[bw["tickerId"]] == False:
+                allfinished = False
 
 close_price = lambda x,ti: x[ti][-1]
 pr = {}
