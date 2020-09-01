@@ -30,14 +30,40 @@ import datetime
 from globals import globvars
 import const
 
+from datetime import datetime, time
+
+def is_time_between(begin_time, end_time, check_time=None):
+    # If check time is not given, default to current UTC time
+    check_time = check_time or datetime.now().time()
+    if begin_time < end_time:
+        return check_time >= begin_time and check_time <= end_time
+    else: # crosses midnight
+        return check_time >= begin_time or check_time <= end_time
+
+# Original test case from OP
+
+
 class IBapi(EWrapper, EClient):
     def __init__(self):
         EClient.__init__(self, self)
 
     def historicalData(self, reqId, bar):
+
+        tickerId = str(reqId)
+        bw = tickerData[tickerId]["bw"]
+
         if reqId not in bars:
             bars[reqId] = []
-        print(reqId, "BarData.", bar)
+
+        # print(reqId, "BarData.", bar)
+
+        if reqId % 2 == 0:
+            bw["cc"].set_stk_price(bar.close)
+        else:
+            bw["cc"].set_opt_price(bar.close)
+
+        tickerData[tickerId][const.LASTPRICE] = bar.close
+
         bars[reqId].append(bar)
 
     def historicalDataEnd(self, reqId: int, start: str, end: str):
@@ -107,6 +133,9 @@ class MyWindow(QWidget):
 
         self.table_model = MyTableModel(self, dataList, header)
         self.table_view = QTableView()
+
+        self.table_view.setFont(QFont("Times", 15));
+
         # self.table_view.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table_view.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
@@ -173,9 +202,27 @@ class MyTableModel(QAbstractTableModel):
                 if const.LASTPRICE in tickerData[bw["tickerId"]]:
                     tv = bw["cc"].getTimevalue()
                     itv = bw["itv"]
+
+                    if (float(bw["option"]["@strike"]) > float(bw["cc"].get_stk_price())):
+                        ioanow = "OTM"
+                    elif (float(bw["option"]["@strike"]) < float(bw["cc"].get_stk_price())):
+                        ioanow = "ITM"
+                    else:
+                        ioanow = "ATM"
+
+                    change = tickerData[bw["tickerId"]][const.LASTPRICE] - float(bw["underlyer"]["@price"])
+                    changepct = 100*(tickerData[bw["tickerId"]][const.LASTPRICE] - float(bw["underlyer"]["@price"]))/float(bw["underlyer"]["@price"])
+
                     dataList2.append([QCheckBox(bw["underlyer"]["@tickerSymbol"]),
+                                      bw["cc"].get_strike(),
+                                      bw["cc"].get_expiry(),
+                                      bw["cc"].get_days(),
+                                      bw["ioa_initial"],
+                                      ioanow,
 
                                       "{:.2f}".format(tickerData[bw["tickerId"]][const.LASTPRICE]),
+                                      "{:.2f}".format(change),
+                                      "{:>2.2f}".format(changepct)+" %",
                                       "{:.2f}".format(tickerData[bw["tickerId"]][const.BIDPRICE]),
                                       "{:.2f}".format(tickerData[bw["tickerId"]][const.ASKPRICE]),
 
@@ -183,7 +230,9 @@ class MyTableModel(QAbstractTableModel):
                                       "{:.2f}".format(tickerData[str(int(bw["tickerId"])+1)][const.BIDPRICE]),
                                       "{:.2f}".format(tickerData[str(int(bw["tickerId"])+1)][const.ASKPRICE]),
 
-                                    "{:.2f}".format(itv),"{:.2f}".format(tv), "{:.2f}".format(100*tv/itv), 0, 0, 0, 0, 'MA', '01',0])
+                                      "{:.2f}".format(itv),
+                                      "{:.2f}".format(tv),
+                                      "{:.2f}".format(100*tv/itv)+" %"])
 
         self.mylist = dataList2
         self.layoutAboutToBeChanged.emit()
@@ -279,10 +328,10 @@ def timer_func(win, mylist):
 #     print(">>> timer_func() num = ", num)
 
 date_time_str = '2020-09-18 22:00:00.000000'
-date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
+date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
 
 date_time_str = '2020-09-18 22:00:00.000000'
-date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
+date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
 
 def run_loop():
     ibapp.run()
@@ -302,15 +351,15 @@ if __name__ == '__main__':
 
     app = QApplication([])
     ibapp = IBapi()
-    ibapp.connect('127.0.0.1', 7495, 1)
+    ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
 
     # you could process a CSV file to create this data
-    header = ['Symbol', 'UL-Last', 'UL-Bid', 'UL-Ask', 'OP-Lst', 'OP-Bid', 'OP-Ask', 'ITV', 'CurTV', 'TV-Profit', 'Pending Action', '0', 'a', 'b', 'c', 'Expiry', 'd']
+    header = ['Symbol', 'Strike', 'Expiry', 'Days', 'Initial', 'Now', 'UL-Last', 'UL-Chge', 'UL-Chge pct','UL-Bid', 'UL-Ask', 'OP-Lst', 'OP-Bid', 'OP-Ask', 'ITV', 'CurTV', 'TV-Chg']
     # a list of (fname, lname, age, weight) tuples
     checkbox1 = QCheckBox("1");
     checkbox1.setChecked(True)
     dataList = [
-        [checkbox1, '0', '0', '0', '0', '0', 0, 0, 0, 0, 0, 0, 0],
+        [checkbox1, '','' '', '', '', '', '', '0', '0', '0', '0', '0', 0, 0, 0, 0]
     ]
 
     # Start the socket in a thread
@@ -329,21 +378,24 @@ if __name__ == '__main__':
         bw["tvprof"] = bw["itv"] - bw["ctv"]
         bw["pac"] = ""
 
-        dataList.append([QCheckBox(bw["underlyer"]["@tickerSymbol"]), bw["option"]["@strike"], bw["option"]["@expiry"], 0, 0, 0, 0, 0, 0, bw["itv"], bw["ctv"], bw["tvprof"], bw["pac"]])
+        if (float(bw["option"]["@strike"]) > float(bw["underlyer"]["@price"])):
+            ioa = "OTM"
+        elif (float(bw["option"]["@strike"]) < float(bw["underlyer"]["@price"])):
+            ioa = "ITM"
+        else:
+            ioa = "ATM"
+
+        bw["ioa_initial"] = ioa
+
+        ioanow = ioa
+
+        dataList.append([QCheckBox(bw["underlyer"]["@tickerSymbol"]), bw["option"]["@strike"], bw["option"]["@expiry"], bw["ioa_initial"],ioanow, 0, 0, 0, 0, 0, 0, bw["itv"], bw["ctv"], bw["tvprof"], bw["pac"]])
 
         mainLogger.info("querying no. %s: %s", bw["@id"], bw["underlyer"]["@tickerSymbol"])
 
         bw["tickerId"] = str(tickerId)
 
 
-        now = datetime.datetime.now()
-        dt = now.strftime("%Y%m%d %H:%M:00")
-        dt = now.strftime("%Y%m%d 22:00:00")
-
-        # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
-        # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
-        #    app.reqHistoricalData(bw["tickerId"], option, dt, "60 S", "10 secs", "MIDPOINT", 1, 1, False, [])
-        #    app.reqHistoricalData(bw["tickerId"]+1, underlyer, dt, "60 S", "10 secs", "MIDPOINT", 1, 1, False, [])
 
         bw["underlyer"]["tickerId"] = str(tickerId)
         bw["option"]["tickerId"] = str(tickerId+1)
@@ -362,8 +414,20 @@ if __name__ == '__main__':
         tickerData[bw["option"]["tickerId"]][const.LASTPRICE] = 0
         tickerData[bw["option"]["tickerId"]][const.BIDPRICE] = 0
 
-        ibapp.reqMktData(bw["underlyer"]["tickerId"], underlyer, "", False, False, [])
-        ibapp.reqMktData(bw["option"]["tickerId"]   , option, "", False, False, [])
+        nyseIsOpen = is_time_between(time(15, 30), time(22, 00))
+
+        if nyseIsOpen:
+            ibapp.reqMktData(bw["underlyer"]["tickerId"], underlyer, "", False, False, [])
+            ibapp.reqMktData(bw["option"]["tickerId"]   , option, "", False, False, [])
+        else:
+            # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
+            # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
+            now = datetime.now()
+            dt = now.strftime("%Y%m%d 22:00:00")
+            ibapp.reqHistoricalData(bw["option"]["tickerId"], option, dt, "3600 S", "5 mins", "MIDPOINT", 1, 1, False, [])
+            ibapp.reqHistoricalData(bw["underlyer"]["tickerId"], underlyer, dt, "3600 S", "5 mins", "MIDPOINT", 1, 1, False, [])
+
+
 
         tickerId += 2
 

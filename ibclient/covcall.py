@@ -1,6 +1,7 @@
 
 from ibapi.contract import Contract
 from datetime import datetime
+from datetime import date
 
 class Security():
     def __init__(self):
@@ -18,6 +19,44 @@ class covered_call():
         self.expiry = expiry
         self.stkprice = 0.0
         self.optprice = 0.0
+
+    def get_ioa_initial(self):
+        if (self.strike > self.stkprice):
+            ioa = "OTM"
+        elif (self.strike < self.stkprice):
+            ioa = "ITM"
+        else:
+            ioa = "ATM"
+
+    def get_ioa_now(self):
+        if (self.strike > self.stkprice):
+            ioa = "OTM"
+        elif (self.strike < self.stkprice):
+            ioa = "ITM"
+        else:
+            ioa = "ATM"
+
+    def get_days(self):
+        ys = self.expiry[0:4]
+        ms = self.expiry[4:6]
+        ds = self.expiry[6:8]
+        year = int(ys)
+        month = int(ms)
+        day = int(ds)
+
+        d1 = date(year, month, day)
+        d0 = date.today()
+        delta = d1 - d0
+        return delta.days
+
+    def get_expiry(self):
+        return (self.expiry)
+
+    def get_strike(self):
+        return (self.strike)
+
+    def get_stk_price(self):
+        return self.stkprice
 
     def set_stk_price(self,price):
         self.stkprice = price
@@ -46,12 +85,14 @@ class covered_call():
     def get_contracts(bw):
         underlyer = Contract()
         underlyer.symbol = bw["underlyer"]["@tickerSymbol"]
+        underlyer.avPrice = bw["underlyer"]["@price"]
         underlyer.secType = "STK"
         underlyer.exchange = "SMART"
         underlyer.currency = "USD"
 
         option = Contract()
         option.symbol = bw["underlyer"]["@tickerSymbol"]
+        option.avPrice = bw["option"]["@price"]
         option.secType = "OPT"
         option.exchange = "SMART"
         option.currency = "USD"

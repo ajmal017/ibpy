@@ -4,3 +4,6 @@ ASKPRICE    = "2"
 ASKSIZE     = "3"
 LASTPRICE   = "4"
 LASTSIZE    = "5"
+
+IBPORT      = 4002
+IBCLIENTID  = 1
