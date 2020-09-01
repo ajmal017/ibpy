@@ -1,6 +1,6 @@
-BIDSIZE     = 0
-BIDPRICE    = 1
-ASKPRICE    = 2
-ASKSIZE     = 3
-LASTPRICE   = 4
-LASTSIZE    = 5
+BIDSIZE     = "0"
+BIDPRICE    = "1"
+ASKPRICE    = "2"
+ASKSIZE     = "3"
+LASTPRICE   = "4"
+LASTSIZE    = "5"

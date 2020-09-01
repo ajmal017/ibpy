@@ -52,20 +52,30 @@ class IBapi(EWrapper, EClient):
 
 
     def tickPrice(self, reqId, tickType, value, attrib):
-        if tickType == const.LASTPRICE :
-            print('The current last price of ', tickerData[reqId]["underlyer"]["@tickerSymbol"], " is ",value)
-            tickerData[reqId]["underlyer"][const.LASTPRICE] = value
+        tickerId = str(reqId)
 
-        if tickType == const.ASKPRICE :
-            print('The last ask price of ', tickerData[reqId]["underlyer"]["@tickerSymbol"], " is ",value)
-            tickerData[reqId]["underlyer"][const.ASKPRICE] = value
+        bw = tickerData[tickerId]["bw"]
 
-        if tickType == const.BIDPRICE :
-            print('The last bid price of ', tickerData[reqId]["underlyer"]["@tickerSymbol"], " is ",value)
-            tickerData[reqId]["underlyer"][const.BIDPRICE] = value
+        if str(tickType) == const.LASTPRICE :
+            if reqId % 2 == 0:
+                bw["cc"].set_stk_price(value)
+            else:
+                bw["cc"].set_opt_price(value)
+            #print('The current last price of ', tickerData[tickerId]["bw"]["underlyer"]["@tickerSymbol"], " is ",value)
+            tickerData[tickerId][const.LASTPRICE] = value
+            #print('The currenttv of ', tickerData[tickerId]["bw"]["underlyer"]["@tickerSymbol"], " is ",bw["cc"].getTimevalue())
 
-        cc = covered_call(underlyer, "C", float(bw["option"]["@strike"]), date_time_obj)
-        cc.set_stk_price(tickerData[reqId]["underlyer"]["@price"])
+
+        if str(tickType) == const.ASKPRICE :
+            #print('The last ask price of ', tickerData[tickerId]["bw"]["underlyer"]["@tickerSymbol"], " is ",value)
+            tickerData[tickerId][const.ASKPRICE] = value
+
+        if str(tickType) == const.BIDPRICE :
+            #print('The last bid price of ', tickerData[tickerId]["bw"]["underlyer"]["@tickerSymbol"], " is ",value)
+            tickerData[tickerId][const.BIDPRICE] = value
+
+        # cc = covered_call(underlyer, "C", float(bw["option"]["@strike"]), date_time_obj)
+        # cc.set_stk_price(tickerData[reqId]["underlyer"]["@price"])
 
     def nextValidId(self, orderId: int):
         super().nextValidId(orderId)
@@ -156,23 +166,24 @@ class MyTableModel(QAbstractTableModel):
     def updateModel(self):
         dataList2 = []
 
-        for bw in ccdict["coveredCalls"]["bw"]:
-            dataList2.append([QCheckBox(bw["underlyer"]["@tickerSymbol"]), int(100*tickerData[bw["tickerId"]]["underlyer"][const.LASTPRICE]),
-                              str(100*tickerData[bw["tickerId"]]["underlyer"][const.BIDPRICE]), str(100*tickerData[bw["tickerId"]]["underlyer"][const.ASKPRICE]), 'cu1705,cu1710', 0, 0, 0, 0,
-                            0,0, 0, 0, 0, 0, 0, 'MA', '01'])
-            # dataList2.append([QCheckBox(bw["option"]["@tickerSymbol"]), int(100*tickerData[bw["tickerId"]]["option"]["price"]), '058176', '02', 'cu1705,cu1710', 0, 0, 0, 0,
-            #                 0,0, 0, 0, 0, 0, 0, 'MA', '01'])
+        # tickerData[bw["tickerId"]][const.LASTPRICE]
 
-        # if self.change_flag is True:
-        #     dataList2 = [
-        #         [QCheckBox("AMD"), int(100*tickerData[4100]["underlyer"]["price"]), '063802', '01', 'rb1705,rb1710', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'MA', '01'],
-        #     ]
-        #     self.change_flag = False
-        # elif self.change_flag is False:
-        #     dataList2 = [
-        #         [QCheckBox("AMD"), int(100*tickerData[4100]["underlyer"]["price"]), '058176', '01', 'rb1705,rb1710', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'MA', '01'],
-        #     ]
-        #     self.change_flag = True
+        for bw in ccdict["coveredCalls"]["bw"]:
+            if int(bw["tickerId"]) % 2 == 0:
+                if const.LASTPRICE in tickerData[bw["tickerId"]]:
+                    tv = bw["cc"].getTimevalue()
+                    itv = bw["itv"]
+                    dataList2.append([QCheckBox(bw["underlyer"]["@tickerSymbol"]),
+
+                                      "{:.2f}".format(tickerData[bw["tickerId"]][const.LASTPRICE]),
+                                      "{:.2f}".format(tickerData[bw["tickerId"]][const.BIDPRICE]),
+                                      "{:.2f}".format(tickerData[bw["tickerId"]][const.ASKPRICE]),
+
+                                      "{:.2f}".format(tickerData[str(int(bw["tickerId"])+1)][const.LASTPRICE]),
+                                      "{:.2f}".format(tickerData[str(int(bw["tickerId"])+1)][const.BIDPRICE]),
+                                      "{:.2f}".format(tickerData[str(int(bw["tickerId"])+1)][const.ASKPRICE]),
+
+                                    "{:.2f}".format(itv),"{:.2f}".format(tv), "{:.2f}".format(100*tv/itv), 0, 0, 0, 0, 'MA', '01',0])
 
         self.mylist = dataList2
         self.layoutAboutToBeChanged.emit()
@@ -277,88 +288,84 @@ def run_loop():
     ibapp.run()
 
 if __name__ == '__main__':
-    with open('cc.xml') as fd:
-        ccdict = xmltodict.parse(fd.read())
-
+    globvars.init_globvars()
+    mainLogger = logger.initMainLogger()
+    initialtickerId = 4100
+    tv = []
+    itv = []
+    tickerData = {}
     bars = {}
     endflag = {}
 
+    with open('cc.xml') as fd:
+        ccdict = xmltodict.parse(fd.read())
+
     app = QApplication([])
+    ibapp = IBapi()
+    ibapp.connect('127.0.0.1', 7495, 1)
+
     # you could process a CSV file to create this data
-    header = ['BWSymbol', 'Type', 'Bid', 'Ask', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 'b', 'c', 'd']
+    header = ['Symbol', 'UL-Last', 'UL-Bid', 'UL-Ask', 'OP-Lst', 'OP-Bid', 'OP-Ask', 'ITV', 'CurTV', 'TV-Profit', 'Pending Action', '0', 'a', 'b', 'c', 'Expiry', 'd']
     # a list of (fname, lname, age, weight) tuples
     checkbox1 = QCheckBox("1");
     checkbox1.setChecked(True)
     dataList = [
-        [checkbox1, 0, '058176', '01', 'rb1705,rb1710', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'MA', '01'],
-        # [QCheckBox("AMD"), 98, '058176', '02', 'cu1705,cu1710', 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 'MA', '01'],
+        [checkbox1, '0', '0', '0', '0', '0', 0, 0, 0, 0, 0, 0, 0],
     ]
-
-    globvars.init_globvars()
-
-    ibapp = IBapi()
-    ibapp.connect('127.0.0.1', 7497, 1)
 
     # Start the socket in a thread
     api_thread = threading.Thread(target=run_loop, daemon=True)
     api_thread.start()
 
-    mainLogger = logger.initMainLogger()
-    initialTickerId = 4100
-    tv = []
-    itv = []
-    tickerData = {}
-
     mainLogger.info('Started')
-    tickerId = initialTickerId
+    tickerId = initialtickerId
     for bw in ccdict["coveredCalls"]["bw"]:
 
-        dataList.append([QCheckBox(bw["underlyer"]["@tickerSymbol"]), 0, '058176', '02', 'cu1705,cu1710', 0, 0, 0, 0, 0,
-                        0, 0, 0, 0, 0, 0, 'MA', '01'])
-        # dataList.append([QCheckBox(bw["option"]["@tickerSymbol"]), 0, '058176', '02', 'cu1705,cu1710', 0, 0, 0, 0, 0,
-        #                 0, 0, 0, 0, 0, 0, 'MA', '01'])
+        (underlyer,option) = covered_call.get_contracts(bw)
+
+        bw["cc"] = covered_call("Call", underlyer, bw["option"]["@strike"], bw["option"]["@expiry"])
+        bw["itv"] = bw["cc"].calc_itv(bw)
+        bw["ctv"] = bw["cc"].getTimevalue()
+        bw["tvprof"] = bw["itv"] - bw["ctv"]
+        bw["pac"] = ""
+
+        dataList.append([QCheckBox(bw["underlyer"]["@tickerSymbol"]), bw["option"]["@strike"], bw["option"]["@expiry"], 0, 0, 0, 0, 0, 0, bw["itv"], bw["ctv"], bw["tvprof"], bw["pac"]])
 
         mainLogger.info("querying no. %s: %s", bw["@id"], bw["underlyer"]["@tickerSymbol"])
-        bw["tickerId"] = tickerId
 
+        bw["tickerId"] = str(tickerId)
 
-        underlyer = Contract()
-        underlyer.symbol = bw["underlyer"]["@tickerSymbol"]
-        underlyer.secType = "STK"
-        underlyer.exchange = "SMART"
-        underlyer.currency = "USD"
-
-        option = Contract()
-        option.symbol = bw["underlyer"]["@tickerSymbol"]
-        option.secType = "OPT"
-        option.exchange = "SMART"
-        option.currency = "USD"
-        option.lastTradeDateOrContractMonth = bw["option"]["@expiry"]
-        option.strike = bw["option"]["@strike"]
-        option.right = "Call"
-        option.multiplier = "100"
 
         now = datetime.datetime.now()
         dt = now.strftime("%Y%m%d %H:%M:00")
         dt = now.strftime("%Y%m%d 22:00:00")
-        tickerData[bw["tickerId"]] = bw
-        tickerData[bw["tickerId"]+1] = bw
+
         # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
         # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
         #    app.reqHistoricalData(bw["tickerId"], option, dt, "60 S", "10 secs", "MIDPOINT", 1, 1, False, [])
         #    app.reqHistoricalData(bw["tickerId"]+1, underlyer, dt, "60 S", "10 secs", "MIDPOINT", 1, 1, False, [])
 
-        tickerData[bw["tickerId"]]["underlyer"][const.BIDPRICE] = 0
-        tickerData[bw["tickerId"]]["underlyer"][const.ASKPRICE] = 0
-        tickerData[bw["tickerId"]]["underlyer"][const.LASTPRICE] = 0
+        bw["underlyer"]["tickerId"] = str(tickerId)
+        bw["option"]["tickerId"] = str(tickerId+1)
 
-        ibapp.reqMktData(bw["tickerId"], underlyer, "", False, False, [])
-        ibapp.reqMktData(bw["tickerId"]+1, option, "", False, False, [])
-        tv.append(0)
-        itv.append(0)
+        tickerData[bw["underlyer"]["tickerId"]] = {}
+        tickerData[bw["option"]["tickerId"]] = {}
+
+        tickerData[bw["underlyer"]["tickerId"]]["bw"] = bw
+        tickerData[bw["option"]["tickerId"]]["bw"] = bw
+
+        tickerData[bw["underlyer"]["tickerId"]][const.BIDPRICE] = 0
+        tickerData[bw["underlyer"]["tickerId"]][const.ASKPRICE] = 0
+        tickerData[bw["underlyer"]["tickerId"]][const.LASTPRICE] = 0
+
+        tickerData[bw["option"]["tickerId"]][const.ASKPRICE] = 0
+        tickerData[bw["option"]["tickerId"]][const.LASTPRICE] = 0
+        tickerData[bw["option"]["tickerId"]][const.BIDPRICE] = 0
+
+        ibapp.reqMktData(bw["underlyer"]["tickerId"], underlyer, "", False, False, [])
+        ibapp.reqMktData(bw["option"]["tickerId"]   , option, "", False, False, [])
+
         tickerId += 2
-
-
 
     win = MyWindow(dataList, header)
     win.show()
