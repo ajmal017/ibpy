@@ -56,6 +56,7 @@ class globvars:
     tst_status_display_tooltip  = None
     gst_status_display_tooltip  = None
     pol_status_display_tooltip  = None
+    tickerData                  = None
 
     def init_globvars():
         globvars.testscriptcounter           = 0
@@ -80,7 +81,7 @@ class globvars:
         globvars.imagecounter                = 0
         globvars.sleepmodcntr                         = 0
         globvars.logfilename                         = "mainLog.log"
-
+        globvars.tickerData                 = {}
 
     def set_teststate(status):
         globvars.testprevstate = globvars.teststate
