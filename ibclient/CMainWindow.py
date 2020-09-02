@@ -25,7 +25,6 @@ class CMainWindow(QMainWindow):
         profstr = "NLQ:"
 
         if "NetLiquidation" in globvars.accountData:
-            print("update statusbar ", globvars.accountData["NetLiquidation"])
             profstr += str(globvars.accountData["NetLiquidation"])
 
         profstr += " TVP: "

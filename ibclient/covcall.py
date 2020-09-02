@@ -49,6 +49,12 @@ class covered_call():
         delta = d1 - d0
         return delta.days
 
+    def set_industry(self, i):
+        self.industry = i
+
+    def get_industry(self):
+        return self.industry
+
     def get_expiry(self):
         return (self.expiry)
 

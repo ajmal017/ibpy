@@ -69,12 +69,12 @@ if __name__ == '__main__':
     with open('cc.xml') as fd:
         ccdict = xmltodict.parse(fd.read())
     # you could process a CSV file to create this data
-    header = ['Symbol', 'Pos', 'Strike', 'Expiry', 'Status', 'UL-Init', 'UL-Last', 'UL-Chge', 'UL-Chge pct','UL-Bid', 'UL-Ask', 'OP-Lst', 'OP-Bid', 'OP-Ask', 'ITV', 'ITV/$', 'CurTV', 'CurTV/$', 'TV-Chg']
+    header = ['Symbol', 'Industry', 'Pos', 'Strike', 'Expiry', 'Status', 'UL-Init', 'UL-Last', 'UL-Chge', 'UL-Chge pct','UL-Bid', 'UL-Ask', 'OP-Lst', 'OP-Bid', 'OP-Ask', 'ITV', 'ITV/$', 'CurTV', 'CurTV/$', 'TV-Chg']
     # a list of (fname, lname, age, weight) tuples
     checkbox1 = QCheckBox("1");
     checkbox1.setChecked(True)
     dataList = [
-        [checkbox1, '', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '0', '0', '0']
+        [checkbox1, '', '', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '0', '0', '0']
     ]
 
     ibapp.reqAccountUpdates(True, "U806698")
@@ -82,6 +82,7 @@ if __name__ == '__main__':
     for bw in ccdict["coveredCalls"]["bw"]:
 
         (underlyer,option) = covered_call.get_contracts(bw)
+
 
         bw["cc"] = covered_call("Call", underlyer, bw["option"]["@strike"], bw["option"]["@expiry"])
         bw["itv"] = bw["cc"].calc_itv(bw)
@@ -102,6 +103,7 @@ if __name__ == '__main__':
 
         dataList.append([
             QCheckBox(bw["underlyer"]["@tickerSymbol"]),
+            "",
             0,
             bw["option"]["@strike"],
             bw["option"]["@expiry"],
@@ -133,6 +135,8 @@ if __name__ == '__main__':
         nyseIsOpen = is_time_between(time(10, 00), time(22, 00))
         cboeIsOpen = is_time_between(time(15, 30), time(22, 00))
 
+        ibapp.reqContractDetails(bw["underlyer"]["tickerId"], underlyer)
+
         if nyseIsOpen:
             ibapp.reqMktData(bw["underlyer"]["tickerId"], underlyer, "", False, False, [])
         else:
@@ -153,7 +157,7 @@ if __name__ == '__main__':
 
         tickerId += 2
 
-    dataList.append([QCheckBox(""), 0, '', '', '', '','', 0, 0, 0, 0, 0, 0, '', '', '', '', ''])
+    dataList.append([QCheckBox(""), '', 0, '', '', '', '','', 0, 0, 0, 0, 0, 0, '', '', '', '', ''])
 
 
     cmw = CMainWindow(dataList, header, ccdict)

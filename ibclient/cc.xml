@@ -75,6 +75,10 @@
     <underlyer type="STK" tickerSymbol="EBAY" price = "57.85"/>
     <option expiry="20200918" strike="56" multiplier="100" price = "2.76"/></bw>
 
+   <bw id="20" enteringTime="2020 SEP 2 19:35:18" enteringPrice="423.85" commission="1.49" quantity="1" exchange="SMART">
+    <underlyer type="STK" tickerSymbol="TMO" price = "438.12"/>
+    <option expiry="20200918" strike="430" multiplier="100" price = "14.27"/></bw>
+
 <!--    <bw id="20" enteringTime="2020 AUG 24 18:56:26" enteringPrice="186.32" commission="1.49" quantity="1">-->
 <!--        <underlyer type="STK" tickerSymbol="PYPL" price = "198.18"/>-->
 <!--        <option expiry="20200918" strike="190" multiplier="100" price = "11.86"/></bw>-->
