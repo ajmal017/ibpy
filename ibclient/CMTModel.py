@@ -15,8 +15,15 @@ class PrxyModel(QSortFilterProxyModel):
 
     def lessThan(self, left, right):
         role = QtCore.Qt.DisplayRole
-        if left.column() in [2,5,6,7,8,9,10,11,12,13,14,15,16,17]:
+        if left.column() in [1,2,5,6,7,8,9,10,11,12,13,14,15,16]:
             return float(self.sourceModel().data(left, role)) < float(self.sourceModel().data(right, role))
+        elif left.column() == 17:
+            try:
+                a = float(self.sourceModel().data(left, role).replace("%",""))
+                b = float(self.sourceModel().data(right, role).replace("%",""))
+                return a < b
+            except:
+                return False
         else:
             return False;
 
@@ -87,7 +94,7 @@ class CMTModel(QAbstractTableModel):
                                       bw["underlyer"]["@price"],
                                       "{:.2f}".format(globvars.tickerData[bw["tickerId"]][const.LASTPRICE]),
                                       "{:.2f}".format(change),
-                                      "{:>2.2f}".format(changepct)+" %",
+                                      "{:>2.2f}".format(changepct),
                                       "{:.2f}".format(globvars.tickerData[bw["tickerId"]][const.BIDPRICE]),
                                       "{:.2f}".format(globvars.tickerData[bw["tickerId"]][const.ASKPRICE]),
 
@@ -98,7 +105,7 @@ class CMTModel(QAbstractTableModel):
                                       "{:.2f}".format(itv),
                                       "{:.2f}".format(tv),
                                       "{:.2f}".format(tv*int(bw["@quantity"])*100),
-                                      "{:.2f}".format(100*tv/itv)+" %"])
+                                      "{:.2f}".format(100*tv/itv)])
 
         self.mylist = dataList2
         self.layoutAboutToBeChanged.emit()

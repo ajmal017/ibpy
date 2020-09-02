@@ -57,7 +57,7 @@ if __name__ == '__main__':
     mainLogger.info('Started')
     tickerId = initialtickerId
 
-    # ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
+    ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
 
     api_thread = threading.Thread(target=run_loop, daemon=True)
     api_thread.start()
@@ -72,7 +72,7 @@ if __name__ == '__main__':
     checkbox1 = QCheckBox("1");
     checkbox1.setChecked(True)
     dataList = [
-        [checkbox1, '', '','', '', '', '', '0', '0', '0', '0', '0', '0', 0, 0, 0, 0, 0]
+        [checkbox1, '', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '0', '0']
     ]
     for bw in ccdict["coveredCalls"]["bw"]:
 
