@@ -15,8 +15,10 @@ class PrxyModel(QSortFilterProxyModel):
 
     def lessThan(self, left, right):
         role = QtCore.Qt.DisplayRole
-        if left.column() in [1,2,5,6,7,9,10,11,12,13,14,15,16]:
+        if left.column() in [5,6,7,9,10,11,12,13,14,15,16]:
             return float(self.sourceModel().data(left, role)) < float(self.sourceModel().data(right, role))
+        elif left.column() in [1,2,3,4]:
+            return (self.sourceModel().data(left, role)) < (self.sourceModel().data(right, role))
         elif left.column() == 17:
             try:
                 a = float(self.sourceModel().data(left, role).replace("%",""))
@@ -94,8 +96,8 @@ class CMTModel(QAbstractTableModel):
                     changepct = 100*(globvars.tickerData[bw["tickerId"]][const.LASTPRICE] - float(bw["underlyer"]["@price"]))/float(bw["underlyer"]["@price"])
 
                     dataList2.append([QCheckBox(bw["underlyer"]["@tickerSymbol"]),
-                                      #bw["@id"],
-                                      bw["@quantity"],
+                                      bw["cc"].get_industry(),
+                                      bw["@quantity"] + " ("+str(int(int(bw["@quantity"])*float(bw["@enteringPrice"]))/10)+"K )",
                                       bw["cc"].get_strike(),
                                       bw["cc"].get_expiry() + " (" + str(bw["cc"].get_days())+" d)",
                                       ioastate,
@@ -138,6 +140,7 @@ class CMTModel(QAbstractTableModel):
 
 
         dataList2.append([QCheckBox(""),
+                          "",
                           0,
                           0,
                           "",
@@ -190,7 +193,7 @@ class CMTModel(QAbstractTableModel):
             ix = self.index(index.row(), index.column())
             cellvalue = ix.data()
             color = self.background_colors[1]
-            if index.column() == 11:
+            if index.column() == 12:
                 try:
                     if float(cellvalue) > 0.01:
                         #self.setData(index(index.row(), 0), QtGui.QBrush(QtCore.Qt.red), QtCore.Qt.BackgroundRole)

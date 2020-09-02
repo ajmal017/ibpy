@@ -1,5 +1,8 @@
 from ibapi.client import EClient
 from ibapi.wrapper import EWrapper
+from ibapi.wrapper import EWrapper
+from ibapi.contract import ContractDetails
+
 from ibapi.contract import Contract
 from ibapi.order_condition import Create, OrderCondition
 from ibapi.order import *
@@ -45,6 +48,19 @@ class BrkApi(EWrapper, EClient):
     def historicalDataUpdate(self, reqId: int, bar):
          print("HistoricalDataUpdate. ReqId:", reqId, "BarData.", bar)
 
+    def contractDetails(self, reqId: int, contractDetails: ContractDetails):
+        tickerId = str(reqId)
+        bw = globvars.tickerData[tickerId]["bw"]
+
+        super().contractDetails(reqId, contractDetails)
+        industry = contractDetails.industry
+        if industry == '':
+            industry = contractDetails.stockType
+        bw["cc"].set_industry(industry)
+        print(industry)
+
+    def contractDetailsEnd(self, reqId: int):
+        super().contractDetailsEnd(reqId)
 
     def tickPrice(self, reqId, tickType, value, attrib):
         tickerId = str(reqId)

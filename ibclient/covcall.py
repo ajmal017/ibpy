@@ -19,6 +19,7 @@ class covered_call():
         self.expiry = expiry
         self.stkprice = 0.0
         self.optprice = 0.0
+        self.industry = ""
 
     def get_ioa_initial(self):
         if (self.strike > self.stkprice):
@@ -48,6 +49,12 @@ class covered_call():
         d0 = date.today()
         delta = d1 - d0
         return delta.days
+
+    def set_industry(self, i):
+        self.industry = i
+
+    def get_industry(self):
+        return self.industry
 
     def get_expiry(self):
         return (self.expiry)
