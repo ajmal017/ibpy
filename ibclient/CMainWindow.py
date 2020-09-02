@@ -18,15 +18,18 @@ class CMainWindow(QMainWindow):
     def contextMenuEvent(self, event):
         cmenu = QMenu(self)
 
-        newAct = cmenu.addAction("New")
+        tauAct = cmenu.addAction("toggleAutoUpdate")
         openAct = cmenu.addAction("Open")
         quitAct = cmenu.addAction("Quit")
         action = cmenu.exec_(self.mapToGlobal(event.pos()))
 
+        if action == tauAct:
+            self.cmtw.toggleAutoUpdate()
+
     def initUI(self, ccd):
 
-        textEdit = CMTWidget(self.dataList, self.header, ccd)
-        self.setCentralWidget(textEdit)
+        self.cmtw = CMTWidget(self.dataList, self.header, ccd)
+        self.setCentralWidget(self.cmtw)
 
         exitAct = QAction(QIcon('exit24.png'), 'Exit', self)
         exitAct.setShortcut('Ctrl+Q')

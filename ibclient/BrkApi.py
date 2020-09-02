@@ -37,11 +37,11 @@ class BrkApi(EWrapper, EClient):
         if reqId not in self.endflag:
             self.endflag[reqId] = False
         super().historicalDataEnd(reqId, start, end)
-        print("HistoricalDataEnd. ReqId:", reqId, "from", start, "to", end)
+        # print("HistoricalDataEnd. ReqId:", reqId, "from", start, "to", end)
         self.endflag[reqId] = True
 
     def historicalDataUpdate(self, reqId: int, bar):
-        print("HistoricalDataUpdate. ReqId:", reqId, "BarData.", bar)
+         print("HistoricalDataUpdate. ReqId:", reqId, "BarData.", bar)
 
 
     def tickPrice(self, reqId, tickType, value, attrib):

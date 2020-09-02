@@ -58,7 +58,7 @@ class CMTModel(QAbstractTableModel):
                         ioanow = "ATM"
 
                     if bw["ioa_initial"] == ioanow:
-                        ioastate = "-"
+                        ioastate = ioanow
                     else:
                         ioastate = bw["ioa_initial"] + "=>" + ioanow
 
@@ -68,11 +68,8 @@ class CMTModel(QAbstractTableModel):
                     dataList2.append([QCheckBox(bw["underlyer"]["@tickerSymbol"]),
                                       bw["@quantity"],
                                       bw["cc"].get_strike(),
-                                      bw["cc"].get_expiry(),
-                                      bw["cc"].get_days(),
+                                      bw["cc"].get_expiry() + " (" + str(bw["cc"].get_days())+" d)",
                                       ioastate,
-                                      # bw["ioa_initial"],
-                                      # ioanow,
 
                                       bw["underlyer"]["@price"],
                                       "{:.2f}".format(globvars.tickerData[bw["tickerId"]][const.LASTPRICE]),
