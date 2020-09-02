@@ -112,11 +112,13 @@ class CMTModel(QAbstractTableModel):
                                       "{:.2f}".format(globvars.tickerData[str(int(bw["tickerId"])+1)][const.ASKPRICE]),
 
                                       "{:.2f}".format(itv),
+                                      "{:.2f}".format(itv*int(bw["@quantity"])*100),
                                       "{:.2f}".format(tv),
                                       "{:.2f}".format(tv*int(bw["@quantity"])*100),
                                       "{:.2f}".format(100*tv/itv)])
                     if globvars.tickerData[bw["tickerId"]][const.LASTPRICE] > 0.01 and globvars.tickerData[str(int(bw["tickerId"])+1)][const.LASTPRICE] > 0.01:
                         summary[16] += tv*int(bw["@quantity"])*100
+                        summary[14] += itv*int(bw["@quantity"])*100
                     else:
                         ulbid = globvars.tickerData[bw["tickerId"]][const.BIDPRICE]
                         ulask = globvars.tickerData[bw["tickerId"]][const.ASKPRICE]
@@ -129,8 +131,9 @@ class CMTModel(QAbstractTableModel):
                                 bw["cc"].set_opt_price((opask+opbid)/2)
                                 tv = bw["cc"].getTimevalue()
                                 summary[16] += tv * int(bw["@quantity"]) * 100
-                        else:
-                            summary[16] += 0
+                                summary[14] += itv * int(bw["@quantity"]) * 100
+
+        globvars.tvprofit = int(summary[14])-int(summary[16])
 
 
 
@@ -152,7 +155,8 @@ class CMTModel(QAbstractTableModel):
                           "",
 
                           "",
-                          summary[15],
+                          summary[14],
+                          "",
                           summary[16],
                           ""])
 

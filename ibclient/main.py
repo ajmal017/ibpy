@@ -69,12 +69,12 @@ if __name__ == '__main__':
     with open('cc.xml') as fd:
         ccdict = xmltodict.parse(fd.read())
     # you could process a CSV file to create this data
-    header = ['Symbol', 'Pos', 'Strike', 'Expiry', 'Status', 'UL-Init', 'UL-Last', 'UL-Chge', 'UL-Chge pct','UL-Bid', 'UL-Ask', 'OP-Lst', 'OP-Bid', 'OP-Ask', 'ITV', 'CurTV', 'CurTV/$', 'TV-Chg']
+    header = ['Symbol', 'Pos', 'Strike', 'Expiry', 'Status', 'UL-Init', 'UL-Last', 'UL-Chge', 'UL-Chge pct','UL-Bid', 'UL-Ask', 'OP-Lst', 'OP-Bid', 'OP-Ask', 'ITV', 'ITV/$', 'CurTV', 'CurTV/$', 'TV-Chg']
     # a list of (fname, lname, age, weight) tuples
     checkbox1 = QCheckBox("1");
     checkbox1.setChecked(True)
     dataList = [
-        [checkbox1, '', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '0', '0']
+        [checkbox1, '', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '0', '0', '0']
     ]
 
     ibapp.reqAccountUpdates(True, "U806698")
@@ -153,7 +153,7 @@ if __name__ == '__main__':
 
         tickerId += 2
 
-    dataList.append([QCheckBox(""), 0, '', '', '', '','', 0, 0, 0, 0, 0, 0, '', '', '', ''])
+    dataList.append([QCheckBox(""), 0, '', '', '', '','', 0, 0, 0, 0, 0, 0, '', '', '', '', ''])
 
 
     cmw = CMainWindow(dataList, header, ccdict)

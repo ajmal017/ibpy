@@ -41,7 +41,7 @@
 
     <bw id="11" enteringTime="" enteringPrice="117.416" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="SITE" price = "128.305"/>
-        <option expiry="20200918" strike="125" multiplier="100" price = "10.88"/></bw>
+        <option expiry="20201016" strike="125" multiplier="100" price = "10.88"/></bw>
 
     <bw id="12" enteringTime="" enteringPrice="23.811" commission="" quantity="3">
         <underlyer type="STK" tickerSymbol="SLV" price = "26.746"/>

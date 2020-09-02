@@ -13,14 +13,6 @@ class CMainWindow(QMainWindow):
 
         self.statusbar = self.statusBar()
         self.setStatusBar(self.statusbar)
-
-        #self.statusbar.showMessage('Ready')
-
-        self.nlv_lbl = QLabel("NLV in USD:"+"0")
-        #self.statusbar.addWidget(self.nlv_lbl)
-        self.statusBar().addPermanentWidget(self.nlv_lbl)
-        self.nlv_lbl.show()
-
         self.dataList = dataList
         self.header = header
         self.initUI(ccd)
@@ -30,8 +22,15 @@ class CMainWindow(QMainWindow):
         self.timer.start(1000)
 
     def updateStatusBar(self):
-        print("update statusbar ", globvars.accountData["NetLiquidationByCurrency"][0])
-        self.nlv_lbl.text = globvars.accountData["NetLiquidationByCurrency"][0]
+        profstr = "NLQ:"
+
+        if "NetLiquidation" in globvars.accountData:
+            print("update statusbar ", globvars.accountData["NetLiquidation"])
+            profstr += str(globvars.accountData["NetLiquidation"])
+
+        profstr += " TVP: "
+        profstr += str(globvars.tvprofit)
+        self.statusbar.showMessage(profstr)
 
     def contextMenuEvent(self, event):
         cmenu = QMenu(self)

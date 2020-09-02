@@ -57,6 +57,7 @@ class globvars:
     gst_status_display_tooltip  = None
     pol_status_display_tooltip  = None
     tickerData                  = None
+    tvprofit                    = None
 
     def init_globvars():
         globvars.testscriptcounter           = 0
@@ -84,6 +85,7 @@ class globvars:
         globvars.tickerData                 = {}
         globvars.logger                     = None
         globvars.accountData                     = {}
+        globvars.tvprofit                   = 0
 
     def set_logger(logger):
         globvars.logger = logger
