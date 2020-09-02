@@ -82,6 +82,11 @@ class globvars:
         globvars.sleepmodcntr                         = 0
         globvars.logfilename                         = "mainLog.log"
         globvars.tickerData                 = {}
+        globvars.logger                     = None
+        globvars.accountData                     = {}
+
+    def set_logger(logger):
+        globvars.logger = logger
 
     def set_teststate(status):
         globvars.testprevstate = globvars.teststate

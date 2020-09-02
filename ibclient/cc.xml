@@ -1,7 +1,7 @@
 <coveredCalls>
     <bw id="1" enteringTime="" enteringPrice="77.522" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="AMD" price = "86.385"/>
-        <option expiry="20200918" strike="95" multiplier="100" price = "8.862"/></bw>
+        <option expiry="20200918" strike="75" multiplier="100" price = "8.862"/></bw>
 
     <bw id="2" enteringTime="" enteringPrice="104.087" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="CDNS" price = "110.304"/>
@@ -39,7 +39,7 @@
         <underlyer type="STK" tickerSymbol="SEDG" price = "219.394"/>
         <option expiry="20200918" strike="190" multiplier="100" price = "34.378"/></bw>
 
-    <bw id="11" enteringTime="" enteringPrice="117.416" commission="" quantity="2">
+    <bw id="11" enteringTime="" enteringPrice="117.416" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="SITE" price = "128.305"/>
         <option expiry="20200918" strike="125" multiplier="100" price = "10.88"/></bw>
 
@@ -47,9 +47,9 @@
         <underlyer type="STK" tickerSymbol="SLV" price = "26.746"/>
         <option expiry="20200918" strike="24" multiplier="100" price = "2.935"/></bw>
 
-    <bw id="13" enteringTime="" enteringPrice="322.981" commission="" quantity="1">
-        <underlyer type="STK" tickerSymbol="SPY" price = "333.954"/>
-        <option expiry="20200918" strike="332" multiplier="100" price = "10.973"/></bw>
+    <bw id="13" enteringTime="2020 AUG 24 18:56:26" enteringPrice="186.32" commission="1.49" quantity="1">
+        <underlyer type="STK" tickerSymbol="PYPL" price = "198.18"/>
+        <option expiry="20200918" strike="190" multiplier="100" price = "11.86"/></bw>
 
     <bw id="14" enteringTime="" enteringPrice="37.658" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="TTGT" price = "39.425"/>

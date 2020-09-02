@@ -4,6 +4,7 @@ from ibapi.contract import Contract
 from ibapi.order_condition import Create, OrderCondition
 from ibapi.order import *
 from ibapi.ticktype import TickTypeEnum
+from Account import Account
 
 from globals import globvars
 import const
@@ -11,6 +12,7 @@ import const
 class BrkApi(EWrapper, EClient):
     def __init__(self):
         EClient.__init__(self, self)
+        self.account = Account()
         self.bars={}
         self.endflag = {}
 
@@ -63,6 +65,10 @@ class BrkApi(EWrapper, EClient):
 
         if str(tickType) == const.BIDPRICE :
             globvars.tickerData[tickerId][const.BIDPRICE] = value
+
+    def updateAccountValue(self, key:str, val:str, currency:str,
+                            accountName:str):
+        self.account.update(key,val)
 
     def nextValidId(self, orderId: int):
         super().nextValidId(orderId)

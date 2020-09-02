@@ -17,14 +17,15 @@ from CMainWindow import CMainWindow
 from BrkApi import BrkApi
 import logger as logger
 from globals import globvars
+import const
 from covcall import covered_call
 
 from time import time
 import threading
 import time
 import xmltodict
-from globals import globvars
-import const
+
+
 
 from datetime import datetime, time, timedelta
 
@@ -46,11 +47,12 @@ def run_loop():
     ibapp.run()
 
 if __name__ == '__main__':
+    globvars.init_globvars()
     capp = QApplication([])
     ibapp = BrkApi()
 
-    globvars.init_globvars()
     mainLogger = logger.initMainLogger()
+    globvars.set_logger(mainLogger)
 
     initialtickerId = 4100
 
@@ -74,6 +76,9 @@ if __name__ == '__main__':
     dataList = [
         [checkbox1, '', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '0', '0']
     ]
+
+    ibapp.reqAccountUpdates(True, "U806698")
+
     for bw in ccdict["coveredCalls"]["bw"]:
 
         (underlyer,option) = covered_call.get_contracts(bw)

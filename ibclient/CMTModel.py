@@ -15,7 +15,7 @@ class PrxyModel(QSortFilterProxyModel):
 
     def lessThan(self, left, right):
         role = QtCore.Qt.DisplayRole
-        if left.column() in [1,2,5,6,7,8,9,10,11,12,13,14,15,16]:
+        if left.column() in [1,2,5,6,7,9,10,11,12,13,14,15,16]:
             return float(self.sourceModel().data(left, role)) < float(self.sourceModel().data(right, role))
         elif left.column() == 17:
             try:
@@ -44,7 +44,7 @@ class CMTModel(QAbstractTableModel):
         self.timer.start(1000)
         self.ccdict = {}
 
-        self.background_colors = [QtGui.QColor(QtCore.Qt.green), QtGui.QColor(QtCore.Qt.blue), QtGui.QColor(QtCore.Qt.red)]
+        self.background_colors = [QtGui.QColor(QtCore.Qt.green), QtGui.QColor(QtCore.Qt.yellow), QtGui.QColor(QtCore.Qt.red)]
 
         # self.rowCheckStateMap = {}
 
@@ -117,6 +117,21 @@ class CMTModel(QAbstractTableModel):
                                       "{:.2f}".format(100*tv/itv)])
                     if globvars.tickerData[bw["tickerId"]][const.LASTPRICE] > 0.01 and globvars.tickerData[str(int(bw["tickerId"])+1)][const.LASTPRICE] > 0.01:
                         summary[16] += tv*int(bw["@quantity"])*100
+                    else:
+                        ulbid = globvars.tickerData[bw["tickerId"]][const.BIDPRICE]
+                        ulask = globvars.tickerData[bw["tickerId"]][const.ASKPRICE]
+                        opbid = globvars.tickerData[str(int(bw["tickerId"])+1)][const.BIDPRICE]
+                        opask = globvars.tickerData[str(int(bw["tickerId"]) + 1)][const.ASKPRICE]
+                        if opask+opbid > 0.01:
+                            spread = (2*(opask-opbid)/(opask+opbid))
+                            if ulbid > 0.01 and opbid > 0.01 and ulask > 0.01 and opask > 0.01 and spread < 0.25:
+                                bw["cc"].set_stk_price((ulask+ulbid)/2)
+                                bw["cc"].set_opt_price((opask+opbid)/2)
+                                tv = bw["cc"].getTimevalue()
+                                summary[16] += tv * int(bw["@quantity"]) * 100
+                        else:
+                            summary[16] += 0
+
 
 
         dataList2.append([QCheckBox(""),
@@ -170,10 +185,11 @@ class CMTModel(QAbstractTableModel):
         elif role == QtCore.Qt.BackgroundRole:
             ix = self.index(index.row(), index.column())
             cellvalue = ix.data()
-
+            color = self.background_colors[1]
             if index.column() == 11:
                 try:
                     if float(cellvalue) > 0.01:
+                        #self.setData(index(index.row(), 0), QtGui.QBrush(QtCore.Qt.red), QtCore.Qt.BackgroundRole)
                         color = self.background_colors[0]
                     else:
                         color = self.background_colors[1]
