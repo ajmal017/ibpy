@@ -117,10 +117,19 @@ if __name__ == '__main__':
         globvars.tickerData[bw["option"]["tickerId"]][const.LASTPRICE] = 0
         globvars.tickerData[bw["option"]["tickerId"]][const.BIDPRICE] = 0
 
-        nyseIsOpen = is_time_between(time(15, 30), time(22, 00))
+        nyseIsOpen = is_time_between(time(10, 00), time(22, 00))
+        cboeIsOpen = is_time_between(time(15, 30), time(22, 00))
 
         if nyseIsOpen:
             ibapp.reqMktData(bw["underlyer"]["tickerId"], underlyer, "", False, False, [])
+        else:
+            # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
+            # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
+            now = datetime.now() - timedelta(days=1)
+            dt = now.strftime("%Y%m%d 21:50:00")
+            ibapp.reqHistoricalData(bw["underlyer"]["tickerId"], underlyer, dt, "3600 S", "5 mins", "MIDPOINT", 1, 1, False, [])
+
+        if cboeIsOpen:
             ibapp.reqMktData(bw["option"]["tickerId"]   , option, "", False, False, [])
         else:
             # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
@@ -128,7 +137,6 @@ if __name__ == '__main__':
             now = datetime.now() - timedelta(days=1)
             dt = now.strftime("%Y%m%d 21:50:00")
             ibapp.reqHistoricalData(bw["option"]["tickerId"], option, dt, "3600 S", "5 mins", "MIDPOINT", 1, 1, False, [])
-            ibapp.reqHistoricalData(bw["underlyer"]["tickerId"], underlyer, dt, "3600 S", "5 mins", "MIDPOINT", 1, 1, False, [])
 
         tickerId += 2
 
