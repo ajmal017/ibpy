@@ -7,6 +7,19 @@ from PyQt5.QtWidgets import *
 from globals import globvars
 import const
 
+class PrxyModel(QSortFilterProxyModel):
+
+    def __init__(self):
+        super().__init__()
+        self.invalidateFilter()
+
+    def lessThan(self, left, right):
+        role = QtCore.Qt.DisplayRole
+        if left.column() in [2,5,6,7,8,9,10,11,12,13,14,15,16,17]:
+            return float(self.sourceModel().data(left, role)) < float(self.sourceModel().data(right, role))
+        else:
+            return False;
+
 class CMTModel(QAbstractTableModel):
     """
     keep the method names
@@ -121,17 +134,18 @@ class CMTModel(QAbstractTableModel):
             return self.header[col]
         return None
 
-    def sort(self, col, order):
-        """sort table by given column number col"""
-        # print(">>> sort() col = ", col)
-        if col != 0:
-            # self.mysignal.emit()
-            #PYQTSIGNAL("layoutAboutToBeChanged()").emit()
-            self.layoutAboutToBeChanged.emit()
-            self.mylist = sorted(self.mylist, key=operator.itemgetter(col))
-            if order == Qt.DescendingOrder:
-                self.mylist.reverse()
-            self.layoutChanged.emit()
+    # def sort(self, col, order):
+    #     """sort table by given column number col"""
+    #     # print(">>> sort() col = ", col)
+    #
+    #     if col != 0:
+    #         # self.mysignal.emit()
+    #         #PYQTSIGNAL("layoutAboutToBeChanged()").emit()
+    #         self.layoutAboutToBeChanged.emit()
+    #         self.mylist = sorted(self.mylist, key=operator.itemgetter(col))
+    #         if order == Qt.DescendingOrder:
+    #             self.mylist.reverse()
+    #         self.layoutChanged.emit()
 
     def flags(self, index):
         if not index.isValid():

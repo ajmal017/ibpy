@@ -57,7 +57,7 @@ if __name__ == '__main__':
     mainLogger.info('Started')
     tickerId = initialtickerId
 
-    ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
+    # ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
 
     api_thread = threading.Thread(target=run_loop, daemon=True)
     api_thread.start()

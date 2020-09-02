@@ -3,7 +3,7 @@ from PyQt5.QtGui import *
 from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import *
 
-from CMTModel import CMTModel
+from CMTModel import CMTModel, PrxyModel
 from globals import globvars
 import const
 
@@ -16,6 +16,10 @@ class CMTWidget(QWidget):
         self.setWindowTitle("Click on the header to sort table")
 
         self.table_model = CMTModel(self, dataList, header)
+
+        self.proxy_model = PrxyModel()
+        self.proxy_model.setSourceModel(self.table_model)
+
         self.table_model.setCCList(ccd)
         self.table_view = QTableView()
 
@@ -28,7 +32,7 @@ class CMTWidget(QWidget):
         self.table_view.clicked.connect(self.showSelection)
         self.table_view.clicked.connect(self.selectRow)
 
-        self.table_view.setModel(self.table_model)
+        self.table_view.setModel(self.proxy_model)
         # enable sorting
         self.table_view.setSortingEnabled(True)
 

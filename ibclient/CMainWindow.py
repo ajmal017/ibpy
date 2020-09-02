@@ -45,6 +45,6 @@ class CMainWindow(QMainWindow):
         toolbar = self.addToolBar('Exit')
         toolbar.addAction(exitAct)
 
-        self.setGeometry(100, 200, 1000, 500)
+        self.setGeometry(100, 200, 1500, 500)
         self.setWindowTitle('Main window')
         self.show()
