@@ -95,7 +95,15 @@ if __name__ == '__main__':
 
         ioanow = ioa
 
-        dataList.append([QCheckBox(bw["underlyer"]["@tickerSymbol"]), bw["option"]["@strike"], bw["option"]["@expiry"], bw["ioa_initial"],ioanow, 0, 0, 0, 0, 0, 0, bw["itv"], bw["ctv"], bw["tvprof"], bw["pac"]])
+        dataList.append([
+            QCheckBox(bw["underlyer"]["@tickerSymbol"]),
+            0,
+            bw["option"]["@strike"],
+            bw["option"]["@expiry"],
+            bw["ioa_initial"],
+            0, 0, 0, 0, 0, 0,
+            0,0,0,
+            bw["itv"], bw["ctv"], 0, bw["tvprof"]])
 
         mainLogger.info("querying no. %s: %s", bw["@id"], bw["underlyer"]["@tickerSymbol"])
 
@@ -139,6 +147,8 @@ if __name__ == '__main__':
             ibapp.reqHistoricalData(bw["option"]["tickerId"], option, dt, "3600 S", "5 mins", "MIDPOINT", 1, 1, False, [])
 
         tickerId += 2
+
+    dataList.append([QCheckBox(""), 0, '', '', '', '','', 0, 0, 0, 0, 0, 0, '', '', '', ''])
 
 
     cmw = CMainWindow(dataList, header, ccdict)

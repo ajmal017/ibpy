@@ -26,6 +26,8 @@ class CMainWindow(QMainWindow):
         if action == tauAct:
             self.cmtw.toggleAutoUpdate()
 
+
+
     def initUI(self, ccd):
 
         self.cmtw = CMTWidget(self.dataList, self.header, ccd)

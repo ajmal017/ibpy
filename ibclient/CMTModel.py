@@ -44,6 +44,8 @@ class CMTModel(QAbstractTableModel):
         self.timer.start(1000)
         self.ccdict = {}
 
+        self.background_colors = [QtGui.QColor(QtCore.Qt.green), QtGui.QColor(QtCore.Qt.blue), QtGui.QColor(QtCore.Qt.red)]
+
         # self.rowCheckStateMap = {}
 
     def setCCList(self, ccd):
@@ -64,11 +66,17 @@ class CMTModel(QAbstractTableModel):
     def updateModel(self):
         dataList2 = []
 
-        for bw in self.ccdict["coveredCalls"]["bw"]:
+        summary = []
+        for colidx, bw in enumerate(self.ccdict["coveredCalls"]["bw"]):
+            summary.append(0)
+
+        for rowidx,bw in enumerate(self.ccdict["coveredCalls"]["bw"]):
             if int(bw["tickerId"]) % 2 == 0:
                 if const.LASTPRICE in globvars.tickerData[bw["tickerId"]]:
                     tv = bw["cc"].getTimevalue()
                     itv = bw["itv"]
+
+                    summary[15] += tv
 
                     if (float(bw["option"]["@strike"]) > float(bw["cc"].get_stk_price())):
                         ioanow = "OTM"
@@ -86,6 +94,7 @@ class CMTModel(QAbstractTableModel):
                     changepct = 100*(globvars.tickerData[bw["tickerId"]][const.LASTPRICE] - float(bw["underlyer"]["@price"]))/float(bw["underlyer"]["@price"])
 
                     dataList2.append([QCheckBox(bw["underlyer"]["@tickerSymbol"]),
+                                      #bw["@id"],
                                       bw["@quantity"],
                                       bw["cc"].get_strike(),
                                       bw["cc"].get_expiry() + " (" + str(bw["cc"].get_days())+" d)",
@@ -106,6 +115,32 @@ class CMTModel(QAbstractTableModel):
                                       "{:.2f}".format(tv),
                                       "{:.2f}".format(tv*int(bw["@quantity"])*100),
                                       "{:.2f}".format(100*tv/itv)])
+                    if globvars.tickerData[bw["tickerId"]][const.LASTPRICE] > 0.01 and globvars.tickerData[str(int(bw["tickerId"])+1)][const.LASTPRICE] > 0.01:
+                        summary[16] += tv*int(bw["@quantity"])*100
+
+
+        dataList2.append([QCheckBox(""),
+                          0,
+                          0,
+                          "",
+                          "",
+
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+                          "",
+
+                          "",
+                          "",
+                          "",
+
+                          "",
+                          summary[15],
+                          summary[16],
+                          ""])
+
 
         self.mylist = dataList2
         self.layoutAboutToBeChanged.emit()
@@ -124,9 +159,32 @@ class CMTModel(QAbstractTableModel):
         if (index.column() == 0):
             value = self.mylist[index.row()][index.column()].text()
         else:
-            value = self.mylist[index.row()][index.column()]
+            a = index.row()
+            b = index.column()
+
+            value = self.mylist[a][b]
+
         if role == QtCore.Qt.EditRole:
             return value
+
+        elif role == QtCore.Qt.BackgroundRole:
+            ix = self.index(index.row(), index.column())
+            cellvalue = ix.data()
+
+            if index.column() == 11:
+                try:
+                    if float(cellvalue) > 0.01:
+                        color = self.background_colors[0]
+                    else:
+                        color = self.background_colors[1]
+                except:
+                    return self.background_colors[1]
+            else:
+                color = self.background_colors[1]
+
+            #pix = QtCore.QPersistentModelIndex(ix)
+            return color
+
         elif role == QtCore.Qt.DisplayRole:
             return value
         elif role == QtCore.Qt.CheckStateRole:
