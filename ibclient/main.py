@@ -44,12 +44,12 @@ def timer_func(win, mylist):
     win.table_view.update()
 
 def run_loop():
-    ibapp.run()
+    globvars.ibapp.run()
 
 if __name__ == '__main__':
     globvars.init_globvars()
     capp = QApplication([])
-    ibapp = BrkApi()
+    globvars.ibapp = BrkApi()
 
     mainLogger = logger.initMainLogger()
     globvars.set_logger(mainLogger)
@@ -59,7 +59,7 @@ if __name__ == '__main__':
     mainLogger.info('Started')
     tickerId = initialtickerId
 
-    ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
+    globvars.ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
 
     api_thread = threading.Thread(target=run_loop, daemon=True)
     api_thread.start()
@@ -77,7 +77,7 @@ if __name__ == '__main__':
         [checkbox1, '', '', '', '', '', '', '', '', '', '', '', '', '', '0', '0', '0', '0', '0', '0']
     ]
 
-    ibapp.reqAccountUpdates(True, "U806698")
+    globvars.ibapp.reqAccountUpdates(True, "U806698")
 
     for bw in ccdict["coveredCalls"]["bw"]:
 
@@ -98,6 +98,8 @@ if __name__ == '__main__':
             ioa = "ATM"
 
         bw["ioa_initial"] = ioa
+
+        globvars.symbol[bw["underlyer"]["@tickerSymbol"]] = bw
 
         ioanow = ioa
 
@@ -135,25 +137,25 @@ if __name__ == '__main__':
         nyseIsOpen = is_time_between(time(10, 00), time(22, 00))
         cboeIsOpen = is_time_between(time(15, 30), time(22, 00))
 
-        ibapp.reqContractDetails(bw["underlyer"]["tickerId"], underlyer)
+        globvars.ibapp.reqContractDetails(bw["underlyer"]["tickerId"], underlyer)
 
         if nyseIsOpen:
-            ibapp.reqMktData(bw["underlyer"]["tickerId"], underlyer, "", False, False, [])
+            globvars.ibapp.reqMktData(bw["underlyer"]["tickerId"], underlyer, "", False, False, [])
         else:
             # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
             # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
             now = datetime.now() - timedelta(days=1)
             dt = now.strftime("%Y%m%d 21:50:00")
-            ibapp.reqHistoricalData(bw["underlyer"]["tickerId"], underlyer, dt, "3600 S", "5 mins", "MIDPOINT", 1, 1, False, [])
+            globvars.ibapp.reqHistoricalData(bw["underlyer"]["tickerId"], underlyer, dt, "3600 S", "5 mins", "MIDPOINT", 1, 1, False, [])
 
         if cboeIsOpen:
-            ibapp.reqMktData(bw["option"]["tickerId"]   , option, "", False, False, [])
+            globvars.ibapp.reqMktData(bw["option"]["tickerId"]   , option, "", False, False, [])
         else:
             # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
             # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
             now = datetime.now() - timedelta(days=1)
             dt = now.strftime("%Y%m%d 21:50:00")
-            ibapp.reqHistoricalData(bw["option"]["tickerId"], option, dt, "3600 S", "5 mins", "MIDPOINT", 1, 1, False, [])
+            globvars.ibapp.reqHistoricalData(bw["option"]["tickerId"], option, dt, "3600 S", "5 mins", "MIDPOINT", 1, 1, False, [])
 
         tickerId += 2
 

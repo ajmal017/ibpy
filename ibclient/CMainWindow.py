@@ -64,3 +64,11 @@ class CMainWindow(QMainWindow):
         self.setGeometry(100, 200, 1500, 500)
         self.setWindowTitle('Main window')
         self.show()
+
+    def closeEvent(self, event):
+        print('Calling')
+        globvars.ibapp.disconnect()
+        print('event: {0}'.format(event))
+        event.accept()
+
+

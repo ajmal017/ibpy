@@ -19,6 +19,9 @@ class BrkApi(EWrapper, EClient):
         self.bars={}
         self.endflag = {}
 
+    def eDisconnect(self):
+        Close()
+
     def historicalData(self, reqId, bar):
 
         tickerId = str(reqId)

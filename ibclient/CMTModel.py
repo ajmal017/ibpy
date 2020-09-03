@@ -15,11 +15,17 @@ class PrxyModel(QSortFilterProxyModel):
 
     def lessThan(self, left, right):
         role = QtCore.Qt.DisplayRole
-        if left.column() in [5,6,7,9,10,11,12,13,14,15,16]:
-            return float(self.sourceModel().data(left, role)) < float(self.sourceModel().data(right, role))
-        elif left.column() in [1,2,3,4]:
-            return (self.sourceModel().data(left, role)) < (self.sourceModel().data(right, role))
-        elif left.column() == 17:
+        lc = left.column()
+        if lc in [6,7,9,10,11,12,13,14,15,16,17,18]:
+            try:
+                a = self.sourceModel().data(left, role)
+                b = self.sourceModel().data(right, role)
+                return float(a) < float(b)
+            except:
+                return False
+        elif lc in [1,2,3,4,5]:
+            return (str(self.sourceModel().data(left, role))) < str((self.sourceModel().data(right, role)))
+        elif lc == 17:
             try:
                 a = float(self.sourceModel().data(left, role).replace("%",""))
                 b = float(self.sourceModel().data(right, role).replace("%",""))
@@ -45,6 +51,7 @@ class CMTModel(QAbstractTableModel):
         self.timer.timeout.connect(self.updateModel)
         self.timer.start(1000)
         self.ccdict = {}
+        self.bw = {}
 
         self.background_colors = [QtGui.QColor(QtCore.Qt.green), QtGui.QColor(QtCore.Qt.yellow), QtGui.QColor(QtCore.Qt.red)]
 
@@ -180,6 +187,10 @@ class CMTModel(QAbstractTableModel):
             return None
         if (index.column() == 0):
             value = self.mylist[index.row()][index.column()].text()
+            try:
+                self.bw = globvars.symbol[value]
+            except:
+                print("ERROR")
         else:
             a = index.row()
             b = index.column()
@@ -193,17 +204,22 @@ class CMTModel(QAbstractTableModel):
             ix = self.index(index.row(), index.column())
             cellvalue = ix.data()
             color = self.background_colors[1]
-            if index.column() == 12:
-                try:
-                    if float(cellvalue) > 0.01:
-                        #self.setData(index(index.row(), 0), QtGui.QBrush(QtCore.Qt.red), QtCore.Qt.BackgroundRole)
-                        color = self.background_colors[0]
-                    else:
-                        color = self.background_colors[1]
-                except:
-                    return self.background_colors[1]
-            else:
-                color = self.background_colors[1]
+            # if index.column() == 12:
+            #     try:
+            #         if float(cellvalue) > 0.01:
+            #             #self.setData(index(index.row(), 0), QtGui.QBrush(QtCore.Qt.red), QtCore.Qt.BackgroundRole)
+            #             color = self.background_colors[0]
+            #         else:
+            #             color = self.background_colors[1]
+            #     except:
+            #         return self.background_colors[1]
+            # else:
+            if self.bw != None:
+                if "cc" in self.bw:
+                    a = float(self.bw["cc"].get_stk_price())
+                    b = float(self.bw["@enteringPrice"])
+                    if  a > 0.5 and a <= b:
+                        color = self.background_colors[2]
 
             #pix = QtCore.QPersistentModelIndex(ix)
             return color
@@ -221,19 +237,6 @@ class CMTModel(QAbstractTableModel):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
             return self.header[col]
         return None
-
-    # def sort(self, col, order):
-    #     """sort table by given column number col"""
-    #     # print(">>> sort() col = ", col)
-    #
-    #     if col != 0:
-    #         # self.mysignal.emit()
-    #         #PYQTSIGNAL("layoutAboutToBeChanged()").emit()
-    #         self.layoutAboutToBeChanged.emit()
-    #         self.mylist = sorted(self.mylist, key=operator.itemgetter(col))
-    #         if order == Qt.DescendingOrder:
-    #             self.mylist.reverse()
-    #         self.layoutChanged.emit()
 
     def flags(self, index):
         if not index.isValid():

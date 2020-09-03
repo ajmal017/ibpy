@@ -58,6 +58,8 @@ class globvars:
     pol_status_display_tooltip  = None
     tickerData                  = None
     tvprofit                    = None
+    ibapi                       = None
+    symbol                      = None
 
     def init_globvars():
         globvars.testscriptcounter           = 0
@@ -86,6 +88,8 @@ class globvars:
         globvars.logger                     = None
         globvars.accountData                     = {}
         globvars.tvprofit                   = 0
+        globvars.ibapp                      = None
+        globvars.symbol                     = {}
 
     def set_logger(logger):
         globvars.logger = logger
