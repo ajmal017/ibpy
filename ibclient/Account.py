@@ -28,5 +28,6 @@ class Account():
         elif key == "NetLiquidationByCurrency":
             globvars.accountData[key][self.idx] =  value
             self.idx =self.idx+1
-
-
+        elif key == "FullInitMarginReq":
+            globvars.accountData[key] =  value
+            self.idx =self.idx+1

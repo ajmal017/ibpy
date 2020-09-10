@@ -59,7 +59,9 @@ class globvars:
     tickerData                  = None
     tvprofit                    = None
     ibapi                       = None
-    symbol                      = None
+    bwl                         = None
+    cc                          = None
+    header                      = None
 
     def init_globvars():
         globvars.testscriptcounter           = 0
@@ -89,42 +91,12 @@ class globvars:
         globvars.accountData                     = {}
         globvars.tvprofit                   = 0
         globvars.ibapp                      = None
-        globvars.symbol                     = {}
+
+        globvars.bwl                        = []
+        globvars.cc                        =  {}
+        globvars.header                     = ['Id', 'Symbol', 'Industry', 'Pos', 'Strike', 'Expiry', 'Status', 'UL-Init', 'BW-Price', 'UL-Last', 'UL-Chge',
+         'UL-Chge pct', 'UL-Bid', 'UL-Ask', 'OP-Lst', 'OP-Bid', 'OP-Ask', 'ITV', 'ITV/$', 'CTV', 'CTV/$', 'TV-Chg', 'TV-Prof']
 
     def set_logger(logger):
         globvars.logger = logger
 
-    def set_teststate(status):
-        globvars.testprevstate = globvars.teststate
-        globvars.teststate = status
-
-    def get_teststate():
-        return globvars.teststate
-
-    def set_opcstate(status):
-        globvars.opcprevstate = globvars.opcstate
-        globvars.opcstate = status
-
-    def get_opcstate():
-        return globvars.opcstate
-
-    def set_gststate(status):
-        globvars.gstprevstate = globvars.gststate
-        globvars.gststate = status
-
-    def get_gststate ( ):
-        return globvars.gststate
-
-    def set_pcnstate(status):
-        globvars.pcnprevstate = globvars.pcnstate
-        globvars.pcnstate = status
-
-    def get_pcnstate ( ):
-        return  globvars.pcnstate
-
-    def set_btrmode   ( mode ):
-        globvars.bmdprevmode = globvars.bmdmode
-        globvars.bmdmode = mode
-
-    def get_bmdmode ():
-        return globvars.bmdmode

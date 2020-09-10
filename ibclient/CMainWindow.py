@@ -6,53 +6,65 @@ from PyQt5.QtCore import QTimer
 from CMTWidget import CMTWidget
 from globals import globvars
 
-
 class CMainWindow(QMainWindow):
-    def __init__(self, dataList, header, ccd):
+    def __init__(self, dataList):
         super().__init__()
 
         self.statusbar = self.statusBar()
         self.setStatusBar(self.statusbar)
         self.dataList = dataList
-        self.header = header
-        self.initUI(ccd)
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.updateStatusBar)
         self.timer.start(1000)
 
     def updateStatusBar(self):
-        profstr = "NLQ:"
+        profstr = "NLQ: "
+        profstr += globvars.accountData["NetLiquidation"] + " CHF | "
 
-        if "NetLiquidation" in globvars.accountData:
-            profstr += str(globvars.accountData["NetLiquidation"])
+        for cncid,cnc in enumerate(globvars.accountData["NetLiquidationByCurrency"]):
+            try:
+                profstr += cnc + " | "
+                profstr += " "
+            except:
+                pass
 
-        profstr += " TVP: "
-        profstr += str(globvars.tvprofit)
+        profstr += " TVP: ALL "
+        profstr += "{:.2f}".format(globvars.tvprofit)
+
+        profstr += " InitMargin "
+        profstr += globvars.accountData["FullInitMarginReq"]
+
         self.statusbar.showMessage(profstr)
 
     def contextMenuEvent(self, event):
         cmenu = QMenu(self)
 
         tauAct = cmenu.addAction("toggleAutoUpdate")
-        openAct = cmenu.addAction("Open")
-        quitAct = cmenu.addAction("Quit")
+        openAct = cmenu.addAction("Show All Columns")
+        resetColumnState = cmenu.addAction("Reset Columns")
+        clearSelection = cmenu.addAction("Clear Selection")
+
         action = cmenu.exec_(self.mapToGlobal(event.pos()))
 
         if action == tauAct:
             self.cmtw.toggleAutoUpdate()
+        elif action == openAct:
+            self.cmtw.showAllColumns()
+        elif action == resetColumnState:
+            self.cmtw.resetAllColumns()
+        elif action == clearSelection:
+            self.cmtw.clearSelection()
 
     def initUI(self, ccd):
 
-        self.cmtw = CMTWidget(self.dataList, self.header, ccd)
+        self.cmtw = CMTWidget(self.dataList, ccd)
         self.setCentralWidget(self.cmtw)
 
         exitAct = QAction(QIcon('exit24.png'), 'Exit', self)
         exitAct.setShortcut('Ctrl+Q')
         exitAct.setStatusTip('Exit application')
         exitAct.triggered.connect(self.close)
-
-        self.statusBar()
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
@@ -63,7 +75,6 @@ class CMainWindow(QMainWindow):
 
         self.setGeometry(100, 200, 1500, 500)
         self.setWindowTitle('Main window')
-        self.show()
 
     def closeEvent(self, event):
         print('Calling')

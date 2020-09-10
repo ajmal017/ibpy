@@ -25,19 +25,15 @@ class BrkApi(EWrapper, EClient):
     def historicalData(self, reqId, bar):
 
         tickerId = str(reqId)
-        bw = globvars.tickerData[tickerId]["bw"]
+        bw = globvars.cc[tickerId]
 
         if reqId not in self.bars:
             self.bars[reqId] = []
 
-        # print(reqId, "BarData.", bar)
-
         if reqId % 2 == 0:
-            bw["cc"].set_stk_price(bar.close)
+            bw.set_stk_price(bar.close)
         else:
-            bw["cc"].set_opt_price(bar.close)
-
-        globvars.tickerData[tickerId][const.LASTPRICE] = bar.close
+            bw.set_opt_price(bar.close)
 
         self.bars[reqId].append(bar)
 
@@ -53,37 +49,35 @@ class BrkApi(EWrapper, EClient):
 
     def contractDetails(self, reqId: int, contractDetails: ContractDetails):
         tickerId = str(reqId)
-        bw = globvars.tickerData[tickerId]["bw"]
+        bw = globvars.cc[tickerId]
 
         super().contractDetails(reqId, contractDetails)
         industry = contractDetails.industry
         if industry == '':
             industry = contractDetails.stockType
-        bw["cc"].set_industry(industry)
-        print(industry)
+        bw.set_industry(industry)
 
     def contractDetailsEnd(self, reqId: int):
         super().contractDetailsEnd(reqId)
 
     def tickPrice(self, reqId, tickType, value, attrib):
         tickerId = str(reqId)
+        tt = str(tickType)
 
-        bw = globvars.tickerData[tickerId]["bw"]
-
-        if str(tickType) == const.LASTPRICE :
-            if reqId % 2 == 0:
-                bw["cc"].set_stk_price(value)
-            else:
-                bw["cc"].set_opt_price(value)
-            globvars.tickerData[tickerId][const.LASTPRICE] = value
-            #print('The currenttv of ', tickerData[tickerId]["bw"]["underlyer"]["@tickerSymbol"], " is ",bw["cc"].getTimevalue())
-
-
-        if str(tickType) == const.ASKPRICE :
-            globvars.tickerData[tickerId][const.ASKPRICE] = value
-
-        if str(tickType) == const.BIDPRICE :
-            globvars.tickerData[tickerId][const.BIDPRICE] = value
+        if reqId % 2 == 0:
+            if tt == const.LASTPRICE:
+                globvars.cc[tickerId].tickerData["ullst"]  = float(value)
+            elif tt == const.BIDPRICE:
+                globvars.cc[tickerId].tickerData["ulbid"] = float(value)
+            elif tt == const.ASKPRICE:
+                globvars.cc[tickerId].tickerData["ulask"] = float(value)
+        else:
+            if tt == const.LASTPRICE:
+                globvars.cc[tickerId].tickerData["oplst"]  = float(value)
+            elif tt == const.BIDPRICE:
+                globvars.cc[tickerId].tickerData["opbid"] = float(value)
+            elif tt == const.ASKPRICE:
+                globvars.cc[tickerId].tickerData["opask"] = float(value)
 
     def updateAccountValue(self, key:str, val:str, currency:str,
                             accountName:str):
