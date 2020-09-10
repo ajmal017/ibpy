@@ -25,8 +25,6 @@ import threading
 import time
 import xmltodict
 
-
-
 from datetime import datetime, time, timedelta
 
 def is_time_between(begin_time, end_time, check_time=None):
@@ -93,12 +91,13 @@ if __name__ == '__main__':
 
         if cboeIsOpen:
             globvars.ibapp.reqMktData(cc.ticker_id()+1   , cc.option(), "", False, False, [])
+            #globvars.ibapp.reqHistoricalData(cc.ticker_id()+1, cc.option(), dt, "2 D", "1 day", "MIDPOINT", 1, 1, False, [])
         else:
             # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
             # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
             now = datetime.now() - timedelta(days=1)
             dt = now.strftime("%Y%m%d 21:59:00")
-            globvars.ibapp.reqHistoricalData(cc.ticker_id()+1, cc.option(), dt, "3600 S", "5 mins", "MIDPOINT", 1, 1, False, [])
+            globvars.ibapp.reqHistoricalData(cc.ticker_id()+1, cc.option(), dt, "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
 
     cmw = CMainWindow(dataList)
 

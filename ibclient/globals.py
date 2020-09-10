@@ -94,8 +94,8 @@ class globvars:
 
         globvars.bwl                        = []
         globvars.cc                        =  {}
-        globvars.header                     = ['Id', 'Symbol', 'Industry', 'Pos', 'Strike', 'Expiry', 'Status', 'UL-Init', 'BW-Price', 'UL-Last', 'UL-Chge',
-         'UL-Chge pct', 'UL-Bid', 'UL-Ask', 'OP-Lst', 'OP-Bid', 'OP-Ask', 'ITV', 'ITV/$', 'CTV', 'CTV/$', 'TV-Chg', 'TV-Prof']
+        globvars.header                     = ['Id', 'Symbol', 'Industry', 'Pos', 'Strike', 'Expiry', 'Status', 'UL-Init', 'BW-Price', 'UL-Last', 'ULL-BWP', 'UL-Chge',
+         'UL-Chge pct', 'UL-Bid', 'UL-Ask', 'OP-Lst', 'OP-Bid', 'OP-Ask', 'ITV', 'ITV/$', 'CTV', 'CTV/$', 'TV-Chg/%', 'TV-Prof']
 
     def set_logger(logger):
         globvars.logger = logger

@@ -21,15 +21,17 @@
 
     <bw id="6" enteringTime="" enteringPrice="48.171" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="KL" price = "53.904"/>
-        <option expiry="20200918" strike="50" multiplier="100" price = "5.732"/></bw>
+        <option expiry="20200918" strike="50" multiplier="100" price = "5.732"/>
+        <rolled when="20200910 19:24:36" from="20200918" to="20201016" strike="55" price = "1.45 = 4.65 - 3.2" commission = "1.38"/></bw>
 
     <bw id="7" enteringTime="" enteringPrice="191.556" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="KLAC" price = "211.854"/>
-        <option expiry="20200918" strike="195" multiplier="100" price = "20.298"/></bw>
+        <option expiry="20200918" strike="195" multiplier="100" price = "20.298"/>
+        <rolled when="20200910 19:49:53" from="20200918" to="20201016" strike="200" price = "2.40 = 4.5 - 2.1" commission = "0.67"/></bw>
 
-    <bw id="8" enteringTime="" enteringPrice="90.601" commission="" quantity="1">
-        <underlyer type="STK" tickerSymbol="MTH" price = "99.894"/>
-        <option expiry="20200918" strike="97.5" multiplier="100" price = "9.292"/></bw>
+<!--    <bw id="8" enteringTime="" enteringPrice="90.601" commission="" quantity="1">-->
+<!--        <underlyer type="STK" tickerSymbol="MTH" price = "99.894"/>-->
+<!--        <option expiry="20200918" strike="97.5" multiplier="100" price = "9.292"/></bw>-->
 
     <bw id="9" enteringTime="" enteringPrice="34.46" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="SAIL" price = "38.242"/>
@@ -78,6 +80,10 @@
    <bw id="20" enteringTime="2020 SEP 2 19:35:18" enteringPrice="423.85" commission="1.49" quantity="1" exchange="SMART">
     <underlyer type="STK" tickerSymbol="TMO" price = "438.12"/>
     <option expiry="20200918" strike="430" multiplier="100" price = "14.27"/></bw>
+
+   <bw id="21" enteringTime="2020 SEP 10 21:05:53" enteringPrice="15.80" commission="4.86" quantity="5" exchange="SMART">
+    <underlyer type="STK" tickerSymbol="CORT" price = "18.45"/>
+    <option expiry="20201016" strike="17" multiplier="100" price = "2.65"/></bw>
 
 <!--   <bw id="21" enteringTime="2020 SEP 2 19:35:18" enteringPrice="423.85" commission="1.49" quantity="1" exchange="SMART">-->
 <!--    <underlyer type="STK" tickerSymbol="AMZN" price = "3390"/>-->

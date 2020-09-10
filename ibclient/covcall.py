@@ -61,17 +61,18 @@ class covered_call():
             False, #9
             False, #10
             False, #11
-            True, #12
-            True, #13
-            False, #14
-            True, #15
-            True, #16
-            False, #17
+            False, #12
+            True,  #13
+            True,  #14
+            False, #15
+            True,  #16
+            True,  #17
             False, #18
             False, #19
             False, #20
-            False,  #21
-            False  # 22
+            False, #21
+            False, #22
+            False  #23
         ]
 
     def tvprof(self):
@@ -81,6 +82,13 @@ class covered_call():
             return 0
 
     def table_data(self):
+        if self.tickerData["oplst"] < 0.001:
+            a = self.tickerData["opask"]
+            b = self.tickerData["opbid"]
+            if a > 0.01 and b > 0.01:
+                if (a-b)/(a+b) < 0.3:
+                    self.tickerData["oplst"] = (a+b)/2
+
         return (
             self.id,
             self.symbol,
@@ -92,6 +100,7 @@ class covered_call():
             "{:.2f}".format(self.inistkprice),
             "{:.2f}".format(self.inibwprice),
             "{:.2f}".format(self.tickerData["ullst"]),
+            "{:.2f}".format(self.tickerData["ullst"] - self.inibwprice),
             "{:.2f}".format(self.tickerData["ullst"] - self.inistkprice),
             "{:.2f}".format((self.tickerData["ullst"] - self.inistkprice)/self.inistkprice),
             "{:.2f}".format(self.tickerData["ulbid"]),
@@ -164,7 +173,7 @@ class covered_call():
         self.tickerData["oplst"] = price
 
     def itv(self):
-        if self.inibwprice <= self.strike:
+        if self.inistkprice <= self.strike:
             # OTM
             ret = self.inioptprice
         else:

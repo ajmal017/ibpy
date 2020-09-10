@@ -97,6 +97,8 @@ class CMTModel(QAbstractTableModel):
 
             if cc.is_valid():
                 if cc.tickerData["ullst"] < cc.inibwprice:
+                    return QBrush(QtCore.Qt.darkRed, Qt.SolidPattern)
+                elif cc.tickerData["ullst"] < cc.strike:
                     return QBrush(QtCore.Qt.red, Qt.SolidPattern)
                 else:
                     return QBrush(QtCore.Qt.green, Qt.SolidPattern)
