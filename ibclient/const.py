@@ -6,10 +6,10 @@ LASTPRICE   = "4"
 LASTSIZE    = "5"
 
 #TWS Realtrading
-IBPORT      = 7495
+#IBPORT      = 7495
 
 #TWS Papertrading
-#IBPORT      = 7497
+IBPORT      = 7497
 
 #GW Realtrading:
 #IBPORT      = 4001

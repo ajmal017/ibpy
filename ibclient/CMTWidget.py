@@ -8,14 +8,14 @@ from globals import globvars
 import const
 
 class CMTWidget(QWidget):
-    def __init__(self, dataList, header, ccd, *args):
+    def __init__(self, dataList, ccd, *args):
         QWidget.__init__(self, *args)
         self.autoUpdate = True
         # setGeometry(x_pos, y_pos, width, height)
         self.setGeometry(70, 150, 1326, 582)
         self.setWindowTitle("Click on the header to sort table")
 
-        self.table_model = CMTModel(self, dataList, header)
+        self.table_model = CMTModel(self, dataList)
 
         self.proxy_model = PrxyModel()
         self.proxy_model.setSourceModel(self.table_model)
@@ -47,11 +47,6 @@ class CMTWidget(QWidget):
             self.autoUpdate = True
 
         self.table_model.setAutoUpdate(self.autoUpdate)
-
-    def update_model(self, datalist, header):
-        self.table_model2 = MyTableModel(self, dataList, header)
-        self.table_view.setModel(self.table_model2)
-        self.table_view.update()
 
     def showSelection(self, item):
         cellContent = item.data()

@@ -12,27 +12,83 @@ class Security():
 
 class covered_call():
 
-    def __init__(self, right: str, underlyer: Contract, strike: float, expiry: datetime):
-        self.ul = underlyer
-        self.strike = strike
-        self.right = right
-        self.expiry = expiry
-        self.stkprice = 0.0
-        self.optprice = 0.0
-        self.industry = ""
+    def __init__(self, bw: dict, ti: int):
+
+        self.tickerData = {}
+
+        self.symbol         = bw["underlyer"]["@tickerSymbol"]
+        self.tickerId       = ti
+        self.industry       = ""
+
+        self.inibwprice      = float(bw["@enteringPrice"])
+        self.position        = float(bw["@quantity"])
+
+        self.strike         = float(bw["option"]["@strike"])
+        self.expiry         = bw["option"]["@expiry"]
+
+        self.inistkprice    = float(bw["underlyer"]["@price"])
+        self.inioptprice    = float(bw["option"]["@price"])
+
+        self.tickerData["oplst"]    = 0
+
+        self.tickerData["ulbid"] = 0.0
+        self.tickerData["ulask"] = 0.0
+        self.tickerData["ullst"] = 0.0
+        self.tickerData["opbid"] = 0.0
+        self.tickerData["opask"] = 0.0
+        self.tickerData["oplst"] = 0.0
+
+
+    def is_valid(self):
+        if self.tickerData["ullst"] > 1 and self.tickerData["oplst"] > 0.01:
+            return True
+        else:
+            return False
+
+    @staticmethod
+    def header(self):
+        return
+
+    def table_data(self):
+        return (
+            self.symbol,
+            self.industry,
+            self.position,
+            self.strike,
+            self.expiry,
+            self.get_ioa_initial(),
+            self.inistkprice,
+            self.inibwprice,
+            self.tickerData["ullst"],
+            self.tickerData["ullst"] - self.inistkprice,
+            (self.tickerData["ullst"] - self.inistkprice)/self.inistkprice,
+            self.tickerData["ulbid"],
+            self.tickerData["ulask"],
+            self.tickerData["oplst"],
+            self.tickerData["opbid"],
+            self.tickerData["opask"],
+            self.itv(),
+            self.itv()*self.position*100,
+            self.ctv(),
+            self.ctv()*self.position*100,
+            100*self.ctv()/self.itv()
+        )
+
+    def ticker_id(self):
+        return self.tickerId
 
     def get_ioa_initial(self):
-        if (self.strike > self.stkprice):
+        if (self.strike > self.inistkprice):
             ioa = "OTM"
-        elif (self.strike < self.stkprice):
+        elif (self.strike < self.inistkprice):
             ioa = "ITM"
         else:
             ioa = "ATM"
 
     def get_ioa_now(self):
-        if (self.strike > self.stkprice):
+        if (self.strike > self.tickerData["ullst"]):
             ioa = "OTM"
-        elif (self.strike < self.stkprice):
+        elif (self.strike < self.tickerData["ullst"]):
             ioa = "ITM"
         else:
             ioa = "ATM"
@@ -63,52 +119,53 @@ class covered_call():
         return (self.strike)
 
     def get_stk_price(self):
-        return self.stkprice
+        return self.tickerData["ullst"]
 
     def set_stk_price(self,price):
-        self.stkprice = price
+        self.tickerData["ullst"] = price
+
 
     def set_opt_price(self,price):
-        self.optprice = price
+        self.tickerData["oplst"] = price
 
-    def calc_itv(self,bw):
-        if bw["underlyer"]["@price"] <= bw["option"]["@strike"]:
+    def itv(self):
+        if self.inibwprice <= self.strike:
             # OTM
-            itv = bw["option"]["@price"]
+            ret = self.inioptprice
         else:
             # ITM
-            itv = float(bw["option"]["@price"]) - float(float(bw["underlyer"]["@price"]) - float(bw["option"]["@strike"]))
-        return float(itv)
+            ret = float(self.inioptprice - float(self.inistkprice - self.strike))
+        return ret
 
-    def getTimevalue(self):
-        if self.stkprice > float(self.strike):
+    def ctv(self):
+        if self.tickerData["ullst"] > float(self.strike):
             #ITM
-            intrinsic_val = float(self.stkprice) - float(self.strike)
-            return float(self.optprice) - intrinsic_val
+            intrinsic_val = float(self.tickerData["ullst"]) - float(self.strike)
+            return float(self.tickerData["oplst"]) - intrinsic_val
         else:
-            return float(self.optprice)
+            return float(self.tickerData["oplst"])
 
-    @staticmethod
-    def get_contracts(bw):
+    def underlyer(self):
         underlyer = Contract()
-        underlyer.symbol = bw["underlyer"]["@tickerSymbol"]
-        underlyer.avPrice = bw["underlyer"]["@price"]
+        underlyer.symbol = self.symbol
+        underlyer.avPrice = self.inistkprice
         underlyer.secType = "STK"
         underlyer.exchange = "SMART"
         underlyer.currency = "USD"
+        return underlyer
 
+    def option(self):
         option = Contract()
-        option.symbol = bw["underlyer"]["@tickerSymbol"]
-        option.avPrice = bw["option"]["@price"]
+        option.symbol = self.symbol
+        option.avPrice = self.inioptprice
         option.secType = "OPT"
         option.exchange = "SMART"
         option.currency = "USD"
-        option.lastTradeDateOrContractMonth = bw["option"]["@expiry"]
-        option.strike = bw["option"]["@strike"]
+        option.lastTradeDateOrContractMonth = self.expiry
+        option.strike = self.strike
         option.right = "Call"
         option.multiplier = "100"
-
-        return (underlyer, option)
+        return option
 
 
 
