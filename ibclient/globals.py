@@ -88,14 +88,13 @@ class globvars:
         globvars.logfilename                         = "mainLog.log"
         globvars.tickerData                 = {}
         globvars.logger                     = None
-        globvars.accountData                     = {}
         globvars.tvprofit                   = 0
         globvars.ibapp                      = None
 
         globvars.bwl                        = []
         globvars.cc                        =  {}
-        globvars.header                     = ['Id', 'Symbol', 'Industry', 'Pos', 'Strike', 'Expiry', 'Status', 'UL-Init', 'BW-Price', 'UL-Last', 'ULL-BWP', 'UL-Chge',
-         'UL-Chge pct', 'UL-Bid', 'UL-Ask', 'OP-Lst', 'OP-Bid', 'OP-Ask', 'ITV', 'ITV/$', 'CTV', 'CTV/$', 'TV-Chg/%', 'TV-Prof']
+        globvars.header                     = ['Id', 'Symbol', 'Industry', 'Pos', 'Strike', 'Expiry', 'Status', 'UL-Init', 'BW-Price', 'BWP-Now', 'BWP-Prof', 'BWP-PL', 'UL-Last', 'ULL-BWP', 'ULL-STRKE', 'UL-Chge',
+         'UL-Chge pct', 'UL-Bid', 'UL-Ask', 'OP-Lst', 'OP-Bid', 'OP-Ask', 'ITV', 'ITV/$', 'CTV', 'CTV/$', 'TV-Chg/%', 'TV-Prof', 'RLZD']
 
     def set_logger(logger):
         globvars.logger = logger

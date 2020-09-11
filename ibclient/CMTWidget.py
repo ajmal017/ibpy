@@ -11,6 +11,13 @@ from covcall import covered_call
 class CMTWidget(QWidget):
     def __init__(self, dataList, ccd, *args):
         QWidget.__init__(self, *args)
+
+
+        pal = QPalette()
+        # pal.setColor(QPalette.Background, const.BLACK);
+        # pal.setColor(QPalette.Window, const.BLACK);
+        # pal.setColor(QPalette.Base, const.BLACK);
+
         self.autoUpdate = True
         # setGeometry(x_pos, y_pos, width, height)
         self.setGeometry(70, 150, 1326, 582)
@@ -24,7 +31,9 @@ class CMTWidget(QWidget):
         self.table_model.setCCList(ccd)
         self.table_view = QTableView()
 
-        self.table_view.setFont(QFont("Times", 11));
+        ft = QFont("Times", 12, QFont.Bold)
+        self.table_view.setFont(ft);
+        self.table_view.setPalette(pal)
 
         # self.table_view.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table_view.setSelectionMode(QAbstractItemView.SingleSelection)
@@ -39,7 +48,7 @@ class CMTWidget(QWidget):
 
         self.columnsHidden = covered_call.columns_hidden()
 
-        self.resetAllColumns()
+#        self.resetAllColumns()
 
 
         header = self.table_view.horizontalHeader();

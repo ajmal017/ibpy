@@ -1,89 +1,161 @@
 <coveredCalls>
     <bw id="1" enteringTime="" enteringPrice="77.522" commission="" quantity="2">
-        <underlyer type="STK" tickerSymbol="AMD" price = "86.385"/>
-        <option expiry="20200918" strike="75" multiplier="100" price = "8.862"/></bw>
+        <underlyer type="STK" tickerSymbol="AMD" price = "86.385" earningscall = "20201027"/>
+        <option expiry="20200821" strike="78" multiplier="100" price = "9.25"/>
+        <rolling_activities>
+            <rolled when="20200818 14:09:55" from="20200821" to="20200918" strike="75" buyprice = "4.25" sellprice="8.87" ulprice="82.70" commission = "3.02"/>
+        </rolling_activities>
+    </bw>
 
     <bw id="2" enteringTime="" enteringPrice="104.087" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="CDNS" price = "110.304"/>
-        <option expiry="20200918" strike="105" multiplier="100" price = "6.216"/></bw>
+        <option expiry="20200918" strike="105" multiplier="100" price = "6.216"/>
+        <rolling_activities>
+        </rolling_activities>
+    </bw>
 
     <bw id="3" enteringTime="" enteringPrice="93.075" commission="" quantity="1">
-        <underlyer type="STK" tickerSymbol="CHD" price = "96.434"/>
-        <option expiry="20200918" strike="95" multiplier="100" price = "3.358"/></bw>
+        <underlyer type="STK" tickerSymbol="CHD" price = "96.434" earningscall = "20201030"/>
+        <option expiry="20200918" strike="95" multiplier="100" price = "3.358"/>
+        <rolling_activities>
+        </rolling_activities>
+    </bw>
 
     <bw id="4" enteringTime="" enteringPrice="62.421" commission="" quantity="1">
-        <underlyer type="STK" tickerSymbol="DHI" price = "67.705"/>
-        <option expiry="20200918" strike="70" multiplier="100" price = "5.283"/></bw>
+        <underlyer type="STK" tickerSymbol="DHI" price = "67.705" earningscall="20201027"/>
+        <option expiry="20200918" strike="70" multiplier="100" price = "5.283"/>
+        <rolling_activities>
+            <rolled when="20200911 21:20:58" from="20200918" to="20201023" strike="69" buyprice = "2.21" sellprice="5.33" ulprice="71.15" commission = "1.28"/>
+        </rolling_activities>
+    </bw>
 
     <bw id="5" enteringTime="" enteringPrice="51.873" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="FIX" price = "53.245"/>
-        <option expiry="20200918" strike="55" multiplier="100" price = "1.372"/></bw>
+        <option expiry="20200918" strike="55" multiplier="100" price = "1.372"/>
+        <rolling_activities>
+        </rolling_activities>
+    </bw>
 
     <bw id="6" enteringTime="" enteringPrice="48.171" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="KL" price = "53.904"/>
         <option expiry="20200918" strike="50" multiplier="100" price = "5.732"/>
-        <rolled when="20200910 19:24:36" from="20200918" to="20201016" strike="55" price = "1.45 = 4.65 - 3.2" commission = "1.38"/></bw>
+        <rolling_activities>
+            <rolled when="20200910 19:24:36" from="20200918" to="20201016" strike="55" buyprice = "3.2" sellprice="4.65" ulprice="54.10" commission = "1.38"/>
+        </rolling_activities>
+    </bw>
 
     <bw id="7" enteringTime="" enteringPrice="191.556" commission="" quantity="1">
-        <underlyer type="STK" tickerSymbol="KLAC" price = "211.854"/>
+        <underlyer type="STK" tickerSymbol="KLAC" price = "211.854" earningscall = "20201102"/>
         <option expiry="20200918" strike="195" multiplier="100" price = "20.298"/>
-        <rolled when="20200910 19:49:53" from="20200918" to="20201016" strike="200" price = "2.40 = 4.5 - 2.1" commission = "0.67"/></bw>
+        <rolling_activities>
+            <rolled when="20200910 19:49:53" from="20200918" to="20201016" strike="200"  buyprice = "2.1" sellprice="4.5" ulprice="175.75" commission = "0.67"/>
+        </rolling_activities>
+    </bw>
 
 <!--    <bw id="8" enteringTime="" enteringPrice="90.601" commission="" quantity="1">-->
 <!--        <underlyer type="STK" tickerSymbol="MTH" price = "99.894"/>-->
 <!--        <option expiry="20200918" strike="97.5" multiplier="100" price = "9.292"/></bw>-->
 
     <bw id="9" enteringTime="" enteringPrice="34.46" commission="" quantity="2">
-        <underlyer type="STK" tickerSymbol="SAIL" price = "38.242"/>
-        <option expiry="20200918" strike="35" multiplier="100" price = "3.789"/></bw>
+        <underlyer type="STK" tickerSymbol="SAIL" price = "38.242" earningscall = "20201105"/>
+        <option expiry="20200918" strike="35" multiplier="100" price = "3.789"/>
+        <rolling_activities>
+        </rolling_activities>
+    </bw>
 
     <bw id="10" enteringTime="" enteringPrice="185.016" commission="" quantity="1">
-        <underlyer type="STK" tickerSymbol="SEDG" price = "219.394"/>
-        <option expiry="20200918" strike="190" multiplier="100" price = "34.378"/></bw>
+        <underlyer type="STK" tickerSymbol="SEDG" price = "219.394" earningscall = "20201102"/>
+        <option expiry="20200918" strike="190" multiplier="100" price = "34.378"/>
+        <rolling_activities>
+        </rolling_activities>
+    </bw>
 
     <bw id="11" enteringTime="" enteringPrice="117.416" commission="" quantity="1">
-        <underlyer type="STK" tickerSymbol="SITE" price = "128.305"/>
-        <option expiry="20201016" strike="125" multiplier="100" price = "10.88"/></bw>
+        <underlyer type="STK" tickerSymbol="SITE" price = "128.305" earningscall = "20201028"/>
+        <option expiry="20201016" strike="125" multiplier="100" price = "10.88"/>
+        <rolling_activities>
+        </rolling_activities>
+    </bw>
 
     <bw id="12" enteringTime="" enteringPrice="23.811" commission="" quantity="3">
         <underlyer type="STK" tickerSymbol="SLV" price = "26.746"/>
-        <option expiry="20200918" strike="24" multiplier="100" price = "2.935"/></bw>
+        <option expiry="20200918" strike="24" multiplier="100" price = "2.935"/>
+        <rolling_activities>
+        </rolling_activities>
+    </bw>
 
     <bw id="13" enteringTime="2020 AUG 24 18:56:26" enteringPrice="186.32" commission="1.49" quantity="1">
-        <underlyer type="STK" tickerSymbol="PYPL" price = "198.18"/>
-        <option expiry="20200918" strike="190" multiplier="100" price = "11.86"/></bw>
+        <underlyer type="STK" tickerSymbol="PYPL" price = "198.18" earningscall = "20201028"/>
+        <option expiry="20200918" strike="190" multiplier="100" price = "11.86"/>
+        <rolling_activities>
+        </rolling_activities>
+    </bw>
 
     <bw id="14" enteringTime="" enteringPrice="37.658" commission="" quantity="2">
-        <underlyer type="STK" tickerSymbol="TTGT" price = "39.425"/>
-        <option expiry="20200918" strike="40" multiplier="100" price = "1.767"/></bw>
+        <underlyer type="STK" tickerSymbol="TTGT" price = "39.425" earningscall = "20201104"/>
+        <option expiry="20200918" strike="40" multiplier="100" price = "1.767"/>
+        <rolling_activities>
+        </rolling_activities>
+    </bw>
 
     <bw id="15" enteringTime="" enteringPrice="24.2221" commission="" quantity="3">
-        <underlyer type="STK" tickerSymbol="VIRT" price = "25.095"/>
-        <option expiry="20200918" strike="25" multiplier="100" price = "0.873"/></bw>
+        <underlyer type="STK" tickerSymbol="VIRT" price = "25.095" earningscall = "20201106"/>
+        <option expiry="20200918" strike="25" multiplier="100" price = "0.873"/>
+        <rolling_activities>
+        </rolling_activities>
+    </bw>
 
     <bw id="16" enteringTime="" enteringPrice="102.851" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="XLV" price = "105.894"/>
-        <option expiry="20200918" strike="106" multiplier="100" price = "3.043"/></bw>
+        <option expiry="20200918" strike="106" multiplier="100" price = "3.043"/>
+        <rolling_activities>
+            <rolled when="20200911 21:19:05" from="20200918" to="20201016" strike="106" buyprice = "0.57" sellprice="1.75" ulprice="104.65" commission = "1.27"/>
+        </rolling_activities>
+    </bw>
 
     <bw id="17" enteringTime="2020 AUG 25 18:04:34" enteringPrice="143.12" commission="1.48" quantity="1">
-        <underlyer type="STK" tickerSymbol="RGEN" price = "147.474"/>
-        <option expiry="20200918" strike="150" multiplier="100" price = "4.338"/></bw>
+        <underlyer type="STK" tickerSymbol="RGEN" price = "147.474" earningscall = "20201029"/>
+        <option expiry="20200918" strike="150" multiplier="100" price = "4.338"/>
+        <rolling_activities>
+        </rolling_activities>
+    </bw>
 
     <bw id="18" enteringTime="2020 AUG 25 20:48:29" enteringPrice="126.21" commission="1.48" quantity="1">
-        <underlyer type="STK" tickerSymbol="FTNT" price = "132.44"/>
-        <option expiry="20200918" strike="130" multiplier="100" price = "6.24"/></bw>
+        <underlyer type="STK" tickerSymbol="FTNT" price = "132.44" earningscall = "20201105"/>
+        <option expiry="20200918" strike="130" multiplier="100" price = "6.24"/>
+        <rolling_activities>
+            <rolled when="20200911 20:39:08" from="20200918" to="20201016" strike="130"  buyprice = "0.17" sellprice="1.69" ulprice="114.90" commission = "1.37"/>
+        </rolling_activities>
+    </bw>
 
    <bw id="19" enteringTime="2020 AUG 26 18:51:40" enteringPrice="55.095" commission="2.34" quantity="2" exchange="SMART">
-    <underlyer type="STK" tickerSymbol="EBAY" price = "57.85"/>
-    <option expiry="20200918" strike="56" multiplier="100" price = "2.76"/></bw>
+    <underlyer type="STK" tickerSymbol="EBAY" price = "57.85" earningscall = "20201027"/>
+    <option expiry="20200918" strike="56" multiplier="100" price = "2.76"/>
+        <rolling_activities>
+            <rolled when="20200911 18:51:01" from="20200918" to="20201023" strike="56"  buyprice = "0.12" sellprice="1.4" ulprice="52.55" commission = "1.45"/>
+        </rolling_activities>
+   </bw>
 
    <bw id="20" enteringTime="2020 SEP 2 19:35:18" enteringPrice="423.85" commission="1.49" quantity="1" exchange="SMART">
-    <underlyer type="STK" tickerSymbol="TMO" price = "438.12"/>
-    <option expiry="20200918" strike="430" multiplier="100" price = "14.27"/></bw>
+    <underlyer type="STK" tickerSymbol="TMO" price = "438.12" earningscall = "20201021"/>
+    <option expiry="20200918" strike="430" multiplier="100" price = "14.27"/>
+        <rolling_activities>
+        </rolling_activities>
+   </bw>
 
    <bw id="21" enteringTime="2020 SEP 10 21:05:53" enteringPrice="15.80" commission="4.86" quantity="5" exchange="SMART">
-    <underlyer type="STK" tickerSymbol="CORT" price = "18.45"/>
-    <option expiry="20201016" strike="17" multiplier="100" price = "2.65"/></bw>
+    <underlyer type="STK" tickerSymbol="CORT" price = "18.45" earningscall = "20201103"/>
+    <option expiry="20201016" strike="17" multiplier="100" price = "2.65"/>
+        <rolling_activities>
+        </rolling_activities>
+   </bw>
+
+   <bw id="22" enteringTime="2020 SEP 10 21:05:53" enteringPrice="15.80" commission="4.86" quantity="5" exchange="SMART">
+    <underlyer type="STK" tickerSymbol="AMZN" price = "3200" earningscall = "20201029"/>
+    <option expiry="20201016" strike="17" multiplier="100" price = "26.5"/>
+        <rolling_activities>
+        </rolling_activities>
+   </bw>
 
 <!--   <bw id="21" enteringTime="2020 SEP 2 19:35:18" enteringPrice="423.85" commission="1.49" quantity="1" exchange="SMART">-->
 <!--    <underlyer type="STK" tickerSymbol="AMZN" price = "3390"/>-->
