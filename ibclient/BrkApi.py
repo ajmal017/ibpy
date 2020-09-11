@@ -13,29 +13,30 @@ from globals import globvars
 import const
 
 class BrkApi(EWrapper, EClient):
-    def __init__(self):
+    def __init__(self, ba):
         EClient.__init__(self, self)
-        self.account = Account()
         self.bars={}
         self.endflag = {}
+        self.account = ba
 
     def eDisconnect(self):
         Close()
 
+    def error(self, reqId: int, errorCode: int, errorString: str):
+        super().error(reqId, errorCode, errorString)
+        print("Error. Id:", reqId, "Code:", errorCode, "Msg:", errorString)
+
     def historicalData(self, reqId, bar):
 
         tickerId = str(reqId)
-        bw = globvars.cc[tickerId]
 
-        if reqId not in self.bars:
-            self.bars[reqId] = []
+        if tickerId in globvars.cc:
+            bw = globvars.cc[tickerId]
 
-        if reqId % 2 == 0:
-            bw.set_stk_price(bar.close)
-        else:
-            bw.set_opt_price(bar.close)
-
-        self.bars[reqId].append(bar)
+            if reqId % 2 == 0:
+                bw.set_stk_price(bar.close)
+            else:
+                bw.set_opt_price(bar.close)
 
     def historicalDataEnd(self, reqId: int, start: str, end: str):
         if reqId not in self.endflag:
@@ -63,21 +64,21 @@ class BrkApi(EWrapper, EClient):
     def tickPrice(self, reqId, tickType, value, attrib):
         tickerId = str(reqId)
         tt = str(tickType)
-
-        if reqId % 2 == 0:
-            if tt == const.LASTPRICE:
-                globvars.cc[tickerId].tickerData["ullst"]  = float(value)
-            elif tt == const.BIDPRICE:
-                globvars.cc[tickerId].tickerData["ulbid"] = float(value)
-            elif tt == const.ASKPRICE:
-                globvars.cc[tickerId].tickerData["ulask"] = float(value)
-        else:
-            if tt == const.LASTPRICE:
-                globvars.cc[tickerId].tickerData["oplst"]  = float(value)
-            elif tt == const.BIDPRICE:
-                globvars.cc[tickerId].tickerData["opbid"] = float(value)
-            elif tt == const.ASKPRICE:
-                globvars.cc[tickerId].tickerData["opask"] = float(value)
+        if tickerId in globvars.cc:
+            if reqId % 2 == 0:
+                if tt == const.LASTPRICE:
+                    globvars.cc[tickerId].tickerData["ullst"]  = float(value)
+                elif tt == const.BIDPRICE:
+                    globvars.cc[tickerId].tickerData["ulbid"] = float(value)
+                elif tt == const.ASKPRICE:
+                    globvars.cc[tickerId].tickerData["ulask"] = float(value)
+            else:
+                if tt == const.LASTPRICE:
+                    globvars.cc[tickerId].tickerData["oplst"]  = float(value)
+                elif tt == const.BIDPRICE:
+                    globvars.cc[tickerId].tickerData["opbid"] = float(value)
+                elif tt == const.ASKPRICE:
+                    globvars.cc[tickerId].tickerData["opask"] = float(value)
 
     def updateAccountValue(self, key:str, val:str, currency:str,
                             accountName:str):

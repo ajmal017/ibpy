@@ -7,34 +7,44 @@ from CMTWidget import CMTWidget
 from globals import globvars
 
 class CMainWindow(QMainWindow):
-    def __init__(self, dataList):
+    def __init__(self, dataList, account):
         super().__init__()
 
         self.statusbar = self.statusBar()
         self.setStatusBar(self.statusbar)
         self.dataList = dataList
+        self.account = account
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.updateStatusBar)
-        self.timer.start(1000)
+        self.timer.start(10000)
+
+
 
     def updateStatusBar(self):
-        profstr = "NLQ: "
-        profstr += globvars.accountData["NetLiquidation"] + " CHF | "
+        profstr = ""
+        if "NetLiquidation" in self.account.accountData:
 
-        for cncid,cnc in enumerate(globvars.accountData["NetLiquidationByCurrency"]):
-            try:
-                profstr += cnc + " | "
-                profstr += " "
-            except:
-                pass
+            profstr += "NLQ: "
+            profstr += self.account.accountData["NetLiquidation"] + " CHF | "
 
-        profstr += " TVP: ALL "
-        profstr += "{:.2f}".format(globvars.tvprofit)
+            #profstr += self.account.accountData["NetLiquidation"] + " CHF ("+self.account.getLastUpdateTimestamp()+") | "
 
-        profstr += " InitMargin "
-        profstr += globvars.accountData["FullInitMarginReq"]
-
+        # if "NetLiquidationByCurrency" in self.account.accountData:
+        #     for cncid,cnc in enumerate(self.account.accountData["NetLiquidationByCurrency"]):
+        #         try:
+        #             profstr += cnc + " | "
+        #             profstr += " "
+        #         except:
+        #             pass
+        #
+        # profstr += " TVP: ALL "
+        # profstr += "{:.2f}".format(globvars.tvprofit)
+        #
+        # if "FullInitMarginReq" in self.account.accountData:
+        #     profstr += " InitMargin "
+        #     profstr += self.account.accountData["FullInitMarginReq"]
+        #
         self.statusbar.showMessage(profstr)
 
     def contextMenuEvent(self, event):

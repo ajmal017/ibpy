@@ -16,14 +16,14 @@ class PrxyModel(QSortFilterProxyModel):
     def lessThan(self, left, right):
         role = QtCore.Qt.DisplayRole
         lc = left.column()
-        if lc in [0,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22]:
+        if lc in [0,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]:
             try:
                 a = self.sourceModel().data(left, role)
                 b = self.sourceModel().data(right, role)
                 return float(a) < float(b)
             except:
                 return False
-        elif lc in [1,2,3,4,5]:
+        elif lc in [1,2,3,4,5,6]:
             return (str(self.sourceModel().data(left, role))) < str((self.sourceModel().data(right, role)))
         elif lc == 17:
             try:
@@ -49,7 +49,7 @@ class CMTModel(QAbstractTableModel):
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.updateModel)
-        self.timer.start(100)
+        self.timer.start(1000)
         self.ccdict = {}
 
     def setCCList(self, ccd):
@@ -83,27 +83,49 @@ class CMTModel(QAbstractTableModel):
 
     def data(self, index, role):
         if not index.isValid():
+            globvars.logger.info("data: index not valid")
             return None
 
         r = index.row()
+        c = index.column()
+
+        if len(globvars.bwl) < int(r):
+            globvars.logger.error("buywrite member %i does not exist", r)
+            return None
+
+        # globvars.logger.info("row %i column %i role %i", r, c, role)
+
         cc = globvars.bwl[int(r)]
 
-        if role == QtCore.Qt.EditRole:
-            return value
+        # globvars.logger.info("")
 
-        elif role == QtCore.Qt.BackgroundRole:
+        # if role == QtCore.Qt.EditRole:
+        #     return value
 
-            r = index.row()
+            # globvars.logger.info("")
 
+        if role == QtCore.Qt.BackgroundRole:
+            # globvars.logger.info("")
+
+            pat = Qt.SolidPattern
+
+            if c == 12:
+                pat = Qt.DiagCrossPattern
+                return QBrush(QtCore.Qt.gray, pat)
+
+            if c == 19 and cc.oplastcalculated:
+                pat = Qt.CrossPattern
+
+            globvars.logger.info("")
             if cc.is_valid():
                 if cc.tickerData["ullst"] < cc.inibwprice:
-                    return QBrush(QtCore.Qt.darkRed, Qt.SolidPattern)
+                    return QBrush(QtCore.Qt.darkRed, pat)
                 elif cc.tickerData["ullst"] < cc.strike:
-                    return QBrush(QtCore.Qt.red, Qt.SolidPattern)
+                    return QBrush(QtCore.Qt.red, pat)
                 else:
-                    return QBrush(QtCore.Qt.green, Qt.SolidPattern)
+                    return QBrush(QtCore.Qt.green, pat)
             else:
-                return QBrush(QtCore.Qt.white, Qt.SolidPattern)
+                return QBrush(QtCore.Qt.white, pat)
 
         elif role == QtCore.Qt.DisplayRole:
             value = self.buywrites[index.row()][index.column()]

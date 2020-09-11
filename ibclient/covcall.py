@@ -15,11 +15,13 @@ class covered_call():
     def __init__(self, bw: dict, ti: int):
 
         self.tickerData = {}
+        self.rollingActivity = []
 
         self.id             = bw["@id"]
         self.symbol         = bw["underlyer"]["@tickerSymbol"]
         self.tickerId       = ti
         self.industry       = ""
+        self.ul_pnl         = 0
 
         self.inibwprice      = float(bw["@enteringPrice"])
         self.position        = float(bw["@quantity"])
@@ -30,7 +32,38 @@ class covered_call():
         self.inistkprice    = float(bw["underlyer"]["@price"])
         self.inioptprice    = float(bw["option"]["@price"])
 
-        self.tickerData["oplst"]    = 0
+        if "rolling_activities" in bw:
+            if bw["rolling_activities"] != None:
+                if len(bw["rolling_activities"]) > 0:
+                    #wegen Unschoenheit oder Bug in xmltodict:
+                    if type(bw["rolling_activities"]["rolled"]) == list:
+                        for rolling_item in bw["rolling_activities"]["rolled"]:
+                            self.rollingActivity.append(
+                                {
+                                    "from"          : rolling_item["@from"],
+                                    "to"            : rolling_item["@to"],
+                                    "strike"        : rolling_item["@strike"],
+                                    "buyprice"      : rolling_item["@buyprice"],
+                                    "sellprice"     : rolling_item["@sellprice"],
+                                    "ulprice"       : rolling_item["@ulprice"]
+                                }
+                            )
+                    else:
+                        self.rollingActivity.append(
+                            {
+                                "from": bw["rolling_activities"]["rolled"]["@from"],
+                                "to": bw["rolling_activities"]["rolled"]["@to"],
+                                "strike": bw["rolling_activities"]["rolled"]["@strike"],
+                                "buyprice": bw["rolling_activities"]["rolled"]["@buyprice"],
+                                "sellprice": bw["rolling_activities"]["rolled"]["@sellprice"],
+                                "ulprice": bw["rolling_activities"]["rolled"]["@ulprice"]
+                            }
+                        )
+
+        self.realized = 0
+        self.calc_rlzd()
+
+        self.oplastcalculated = False
 
         self.tickerData["ulbid"] = 0.0
         self.tickerData["ulask"] = 0.0
@@ -41,8 +74,11 @@ class covered_call():
 
 
     def is_valid(self):
-        if self.tickerData["ullst"] > 1 and self.tickerData["oplst"] > 0.01 and self.itv() > 0:
-            return True
+        if "ullst" in self.tickerData and "oplst" in self.tickerData:
+            if self.tickerData["ullst"] > 1 and self.tickerData["oplst"] > 0.01 and self.itv() > 0:
+                return True
+            else:
+                return False
         else:
             return False
 
@@ -72,7 +108,8 @@ class covered_call():
             False, #20
             False, #21
             False, #22
-            False  #23
+            False,  #23
+            False  # 23
         ]
 
     def tvprof(self):
@@ -88,6 +125,7 @@ class covered_call():
             if a > 0.01 and b > 0.01:
                 if (a-b)/(a+b) < 0.3:
                     self.tickerData["oplst"] = (a+b)/2
+                    self.oplastcalculated = True
 
         return (
             self.id,
@@ -97,10 +135,14 @@ class covered_call():
             "{:.2f}".format(self.strike),
             self.expiry,
             self.get_ioa_initial() + "=>" + self.get_ioa_now(),
-            "{:.2f}".format(self.inistkprice),
-            "{:.2f}".format(self.inibwprice),
+            "{:.2f}".format(self.inistkprice),          #UL-Init
+            "{:.2f}".format(self.inibwprice),           #BW-Price
+            "{:.2f}".format(self.tickerData["ullst"] - self.tickerData["oplst"]),   #actual value of buywrite (last ul price - last option price
+            "{:.2f}".format(self.tickerData["ullst"] - self.tickerData["oplst"] - self.inibwprice), # Profit or Loss of Buywrite
+            "{:.2f}".format((self.tickerData["ullst"] - self.tickerData["oplst"] - self.inibwprice)*self.position*100), #current Profit or Loss in USD
             "{:.2f}".format(self.tickerData["ullst"]),
             "{:.2f}".format(self.tickerData["ullst"] - self.inibwprice),
+            "{:.2f}".format(self.tickerData["ullst"] - self.strike),
             "{:.2f}".format(self.tickerData["ullst"] - self.inistkprice),
             "{:.2f}".format((self.tickerData["ullst"] - self.inistkprice)/self.inistkprice),
             "{:.2f}".format(self.tickerData["ulbid"]),
@@ -113,7 +155,9 @@ class covered_call():
             "{:.2f}".format(self.ctv()),
             "{:.2f}".format(self.ctv()*self.position*100),
             "{:.2f}".format(100*self.ctv()/self.itv()),
-            "{:.2f}".format(self.itv() * self.position * 100 - self.ctv()*self.position*100)
+            "{:.2f}".format(self.itv() * self.position * 100 - self.ctv()*self.position*100),
+            "{:.2f}".format(self.realized),
+            "{:.2f}".format(self.ul_pnl * self.position * 100)
         )
 
     def ticker_id(self):
@@ -168,9 +212,23 @@ class covered_call():
     def set_stk_price(self,price):
         self.tickerData["ullst"] = price
 
-
     def set_opt_price(self,price):
         self.tickerData["oplst"] = price
+
+    def calc_rlzd(self):
+        if len(self.rollingActivity) > 0:
+            for ra in self.rollingActivity:
+
+                self.ul_pnl = -(self.inistkprice - float(ra["ulprice"]))
+
+                self.realized = self.realized + 100 * self.position * (self.inioptprice - float(ra["buyprice"]))
+                self.inioptprice = float(ra["sellprice"])
+                self.inistkprice = float(ra["ulprice"])
+                self.inibwprice = self.inistkprice - self.inioptprice
+                self.strike = float(ra["strike"])
+                self.expiry = ra["to"]
+
+
 
     def itv(self):
         if self.inistkprice <= self.strike:
