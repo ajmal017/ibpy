@@ -150,13 +150,6 @@
         </rolling_activities>
    </bw>
 
-   <bw id="22" enteringTime="2020 SEP 10 21:05:53" enteringPrice="15.80" commission="4.86" quantity="5" exchange="SMART">
-    <underlyer type="STK" tickerSymbol="AMZN" price = "3200" earningscall = "20201029"/>
-    <option expiry="20201016" strike="17" multiplier="100" price = "26.5"/>
-        <rolling_activities>
-        </rolling_activities>
-   </bw>
-
 <!--   <bw id="21" enteringTime="2020 SEP 2 19:35:18" enteringPrice="423.85" commission="1.49" quantity="1" exchange="SMART">-->
 <!--    <underlyer type="STK" tickerSymbol="AMZN" price = "3390"/>-->
 <!--    <option expiry="20200918" strike="3900" multiplier="100" price = "14.27"/></bw>-->

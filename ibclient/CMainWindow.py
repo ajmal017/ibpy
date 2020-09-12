@@ -5,6 +5,7 @@ from PyQt5.QtCore import QTimer
 
 from CMTWidget import CMTWidget
 from globals import globvars
+from ColorDemo import open_color_demo
 
 class CMainWindow(QMainWindow):
     def __init__(self, dataList, account):
@@ -75,6 +76,11 @@ class CMainWindow(QMainWindow):
         exitAct.setShortcut('Ctrl+Q')
         exitAct.setStatusTip('Exit application')
         exitAct.triggered.connect(self.close)
+
+        colorDemoAct = QAction(QIcon('exit24.png'), 'ColorDemo', self)
+        colorDemoAct.setShortcut('Ctrl+Q')
+        colorDemoAct.setStatusTip('Show all Colorss')
+        colorDemoAct.triggered.connect(open_color_demo)
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')

@@ -16,7 +16,7 @@ class PrxyModel(QSortFilterProxyModel):
     def lessThan(self, left, right):
         role = QtCore.Qt.DisplayRole
         lc = left.column()
-        if lc in [0,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29]:
+        if lc in [0,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]:
             try:
                 a = self.sourceModel().data(left, role)
                 b = self.sourceModel().data(right, role)
@@ -45,7 +45,7 @@ class CMTModel(QAbstractTableModel):
         QAbstractTableModel.__init__(self, parent, *args)
         self.my_signal = pyqtSignal()
         self.buywrites = mylist
-        self.header = globvars.header
+        self.header = globvars.header1.keys()
 
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.updateModel)
@@ -80,6 +80,7 @@ class CMTModel(QAbstractTableModel):
 
     def columnCount(self, parent):
         return len(self.buywrites[0])
+
 
     def data(self, index, role):
         if not index.isValid():
@@ -131,12 +132,18 @@ class CMTModel(QAbstractTableModel):
             value = self.buywrites[index.row()][index.column()]
             return value
         elif role == QtCore.Qt.ToolTipRole:
-            return str(index.column())
+            if c == 7:
+                return "time of this price was "+cc.ul_ts
+            return str(index.column())+" "+str(index.row())
 
 
     def headerData(self, col, orientation, role):
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return self.header[col]
+            return list(globvars.header1.keys())[col]
+
+        elif role == QtCore.Qt.ToolTipRole:
+            return globvars.header1[list(globvars.header1.keys())[col]]
+
         return None
 
     def flags(self, index):

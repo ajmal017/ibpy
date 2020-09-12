@@ -17,12 +17,13 @@ class covered_call():
         self.tickerData = {}
         self.rollingActivity = []
 
+        self.bw             = bw
         self.id             = bw["@id"]
         self.symbol         = bw["underlyer"]["@tickerSymbol"]
         self.tickerId       = ti
         self.industry       = ""
-        self.ul_pnl         = 0
-
+        self.ul_ts          = bw["@enteringTime"]
+        self.rolled         = 0
         self.inibwprice      = float(bw["@enteringPrice"])
         self.position        = float(bw["@quantity"])
 
@@ -40,6 +41,7 @@ class covered_call():
                         for rolling_item in bw["rolling_activities"]["rolled"]:
                             self.rollingActivity.append(
                                 {
+                                    "when"            : rolling_item["@when"],
                                     "from"          : rolling_item["@from"],
                                     "to"            : rolling_item["@to"],
                                     "strike"        : rolling_item["@strike"],
@@ -51,6 +53,7 @@ class covered_call():
                     else:
                         self.rollingActivity.append(
                             {
+                                "when": bw["rolling_activities"]["rolled"]["@when"],
                                 "from": bw["rolling_activities"]["rolled"]["@from"],
                                 "to": bw["rolling_activities"]["rolled"]["@to"],
                                 "strike": bw["rolling_activities"]["rolled"]["@strike"],
@@ -61,7 +64,6 @@ class covered_call():
                         )
 
         self.realized = 0
-        self.calc_rlzd()
 
         self.oplastcalculated = False
 
@@ -71,6 +73,9 @@ class covered_call():
         self.tickerData["opbid"] = 0.0
         self.tickerData["opask"] = 0.0
         self.tickerData["oplst"] = 0.0
+
+        self.calc_rlzd()
+
 
 
     def is_valid(self):
@@ -131,11 +136,13 @@ class covered_call():
             self.id,
             self.symbol,
             self.industry,
+            self.rolled,
             self.position,
             "{:.2f}".format(self.strike),
             self.expiry,
             self.get_ioa_initial() + "=>" + self.get_ioa_now(),
             "{:.2f}".format(self.inistkprice),          #UL-Init
+            "{:.2f}".format(self.inioptprice),          #OPT-Init
             "{:.2f}".format(self.inibwprice),           #BW-Price
             "{:.2f}".format(self.tickerData["ullst"] - self.tickerData["oplst"]),   #actual value of buywrite (last ul price - last option price
             "{:.2f}".format(self.tickerData["ullst"] - self.tickerData["oplst"] - self.inibwprice), # Profit or Loss of Buywrite
@@ -157,7 +164,7 @@ class covered_call():
             "{:.2f}".format(100*self.ctv()/self.itv()),
             "{:.2f}".format(self.itv() * self.position * 100 - self.ctv()*self.position*100),
             "{:.2f}".format(self.realized),
-            "{:.2f}".format(self.ul_pnl * self.position * 100)
+            "{:.2f}".format((float(self.tickerData["ullst"]) -  float(self.bw["underlyer"]["@price"])) * self.position * 100)
         )
 
     def ticker_id(self):
@@ -219,15 +226,14 @@ class covered_call():
         if len(self.rollingActivity) > 0:
             for ra in self.rollingActivity:
 
-                self.ul_pnl = -(self.inistkprice - float(ra["ulprice"]))
-
                 self.realized = self.realized + 100 * self.position * (self.inioptprice - float(ra["buyprice"]))
                 self.inioptprice = float(ra["sellprice"])
                 self.inistkprice = float(ra["ulprice"])
                 self.inibwprice = self.inistkprice - self.inioptprice
                 self.strike = float(ra["strike"])
+                self.ul_ts  = ra["when"]
                 self.expiry = ra["to"]
-
+                self.rolled += 1
 
 
     def itv(self):

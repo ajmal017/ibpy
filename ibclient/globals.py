@@ -1,6 +1,7 @@
 import datetime
 import time
 import const
+from collections import OrderedDict
 
 class Sleep:
 
@@ -62,6 +63,7 @@ class globvars:
     bwl                         = None
     cc                          = None
     header                      = None
+    header1                     = OrderedDict()
 
     def init_globvars():
         globvars.testscriptcounter           = 0
@@ -92,16 +94,40 @@ class globvars:
         globvars.ibapp                      = None
 
         globvars.bwl                        = []
-        globvars.cc                        =  {}
-        globvars.header                     = ['Id', 'Symbol', 'Industry', 'Pos', 'Strike', 'Expiry', 'Status', 'UL-Init',
-                                               'BW-Price', 'BWP-Now', 'BWP-Prof', 'BWP-PL', #buywrite figures
-                                               'UL-Last', 'ULL-BWP', 'ULL-STRKE', 'UL-Chge','UL-Chge pct', #UL-Last, UL-Last minus bwprice (breakeven detection)
-                                               'UL-Bid', 'UL-Ask', #underlyer prices
-                                               'OP-Lst', 'OP-Bid', 'OP-Ask', # option prices
-                                               'ITV', 'ITV/$', 'CTV', 'CTV/$', 'TV-Chg/%', #initiasl Timevalue, Current TimeValue, both in dollar and percent change
-                                               'TV-Prof',   # profit from timevalue
-                                               'RLZD',      # realized from option buy back when rolling
-                                               'UL-URPNL']  # unrealizerd PNL for Unterlyer
+        globvars.cc                         =  {}
+
+        globvars.header1['Id'         ] = "Unique Identifier"
+        globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
+        globvars.header1['Industry'   ] = "Industry of Underlyer"
+        globvars.header1['Rolled'     ] = "How often this position was rolled"
+        globvars.header1['Pos'        ] = "How many legs"
+        globvars.header1['Strike'     ] = "Strike"
+        globvars.header1['Expiry'     ] = "Expiry"
+        globvars.header1['Status'     ] = "In/Out/At the money at initiation and now ?"
+        globvars.header1['UL-Init'    ] = "Price of underlyer when position was initiated"
+        globvars.header1['OPT-Init'    ] = "Price of option when position was initiated"
+        globvars.header1['BW-Price'   ] = "Initial buywrite price = UL-Price - Opt-premium"
+        globvars.header1['BWP-Now'    ] = "Current price of this Buywrite"
+        globvars.header1['BWP-Prof'   ] = "Profit of the Buywrite"
+        globvars.header1['BWP-PL'     ] = ""
+        globvars.header1['UL-Last'    ] = "underlyedr - last known price traded"
+        globvars.header1['ULL-BWP'    ] = "UL-Last minus bwprice (for detecting when breakeven will is reached)"
+        globvars.header1['ULL-STRKE'  ] = "UL-Last - Strike"
+        globvars.header1['UL-Chge'    ] = "Change of UL-Price since initiation of position"
+        globvars.header1['UL-Chge pct'] = ".. in pct"
+        globvars.header1['UL-Bid'     ] = "last known bid for underlyer"
+        globvars.header1['UL-Ask'     ] = "last known ask for underlyer"
+        globvars.header1['OP-Lst'     ] = "last known trade for underlyer"
+        globvars.header1['OP-Bid'     ] = "last known bid for option"
+        globvars.header1['OP-Ask'     ] = "last known ask for option"
+        globvars.header1['ITV'        ] = "initial Timevalue for this position"
+        globvars.header1['ITV/$'      ] = "initial Timevalue in dollar for this position"
+        globvars.header1['CTV'        ] = "Current TimeValue for this position"
+        globvars.header1['CTV/$'      ] = "Current TimeValue in dollar for this position"
+        globvars.header1['TV-Chg/%'   ] = "Change of Timevalue in %"
+        globvars.header1['TV-Prof'    ] = "Accumulated timevalue profit of tie sposition"
+        globvars.header1['RLZD'       ] = "Realized from option buy back when rolling"
+        globvars.header1['UL-URPNL'   ] = "Unrealizerd PNL for Unterlyer"
 
     def set_logger(logger):
         globvars.logger = logger
