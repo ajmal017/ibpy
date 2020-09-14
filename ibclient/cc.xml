@@ -102,6 +102,7 @@
         <underlyer type="STK" tickerSymbol="VIRT" price = "25.095" earningscall = "20201106"/>
         <option expiry="20200918" strike="25" multiplier="100" price = "0.873"/>
         <rolling_activities>
+            <rolled when="20200914 18:58:28" from="20200918" to="20201016" strike="30" buyprice = "2.93" sellprice="0.69" ulprice="27.89" commission = "1.27"/>
         </rolling_activities>
     </bw>
 

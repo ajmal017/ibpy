@@ -1,16 +1,5 @@
-''' pqt_tableview3.py
-explore PyQT's QTableView Model
-using QAbstractTableModel to present tabular data
-allow table sorting by clicking on the header title
-used the Anaconda package (comes with PyQt4) on OS X
-(dns)
-'''
-
 # coding=utf-8
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import *
 
 from CMainWindow import CMainWindow
@@ -27,16 +16,13 @@ import time
 import xmltodict
 
 from datetime import datetime, time, timedelta
-
-import os
-import signal
 import traceback
 
-def sig_handler(signum, frame):
+
+def sig_handler ( signum, frame):
     print ("segfault")
     traceback.print_stack(frame)
 
-#signal.signal(signal.SIGSEGV, sig_handler)
 
 def find_last_sx_opening_time(which_stockexchange: int):
     today = datetime.today()
@@ -135,8 +121,8 @@ if __name__ == '__main__':
 
         mainLogger.info("querying no. %s: %s", bw["@id"], bw["underlyer"]["@tickerSymbol"])
 
-        nyseIsOpen = is_time_between(time(10, 00), time(22, 00)) and datetime.today().weekday() > 0 and datetime.today().weekday() < 5
-        cboeIsOpen = is_time_between(time(15, 30), time(22, 00)) and datetime.today().weekday() > 0 and datetime.today().weekday() < 5
+        nyseIsOpen = is_time_between(time(10, 00), time(22, 00)) and datetime.today().weekday() >= 0 and datetime.today().weekday() < 5
+        cboeIsOpen = is_time_between(time(15, 30), time(22, 00)) and datetime.today().weekday() >= 0 and datetime.today().weekday() < 5
 
         #globvars.ibapp.reqContractDetails(cc.ticker_id(), cc.underlyer())
 

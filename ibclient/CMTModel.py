@@ -16,7 +16,7 @@ class PrxyModel(QSortFilterProxyModel):
     def lessThan(self, left, right):
         role = QtCore.Qt.DisplayRole
         lc = left.column()
-        if lc in [0,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32]:
+        if lc in [0,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36]:
             try:
                 a = self.sourceModel().data(left, role)
                 b = self.sourceModel().data(right, role)
@@ -110,11 +110,11 @@ class CMTModel(QAbstractTableModel):
 
             pat = Qt.SolidPattern
 
-            if c == 12:
+            if c == 14:
                 pat = Qt.DiagCrossPattern
                 return QBrush(QtCore.Qt.gray, pat)
 
-            if c == 19 and cc.oplastcalculated:
+            if c == 21 and cc.oplastcalculated:
                 pat = Qt.CrossPattern
 
             globvars.logger.info("")
@@ -138,17 +138,21 @@ class CMTModel(QAbstractTableModel):
 
 
     def headerData(self, col, orientation, role):
+        headerlist = list(globvars.header1.keys())
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
-            return list(globvars.header1.keys())[col]
+            return headerlist[col]
 
         elif role == QtCore.Qt.ToolTipRole:
-            return globvars.header1[list(globvars.header1.keys())[col]]
+            if col == 36:
+                return globvars.total
+            else:
+                return globvars.header1[list(globvars.header1.keys())[col]]
 
         return None
 
     def flags(self, index):
         if not index.isValid():
-            return None
+            return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
         # print(">>> flags() index.column() = ", index.column())
         if index.column() == 0:
             # return Qt::ItemIsEnabled | Qt::ItemIsSelectable | Qt::ItemIsUserCheckable

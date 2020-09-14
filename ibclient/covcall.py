@@ -114,6 +114,11 @@ class covered_call():
             False, #21
             False, #22
             False,  #23
+            False,  # 23
+            False,  # 23
+            False,  # 23
+            False,  # 23
+            False,  # 23
             False  # 23
         ]
 
@@ -131,6 +136,11 @@ class covered_call():
                 if (a-b)/(a+b) < 0.3:
                     self.tickerData["oplst"] = (a+b)/2
                     self.oplastcalculated = True
+
+        try:
+            pcttvloss = self.ctv()/self.itv()
+        except ZeroDivisionError:
+            pcttvloss  = 0
 
         return (
             self.id,
@@ -157,14 +167,19 @@ class covered_call():
             "{:.2f}".format(self.tickerData["oplst"]),
             "{:.2f}".format(self.tickerData["opbid"]),
             "{:.2f}".format(self.tickerData["opask"]),
+            "{:.2f}".format(self.iiv()),
+            "{:.2f}".format(self.iiv()*self.position*100),
             "{:.2f}".format(self.itv()),
             "{:.2f}".format(self.itv()*self.position*100),
+            "{:.2f}".format(self.civ()),
+            "{:.2f}".format(self.civ()*self.position*100),
             "{:.2f}".format(self.ctv()),
             "{:.2f}".format(self.ctv()*self.position*100),
-            "{:.2f}".format(100*self.ctv()/self.itv()),
+            "{:.2f}".format(100*pcttvloss),
             "{:.2f}".format(self.itv() * self.position * 100 - self.ctv()*self.position*100),
             "{:.2f}".format(self.realized),
-            "{:.2f}".format((float(self.tickerData["ullst"]) -  float(self.bw["underlyer"]["@price"])) * self.position * 100)
+            "{:.2f}".format((float(self.tickerData["ullst"]) -  float(self.bw["underlyer"]["@price"])) * self.position * 100),
+            "{:.2f}".format((float(self.tickerData["ullst"]) -  float(self.bw["underlyer"]["@price"])) * self.position * 100 + self.realized + self.itv() * self.position * 100 - self.ctv()*self.position*100 + self.civ()*self.position*100 - self.iiv()*self.position*100)
         )
 
     def ticker_id(self):
@@ -236,13 +251,22 @@ class covered_call():
                 self.rolled += 1
 
 
-    def itv(self):
+    def iiv(self):
         if self.inistkprice <= self.strike:
             # OTM
             ret = self.inioptprice
         else:
             # ITM
             ret = float(self.inioptprice - float(self.inistkprice - self.strike))
+        return ret
+
+    def itv(self):
+        if self.inistkprice <= self.strike:
+            # OTM
+            ret = 0
+        else:
+            # ITM
+            ret = float(self.inistkprice - self.strike)
         return ret
 
     def ctv(self):
@@ -252,6 +276,14 @@ class covered_call():
             return float(self.tickerData["oplst"]) - intrinsic_val
         else:
             return float(self.tickerData["oplst"])
+
+    def civ(self):
+        if self.tickerData["ullst"] > float(self.strike):
+            #ITM
+            intrinsic_val = float(self.tickerData["ullst"]) - float(self.strike)
+            return float(intrinsic_val)
+        else:
+            return float(0)
 
     def underlyer(self):
         underlyer = Contract()

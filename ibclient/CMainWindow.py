@@ -5,7 +5,6 @@ from PyQt5.QtCore import QTimer
 
 from CMTWidget import CMTWidget
 from globals import globvars
-from ColorDemo import open_color_demo
 
 class CMainWindow(QMainWindow):
     def __init__(self, dataList, account):
@@ -28,6 +27,16 @@ class CMainWindow(QMainWindow):
 
             profstr += "NLQ: "
             profstr += self.account.accountData["NetLiquidation"] + " CHF | "
+            globvars.total = 0
+            for cc in globvars.bwl:
+                # globvars.total = globvars.total + int((float(cc.tickerData["ullst"]) - float(cc.bw["underlyer"][
+                #                                              "@price"])) * cc.position * 100 + cc.realized + cc.itv() * cc.position * 100 - cc.ctv() * cc.position * 100)
+
+
+                globvars.total = globvars.total + (float(cc.tickerData["ullst"]) - float(cc.bw["underlyer"][
+                                                             "@price"])) * cc.position * 100 + cc.realized + cc.itv() * cc.position * 100 - cc.ctv() * cc.position * 100 + \
+                cc.civ() * cc.position * 100 - cc.iiv() * cc.position * 100
+
 
             #profstr += self.account.accountData["NetLiquidation"] + " CHF ("+self.account.getLastUpdateTimestamp()+") | "
 
@@ -77,10 +86,10 @@ class CMainWindow(QMainWindow):
         exitAct.setStatusTip('Exit application')
         exitAct.triggered.connect(self.close)
 
-        colorDemoAct = QAction(QIcon('exit24.png'), 'ColorDemo', self)
-        colorDemoAct.setShortcut('Ctrl+Q')
-        colorDemoAct.setStatusTip('Show all Colorss')
-        colorDemoAct.triggered.connect(open_color_demo)
+        # colorDemoAct = QAction(QIcon('exit24.png'), 'ColorDemo', self)
+        # colorDemoAct.setShortcut('Ctrl+Q')
+        # colorDemoAct.setStatusTip('Show all Colorss')
+        # colorDemoAct.triggered.connect(open_color_demo)
 
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')

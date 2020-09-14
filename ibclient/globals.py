@@ -96,6 +96,7 @@ class globvars:
         globvars.bwl                        = []
         globvars.cc                         =  {}
 
+
         globvars.header1['Id'         ] = "Unique Identifier"
         globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
         globvars.header1['Industry'   ] = "Industry of Underlyer"
@@ -120,14 +121,19 @@ class globvars:
         globvars.header1['OP-Lst'     ] = "last known trade for underlyer"
         globvars.header1['OP-Bid'     ] = "last known bid for option"
         globvars.header1['OP-Ask'     ] = "last known ask for option"
+        globvars.header1['IIV'        ] = "initial intrinsic value for this option"
+        globvars.header1['IIV/$'      ] = "initial intrinsic value in dollar for this option"
         globvars.header1['ITV'        ] = "initial Timevalue for this position"
         globvars.header1['ITV/$'      ] = "initial Timevalue in dollar for this position"
+        globvars.header1['CIV'        ] = "Current Intrinsic Value for this position"
+        globvars.header1['CIV/$'      ] = "Current Intrinsic Value in dollar for this position"
         globvars.header1['CTV'        ] = "Current TimeValue for this position"
         globvars.header1['CTV/$'      ] = "Current TimeValue in dollar for this position"
         globvars.header1['TV-Chg/%'   ] = "Change of Timevalue in %"
-        globvars.header1['TV-Prof'    ] = "Accumulated timevalue profit of tie sposition"
+        globvars.header1['TV-Prof'    ] = "Accumulated timevalue profit of this position"
         globvars.header1['RLZD'       ] = "Realized from option buy back when rolling"
         globvars.header1['UL-URPNL'   ] = "Unrealizerd PNL for Unterlyer"
+        globvars.header1['TOTAL'      ] = "Unrealizerd PNL for Unterlyer PLUS Realized from option buy back when rolling PLUS Accumulated timevalue profit of this position"
 
     def set_logger(logger):
         globvars.logger = logger
