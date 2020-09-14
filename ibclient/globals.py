@@ -96,6 +96,8 @@ class globvars:
         globvars.bwl                        = []
         globvars.cc                         =  {}
 
+        globvars.header['Id'         ] = dict(name="Unique Identifier", id = 1, test = "jhvb", enabled = True)
+
         globvars.header1['Id'         ] = "Unique Identifier"
         globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
         globvars.header1['Industry'   ] = "Industry of Underlyer"

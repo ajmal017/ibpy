@@ -1,16 +1,5 @@
-''' pqt_tableview3.py
-explore PyQT's QTableView Model
-using QAbstractTableModel to present tabular data
-allow table sorting by clicking on the header title
-used the Anaconda package (comes with PyQt4) on OS X
-(dns)
-'''
-
 # coding=utf-8
 
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import *
 
 from CMainWindow import CMainWindow
@@ -27,16 +16,13 @@ import time
 import xmltodict
 
 from datetime import datetime, time, timedelta
-
-import os
-import signal
 import traceback
 
-def sig_handler(signum, frame):
+
+def sig_handler ( signum, frame):
     print ("segfault")
     traceback.print_stack(frame)
 
-#signal.signal(signal.SIGSEGV, sig_handler)
 
 def find_last_sx_opening_time(which_stockexchange: int):
     today = datetime.today()
