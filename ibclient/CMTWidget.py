@@ -48,15 +48,13 @@ class CMTWidget(QWidget):
 
         self.columnsHidden = covered_call.columns_hidden()
 
-#        self.resetAllColumns()
-
-
         header = self.table_view.horizontalHeader();
         header.sectionDoubleClicked.connect(self.onSectionDoubleClicked)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.table_view)
         self.setLayout(layout)
+
 
     def onSectionDoubleClicked(self, logicalIndex):
         self.table_view.hideColumn(logicalIndex)

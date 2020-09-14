@@ -20,7 +20,6 @@ class CMainWindow(QMainWindow):
         self.timer.start(10000)
 
 
-
     def updateStatusBar(self):
         profstr = ""
         if "NetLiquidation" in self.account.accountData:
@@ -33,10 +32,7 @@ class CMainWindow(QMainWindow):
                 #                                              "@price"])) * cc.position * 100 + cc.realized + cc.itv() * cc.position * 100 - cc.ctv() * cc.position * 100)
 
 
-                globvars.total = globvars.total + (float(cc.tickerData["ullst"]) - float(cc.bw["underlyer"][
-                                                             "@price"])) * cc.position * 100 + cc.realized + cc.itv() * cc.position * 100 - cc.ctv() * cc.position * 100 + \
-                cc.civ() * cc.position * 100 - cc.iiv() * cc.position * 100
-
+                globvars.total = globvars.total + cc.total
 
             #profstr += self.account.accountData["NetLiquidation"] + " CHF ("+self.account.getLastUpdateTimestamp()+") | "
 
@@ -55,7 +51,7 @@ class CMainWindow(QMainWindow):
         #     profstr += " InitMargin "
         #     profstr += self.account.accountData["FullInitMarginReq"]
         #
-        self.statusbar.showMessage(profstr)
+        self.statusbar.showMessage(profstr)# + " " + "{:.2f}".format(globvars.total))
 
     def contextMenuEvent(self, event):
         cmenu = QMenu(self)
@@ -100,6 +96,8 @@ class CMainWindow(QMainWindow):
 
         self.setGeometry(100, 200, 1500, 500)
         self.setWindowTitle('Main window')
+        self.cmtw.resetAllColumns()
+
 
     def closeEvent(self, event):
         print('Calling')

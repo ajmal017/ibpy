@@ -96,6 +96,9 @@ if __name__ == '__main__':
     dataList = [[''       , ''        , ''   , ''      , ''      , ''      , ''       , ''        , ''       , ''       , ''           , ''     , ''      , ''      , ''      , ''      , '0'  , '0'    , '0'  , '0'    , '0'     ]]
 
     for bw in ccdict["coveredCalls"]["bw"]:
+        if 'closed' in bw:
+            del bw
+            continue
         globvars.cc[str(tickerId)] = covered_call(bw, tickerId)
         globvars.bwl.append(globvars.cc[str(tickerId)])
         globvars.cc[str(tickerId + 1)] = globvars.cc[str(tickerId)]
@@ -117,6 +120,8 @@ if __name__ == '__main__':
     globvars.ibapp.reqAccountUpdates(True, "U806698")
 
     for cc in globvars.bwl:
+        if cc == globvars.bwl[-1]:
+            break;
         # dataList.append(cc.table_data())
 
         mainLogger.info("querying no. %s: %s", bw["@id"], bw["underlyer"]["@tickerSymbol"])

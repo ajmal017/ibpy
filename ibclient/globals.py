@@ -104,6 +104,7 @@ class globvars:
         globvars.header1['Pos'        ] = "How many legs"
         globvars.header1['Strike'     ] = "Strike"
         globvars.header1['Expiry'     ] = "Expiry"
+        globvars.header1['Earngs Call'     ] = "Next Earningscall Date"
         globvars.header1['Status'     ] = "In/Out/At the money at initiation and now ?"
         globvars.header1['UL-Init'    ] = "Price of underlyer when position was initiated"
         globvars.header1['OPT-Init'    ] = "Price of option when position was initiated"
