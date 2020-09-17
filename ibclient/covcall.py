@@ -2,6 +2,7 @@
 from ibapi.contract import Contract
 from datetime import datetime
 from datetime import date
+from globals import globvars
 
 class Security():
     def __init__(self):
@@ -164,8 +165,9 @@ class covered_call():
                 self.uncertaintyFlag = True
         else:
             if self.oplastcalculated == True or self.tickerData["oplst"] < b or self.tickerData["oplst"] > a:
-                self.tickerData["oplst"] = (a + b) / 2
-                self.oplastcalculated = True
+                if a > 0.01 and b > 0.01:
+                    self.tickerData["oplst"] = (a + b) / 2
+                    self.oplastcalculated = True
 
             self.uncertaintyFlag = False
 
@@ -342,6 +344,11 @@ class covered_call():
         option.strike = self.strike
         option.right = "Call"
         option.multiplier = "100"
+        globvars.logger.info("%s", self.symbol)
+        globvars.logger.info("%s", self.inioptprice)
+        globvars.logger.info("%s", self.expiry)
+        globvars.logger.info("%s", self.strike)
+
         return option
 
 

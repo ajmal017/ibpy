@@ -12,6 +12,7 @@
         <underlyer type="STK" tickerSymbol="CDNS" price = "110.304" earningscall = "20201019"/>
         <option expiry="20200918" strike="105" multiplier="100" price = "6.216"/>
         <rolling_activities>
+            <rolled when="20200918 20:16:11" from="20200918" to="20201016" strike="105" buyprice = "0.00" sellprice="1.95" ulprice="99.50" commission = "0.24"/>
         </rolling_activities>
     </bw>
 
@@ -19,6 +20,7 @@
         <underlyer type="STK" tickerSymbol="CHD" price = "96.434" earningscall = "20201030"/>
         <option expiry="20200918" strike="95" multiplier="100" price = "3.358"/>
         <rolling_activities>
+            <rolled when="20200918 20:29:58" from="20200918" to="20201016" strike="95" buyprice = "0.00" sellprice="0.90" ulprice="89.80" commission = "0.24"/>
         </rolling_activities>
     </bw>
 
@@ -93,7 +95,7 @@
         <underlyer type="STK" tickerSymbol="PYPL" price = "198.18" earningscall = "20201028"/>
         <option expiry="20200918" strike="190" multiplier="100" price = "11.86"/>
         <rolling_activities>
-            <rolled when="20200917 21:52:07" from="20200918" to="20201016" strike="192.5" buyprice = "0.06" sellprice="3.81" ulprice="174.61" commission = "1.28"/>
+            <rolled when="20200917 21:52:07" from="20200918" to="20201023" strike="192.5" buyprice = "0.06" sellprice="3.81" ulprice="174.61" commission = "1.28"/>
         </rolling_activities>
     </bw>
 

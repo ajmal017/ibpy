@@ -149,10 +149,7 @@ class CMTModel(QAbstractTableModel):
             if c == 1 and cc.uncertaintyFlag:
                 pat = Qt.CrossPattern
 
-            globvars.logger.info("")
             if cc.is_valid():
-
-
                 if cc.tickerData["ullst"] < cc.inibwprice:
                     return QBrush(QtCore.Qt.darkRed, pat)
                 elif cc.tickerData["ullst"] < cc.strike:
@@ -168,6 +165,7 @@ class CMTModel(QAbstractTableModel):
         elif role == QtCore.Qt.DisplayRole:
             value = self.buywrites[index.row()][index.column()]
             return value
+
         elif role == QtCore.Qt.ToolTipRole:
             if c == 5:
                 s = cc.symbol + cc.expiry + " "

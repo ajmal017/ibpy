@@ -33,7 +33,7 @@ def find_last_sx_opening_time(which_stockexchange: int):
         opening_hour = time(10,00,00,00)
         closing_hour = time(2,00,00,00)
     else:
-        closing_hour = time(21,59,59,59)
+        closing_hour = time(22,00,00,00)
         opening_hour = time(15,30,00,00)
 
     if weekday == 0: #monday
@@ -119,6 +119,12 @@ if __name__ == '__main__':
 
     globvars.ibapp.reqAccountUpdates(True, "U806698")
 
+    dtnyse = find_last_sx_opening_time(const.STOCKEXCHANGE_NYSE)
+    ifdtnyse = dtnyse.strftime("%Y%m%d %H:%M:%S")
+
+    dtcboe = find_last_sx_opening_time(const.STOCKEXCHANGE_CBOE)
+    ifdtcboe = dtcboe.strftime("%Y%m%d %H:%M:%S")
+
     for cc in globvars.bwl:
         if cc == globvars.bwl[-1]:
             break;
@@ -137,22 +143,19 @@ if __name__ == '__main__':
             # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
             # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
 
-            dt = find_last_sx_opening_time(const.STOCKEXCHANGE_NYSE)
-            ifdt = dt.strftime("%Y%m%d %H:%M:%S")
-
-            globvars.ibapp.reqHistoricalData(cc.ticker_id(), cc.underlyer(), ifdt, "3600 S", "5 mins", "TRADES", const.HISTDATA_OUTSIDERTH, 1, False, [])
+            globvars.ibapp.reqHistoricalData(cc.ticker_id(), cc.underlyer(), ifdtnyse, "3600 S", "5 mins", "TRADES", const.HISTDATA_OUTSIDERTH, 1, False, [])
 
         if cboeIsOpen:
+
+            globvars.logger.info("ticker: %i", cc.ticker_id()+1)
             globvars.ibapp.reqMktData(cc.ticker_id()+1   , cc.option(), "", False, False, [])
             #globvars.ibapp.reqHistoricalData(cc.ticker_id()+1, cc.option(), dt, "2 D", "1 day", "MIDPOINT", 1, 1, False, [])
         else:
             # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
             # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
 
-            dt = find_last_sx_opening_time(const.STOCKEXCHANGE_CBOE)
-            ifdt = dt.strftime("%Y%m%d %H:%M:%S")
 
-            globvars.ibapp.reqHistoricalData(cc.ticker_id()+1, cc.option(), ifdt, "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
+            globvars.ibapp.reqHistoricalData(cc.ticker_id()+1, cc.option(), ifdtcboe, "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
 
     api_thread.start()
 
