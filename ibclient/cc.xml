@@ -93,6 +93,7 @@
         <underlyer type="STK" tickerSymbol="PYPL" price = "198.18" earningscall = "20201028"/>
         <option expiry="20200918" strike="190" multiplier="100" price = "11.86"/>
         <rolling_activities>
+            <rolled when="20200917 21:52:07" from="20200918" to="20201016" strike="192.5" buyprice = "0.06" sellprice="3.81" ulprice="174.61" commission = "1.28"/>
         </rolling_activities>
     </bw>
 
@@ -100,6 +101,7 @@
         <underlyer type="STK" tickerSymbol="TTGT" price = "39.425" earningscall = "20201104"/>
         <option expiry="20200918" strike="40" multiplier="100" price = "1.767"/>
         <rolling_activities>
+            <rolled when="20200917 20:14:07" from="20200918" to="20201016" strike="40" buyprice = "0.68" sellprice="2.23" ulprice="40.65" commission = "3.05"/>
         </rolling_activities>
     </bw>
 
