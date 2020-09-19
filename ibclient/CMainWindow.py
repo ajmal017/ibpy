@@ -95,7 +95,7 @@ class CMainWindow(QMainWindow):
         toolbar.addAction(exitAct)
 
         self.setGeometry(100, 200, 1500, 500)
-        self.setWindowTitle('Main window')
+        self.setWindowTitle('Covered Call Analyzer Application')
         self.cmtw.resetAllColumns()
 
 

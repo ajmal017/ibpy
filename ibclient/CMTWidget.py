@@ -53,7 +53,14 @@ class CMTWidget(QWidget):
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.table_view)
+
         self.setLayout(layout)
+
+        self.timer = QTimer()
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.resetAllColumns)
+        self.timer.start(2000)
+
 
 
     def onSectionDoubleClicked(self, logicalIndex):

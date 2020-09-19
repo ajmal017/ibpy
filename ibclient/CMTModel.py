@@ -16,24 +16,48 @@ class PrxyModel(QSortFilterProxyModel):
     def lessThan(self, left, right):
         role = QtCore.Qt.DisplayRole
         lc = left.column()
-        if lc in [0,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37]:
+        if lc in [
+                const.COL_ID                    ,
+                const.COL_ROLLED                ,
+                const.COL_POSITION              ,
+                const.COL_STRIKE                ,
+                const.COL_STATUS                ,
+                const.COL_ULINIT                ,
+                const.COL_BWPRICE                ,
+                const.COL_BWPNOW                 ,
+                const.COL_BWPPROF                ,
+                const.COL_BWPPL                  ,
+                const.COL_ULLAST                 ,
+                const.COL_ULLMINUSBWP            ,
+                const.COL_ULLMINUSSTRIKE         ,
+                const.COL_ULLCHANGE              ,
+                const.COL_ULLCHANGEPCT           ,
+                const.COL_ULBID                  ,
+                const.COL_ULASK                  ,
+                const.COL_OPLAST                 ,
+                const.COL_OPBID                  ,
+                const.COL_OPASK                  ,
+                const.COL_INITINTRNSCVAL         ,
+                const.COL_INITINTRNSCVALDOLL     ,
+                const.COL_INITTIMEVAL            ,
+                const.COL_INITTIMEVALDOLL        ,
+                const.COL_CURRINTRNSCVAL         ,
+                const.COL_CURRINTRNSCVALDOLL     ,
+                const.COL_CURRTIMEVAL            ,
+                const.COL_CURRTIMEVALDOLL        ,
+                const.COL_TIMEVALCHANGEPCT       ,
+                const.COL_TIMEVALPROFIT          ,
+                const.COL_REALIZED               ,
+                const.COL_ULUNREALIZED           ,
+                const.COL_TOTAL                  ]:
             try:
                 a = self.sourceModel().data(left, role)
                 b = self.sourceModel().data(right, role)
                 return float(a) < float(b)
             except:
                 return False
-        elif lc in [1,2,3,4,5,6]:
-            return (str(self.sourceModel().data(left, role))) < str((self.sourceModel().data(right, role)))
-        elif lc == 17:
-            try:
-                a = float(self.sourceModel().data(left, role).replace("%",""))
-                b = float(self.sourceModel().data(right, role).replace("%",""))
-                return a < b
-            except:
-                return False
         else:
-            return False;
+            return (str(self.sourceModel().data(left, role))) < str((self.sourceModel().data(right, role)))
 
 class CMTModel(QAbstractTableModel):
     """
@@ -81,8 +105,28 @@ class CMTModel(QAbstractTableModel):
 
                 for  i,data_col in enumerate(data):
                     try:
-                        if i in [29,30,31,32,33,34,35,36,37]:
+                        if i in [
+                            const.COL_INITINTRNSCVALDOLL,
+                            const.COL_INITTIMEVALDOLL,
+                            const.COL_CURRINTRNSCVALDOLL,
+                            const.COL_CURRINTRNSCVAL,
+                            const.COL_CURRINTRNSCVALDOLL,
+                            const.COL_CURRTIMEVAL,
+                            const.COL_CURRTIMEVALDOLL,
+                            const.COL_TIMEVALCHANGEPCT,
+                            const.COL_TIMEVALPROFIT,
+                            const.COL_REALIZED,
+                            const.COL_ULUNREALIZED,
+                            const.COL_TOTAL
+                        ]:
                             sum[i] = sum[i] + float(data_col)
+                        elif i == const.COL_ULLAST:
+                            sum[i] = sum[i] + cc.position * 100 * cc.tickerData["ullst"]
+                        elif i == const.COL_OPLAST:
+                            sum[i] = sum[i] + cc.position * 100 * cc.tickerData["oplst"]
+                        elif i == const.COL_BWPRICE:
+                            sum[i] = sum[i] + cc.position * 100 * float(cc.bw["@enteringPrice"])
+
                         else:
                             sum[i] = 0
                     except:
