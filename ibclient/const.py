@@ -8,10 +8,10 @@ LASTPRICE   = "4"
 LASTSIZE    = "5"
 
 #TWS Realtrading
-IBPORT      = 7495
+#IBPORT      = 7495
 
 #TWS Papertrading
-#IBPORT      = 7497
+IBPORT      = 7497
 
 #GW Realtrading:
 #IBPORT      = 4001
@@ -20,6 +20,7 @@ IBPORT      = 7495
 #IBPORT      = 4002
 
 IBCLIENTID  = 1
+ACCOUNTNUMBER = "U806698"
 
 WHITE = QColor(255, 255, 255)
 BLACK = QColor(0, 0, 0)

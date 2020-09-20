@@ -15,7 +15,6 @@ import const
 class BrkApi(EWrapper, EClient):
     def __init__(self, ba):
         EClient.__init__(self, self)
-        self.bars={}
         self.endflag = {}
         self.account = ba
 

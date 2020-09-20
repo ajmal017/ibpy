@@ -1,10 +1,11 @@
 import sys
-from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, QMenu, QLabel
+from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, QMenu, QLabel, QColorDialog, QFontDialog
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QTimer
 
 from CMTWidget import CMTWidget
 from globals import globvars
+from BrkConnection import BrkConnection
 
 class CMainWindow(QMainWindow):
     def __init__(self, dataList, account):
@@ -72,9 +73,23 @@ class CMainWindow(QMainWindow):
         elif action == clearSelection:
             self.cmtw.clearSelection()
 
+    def openColorDialog(self):
+        c = QColorDialog.getColor()
+        return c
+
+    def openFontDialog(self):
+        f = QFontDialog.getFont()
+        return f
+
+    def openSettingsDialog(self):
+        pass
+
     def initUI(self, ccd):
 
         self.cmtw = CMTWidget(self.dataList, ccd)
+
+        self.broker = BrkConnection()
+
         self.setCentralWidget(self.cmtw)
 
         exitAct = QAction(QIcon('exit24.png'), 'Exit', self)
@@ -91,8 +106,32 @@ class CMainWindow(QMainWindow):
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAct)
 
+        actionSelectFont = QAction(QIcon('icons/Digital - Zero.png'), 'Flee the Scene', self)
+        actionSelectFont.setToolTip("Select Font")
+        actionSelectFont.triggered.connect(self.openFontDialog)
+
+        actionSelectColor = QAction(QIcon('icons/Digital - One.png'), 'Flee the Scene', self)
+        actionSelectColor.setToolTip("Select Color")
+        actionSelectColor.triggered.connect(self.openColorDialog)
+
+        actionConnectToBrkApi = QAction(QIcon('icons/Link - 01.png'), 'Connect', self)
+        actionConnectToBrkApi.setToolTip("Connect toIBKR")
+        actionConnectToBrkApi.triggered.connect(self.broker.connectToIBKR)
+
+        actionDisconnectFromBrkApi = QAction(QIcon('icons/Link - 02.png'), 'Disconnect', self)
+        actionDisconnectFromBrkApi.setToolTip("Disconnect from IBKR")
+        actionDisconnectFromBrkApi.triggered.connect(self.broker.disconnectFromIBKR)
+
+        actionOpenSettings = QAction(QIcon('icons/Gear.png'), 'Disconnect', self)
+        actionOpenSettings.setToolTip("Open Settings")
+        actionOpenSettings.triggered.connect(self.openSettingsDialog)
+
         toolbar = self.addToolBar('Exit')
-        toolbar.addAction(exitAct)
+        toolbar.addAction(actionSelectFont)
+        toolbar.addAction(actionSelectColor)
+        toolbar.addAction(actionConnectToBrkApi)
+        toolbar.addAction(actionDisconnectFromBrkApi)
+        toolbar.addAction(actionOpenSettings)
 
         self.setGeometry(100, 200, 1500, 500)
         self.setWindowTitle('Covered Call Analyzer Application')
