@@ -1,44 +1,74 @@
-OPCUNDEF                    = 0
-OPCINITIALIZED              = 1
-OPCDISCONNECTED             = 2
-OPCCONNECTED                = 4
-OPCCONNECTINGSTAGE1         = 6
-OPCCONNECTIONERROR1         = 90
+from PyQt5.QtGui import QPalette, QColor
 
-#OPC Transitionszustände:
-OPCDODISCONNECT            = 5
-OPCDOCONNECT               = 3
+BIDSIZE     = "0"
+BIDPRICE    = "1"
+ASKPRICE    = "2"
+ASKSIZE     = "3"
+LASTPRICE   = "4"
+LASTSIZE    = "5"
 
-#GST stabile Zustände
-GSTISUNDEF                  = 100
-GSTISESTABLISHED            = 101
-GSTISNOTESTABLISHED         = 102
-GSTSTATEERROR               = 103
+#TWS Realtrading
+IBPORT      = 7495
 
-#GST Transitionszustände:
-GSTDOESTABLISH             = 104
+#TWS Papertrading
+#IBPORT      = 7497
 
-#Test stabile Zustände:
-TESTSTATE_UNDEF             = 200
-TESTSTATE_INITIALIZED       = 201
-TESTSTATE_RUNNING           = 202
-TESTSTATE_PAUSED            = 203
-TESTSTATE_STOPPED           = 204
-TESTSTATE_AUSWERTUNG        = 205
-TESTSTATE_PREPROCESSING     = 206
-TESTSTATE_TESTSDONE         = 207
-TESTSTATE_ERROR1            = 211
-#Test Transitionszustände:
-TESTSTATE_ABORTING          = 209
-TESTSTATE_WAITFORABORTION   = 208
-TESTSTATE_ABORTED           = 210
+#GW Realtrading:
+#IBPORT      = 4001
 
-#Zustände OBFB:
-OBFBISUNDEF                 = 500
-OBFBISORTSBETRIEB           = 501
-OBFBISFERNBETRIEB           = 502
+#GW Papertrading:
+#IBPORT      = 4002
 
-POLARIONSTATEISUNDEF        = 400
-POLARIONCONNECTED           = 401
+IBCLIENTID  = 1
 
-IMAGESHOWDELAY                       = 2000
+WHITE = QColor(255, 255, 255)
+BLACK = QColor(0, 0, 0)
+RED = QColor(255, 0, 0)
+PRIMARY = QColor(53, 53, 53)
+SECONDARY = QColor(35, 35, 35)
+TERTIARY = QColor(42, 130, 218)
+
+STOCKEXCHANGE_NYSE = 0
+STOCKEXCHANGE_CBOE = 1
+
+HISTDATA_OUTSIDERTH = 0
+HISTDATA_INSIDERTH = 1
+
+COL_ID                      =  0
+COL_SYMBOL                  =  1
+COL_INDUSTRY                =  2
+COL_ROLLED                  =  3
+COL_POSITION                =  4
+COL_STRIKE                  =  5
+COL_EXPIRY                  =  6
+COL_EARNGSCALL              =  7
+COL_STATUS                  =  8
+COL_ULINIT                  =  9
+COL_OPTINIT                  = 10
+COL_BWPRICE                 =  11
+COL_BWPNOW                  =  12
+COL_BWPPROF                 =  13
+COL_BWPPL                   =  14
+COL_ULLAST                  =  15
+COL_ULLMINUSBWP             =  16
+COL_ULLMINUSSTRIKE          =  17
+COL_ULLCHANGE               =  18
+COL_ULLCHANGEPCT            =  19
+COL_ULBID                   =  20
+COL_ULASK                   =  21
+COL_OPLAST                  =  22
+COL_OPBID                   =  23
+COL_OPASK                   =  24
+COL_INITINTRNSCVAL          =  25
+COL_INITINTRNSCVALDOLL      =  26
+COL_INITTIMEVAL             =  27
+COL_INITTIMEVALDOLL         =  28
+COL_CURRINTRNSCVAL          =  29
+COL_CURRINTRNSCVALDOLL      =  30
+COL_CURRTIMEVAL             =  31
+COL_CURRTIMEVALDOLL         =  32
+COL_TIMEVALCHANGEPCT        =  33
+COL_TIMEVALPROFIT           =  34
+COL_REALIZED                =  35
+COL_ULUNREALIZED            =  36
+COL_TOTAL                   =  37

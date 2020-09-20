@@ -1,183 +1,162 @@
-#from https://algotrading101.com/learn/interactive-brokers-python-api-native-guide/
-from ibapi.client import EClient
-from ibapi.wrapper import EWrapper
-from ibapi.contract import Contract
-from ibapi.order_condition import Create, OrderCondition
-from ibapi.order import *
-from ibapi.ticktype import TickTypeEnum
+# coding=utf-8
+
+from PyQt5.QtWidgets import *
+
+from CMainWindow import CMainWindow
+from BrkApi import BrkApi
+from Account import Account
 import logger as logger
 from globals import globvars
-
-import datetime
+import const
 from covcall import covered_call
 
+from time import time
 import threading
 import time
-
 import xmltodict
 
-with open('cc.xml') as fd:
-    ccdict = xmltodict.parse(fd.read())
-
-bars = {}
-endflag = {}
-
-class IBapi(EWrapper, EClient):
-    def __init__(self):
-        EClient.__init__(self, self)
-
-    def historicalData(self, reqId, bar):
-        if reqId not in bars:
-            bars[reqId] = []
-        print(reqId, "BarData.", bar)
-        bars[reqId].append(bar)
-
-    def historicalDataEnd(self, reqId: int, start: str, end: str):
-        if reqId not in endflag:
-            endflag[reqId] = False
-        super().historicalDataEnd(reqId, start, end)
-        print("HistoricalDataEnd. ReqId:", reqId, "from", start, "to", end)
-        endflag[reqId] = True
-
-    def historicalDataUpdate(self, reqId: int, bar):
-        print("HistoricalDataUpdate. ReqId:", reqId, "BarData.", bar)
+from datetime import datetime, time, timedelta
+import traceback
 
 
-    def tickPrice(self, reqId, tickType, price, attrib):
-        if tickType == 2 and reqId == 1:
-            print('The current ask price is: ', price)
+def sig_handler ( signum, frame):
+    print ("segfault")
+    traceback.print_stack(frame)
 
 
-    def nextValidId(self, orderId: int):
-        super().nextValidId(orderId)
-        self.nextorderId = orderId
-        print('The next valid order id is: ', self.nextorderId)
+def find_last_sx_opening_time(which_stockexchange: int):
+    today = datetime.today()
+    tod = datetime.now().time()
+    weekday = datetime.weekday(today) # 6=sunday, 0=monday
+
+    if which_stockexchange == const.STOCKEXCHANGE_NYSE:
+        opening_hour = time(10,00,00,00)
+        closing_hour = time(2,00,00,00)
+    else:
+        closing_hour = time(22,00,00,00)
+        opening_hour = time(15,30,00,00)
+
+    if weekday == 0: #monday
+        if tod < opening_hour:  #monday morning
+            return datetime.combine(today-timedelta(2), closing_hour)
+        if tod > closing_hour: #monday night
+            return datetime.combine(today, closing_hour)
+
+    if weekday >= 1 or weekday <= 4:
+        if tod < opening_hour: #tuesday to friday morning
+            return datetime.combine(today, closing_hour)
+        if tod > closing_hour: #tuesday to friday night
+            return datetime.combine(today, closing_hour)
+
+    if weekday == 5: #saturday
+        return datetime.combine(today, closing_hour)
+
+    if weekday == 6: #sunday
+        return datetime.combine(today-timedelta(1), closing_hour)
+
+now = datetime.now()
+dt = now.strftime("%Y%m%d 21:59:59")
 
 
-    def orderStatus(self, orderId, status, filled, remaining, avgFullPrice, permId, parentId, lastFillPrice, clientId,
-                    whyHeld, mktCapPrice):
-        print('orderStatus - orderid:', orderId, 'status:', status, 'filled', filled, 'remaining', remaining,
-              'lastFillPrice', lastFillPrice)
-
-
-    def openOrder(self, orderId, contract, order, orderState):
-        print('openOrder id:', orderId, contract.symbol, contract.secType, '@', contract.exchange, ':', order.action,
-              order.orderType, order.totalQuantity, orderState.status)
-
-
-    def execDetails(self, reqId, contract, execution):
-        print('Order Executed: ', reqId, contract.symbol, contract.secType, contract.currency, execution.execId,
-              execution.orderId, execution.shares, execution.lastLiquidity)
-
-date_time_str = '2020-09-18 22:00:00.000000'
-date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
-
-date_time_str = '2020-09-18 22:00:00.000000'
-date_time_obj = datetime.datetime.strptime(date_time_str, '%Y-%m-%d %H:%M:%S.%f')
+def is_time_between(begin_time, end_time, check_time=None):
+    # If check time is not given, default to current UTC time
+    check_time = check_time or datetime.now().time()
+    if begin_time < end_time:
+        return check_time >= begin_time and check_time <= end_time
+    else: # crosses midnight
+        return check_time >= begin_time or check_time <= end_time
 
 def run_loop():
-    app.run()
+    globvars.ibapp.run()
 
-globvars.init_globvars()
+if __name__ == '__main__':
+    globvars.init_globvars()
+    capp = QApplication([])
+    account = Account()
 
-app = IBapi()
-app.connect('127.0.0.1', 7495, 3)
+    globvars.ibapp = BrkApi(account)
 
-#Start the socket in a thread
-api_thread = threading.Thread(target=run_loop, daemon=True)
-api_thread.start()
+    mainLogger = logger.initMainLogger()
+    globvars.set_logger(mainLogger)
 
-time.sleep(1) #Sleep interval to allow time for connection to server
+    globvars.logger.info("**********************************************")
+    globvars.logger.info("*          IBPY - Covered Call Analyzer      *")
+    globvars.logger.info("**********************************************")
 
-mainLogger = logger.initMainLogger()
-mainLogger.info('Started')
+    initialtickerId = 4100
 
-initialTickerId = 4100
+    mainLogger.info('Started')
+    tickerId = initialtickerId
 
+    globvars.bwl = []
 
-tv=[]
-itv=[]
+    with open('cc.xml') as fd:
+        ccdict = xmltodict.parse(fd.read())
 
-
-tickerId = initialTickerId
-for bw in ccdict["coveredCalls"]["bw"]:
-    bw["tickerId"] = tickerId
-
-    underlyer = Contract()
-    underlyer.symbol = bw["underlyer"]["@tickerSymbol"]
-    underlyer.secType = "STK"
-    underlyer.exchange = "SMART"
-    underlyer.currency = "USD"
-
-    option = Contract()
-    option.symbol = bw["underlyer"]["@tickerSymbol"]
-    option.secType = "OPT"
-    option.exchange = "SMART"
-    option.currency = "USD"
-    option.lastTradeDateOrContractMonth = bw["option"]["@expiry"]
-    option.strike = bw["option"]["@strike"]
-    option.right = "Call"
-    option.multiplier = "100"
-
-    now = datetime.datetime.now()
-    dt = now.strftime("%Y%m%d %H:%M:00")
-    app.reqHistoricalData(bw["tickerId"], option, dt, "30 S", "5 secs", "MIDPOINT", 1, 1, False, [])
-    app.reqHistoricalData(bw["tickerId"]+1, underlyer, dt, "30 S", "5 secs", "MIDPOINT", 1, 1, False, [])
-    tv.append(0)
-    itv.append(0)
-    tickerId += 2
-
-time.sleep(10) #Sleep interval to allow time for connection to server
-
-allfinished = False
-while allfinished == False:
-    allfinished = True
+    dataList = [[''       , ''        , ''   , ''      , ''      , ''      , ''       , ''        , ''       , ''       , ''           , ''     , ''      , ''      , ''      , ''      , '0'  , '0'    , '0'  , '0'    , '0'     ]]
 
     for bw in ccdict["coveredCalls"]["bw"]:
-        while bw["tickerId"] not in endflag:
-            time.sleep(1)
-        if endflag[bw["tickerId"]] == False:
+        if 'closed' in bw:
+            del bw
+            continue
+        globvars.cc[str(tickerId)] = covered_call(bw, tickerId)
+        globvars.bwl.append(globvars.cc[str(tickerId)])
+        globvars.cc[str(tickerId + 1)] = globvars.cc[str(tickerId)]
+        tickerId += 2
 
-            allfinished = False
-
-close_price = lambda x,ti: x[ti][-1]
-pr = {}
+    for cc in globvars.bwl:
+        dataList.append(cc.table_data())
 
 
+    cmw = CMainWindow(dataList, account)
 
-#initial timevalues:
-for bwnum,bw in enumerate(ccdict["coveredCalls"]["bw"]):
-    underlyer = Contract()
-    underlyer.symbol = bw["underlyer"]["@tickerSymbol"]
-    underlyer.secType = "STK"
-    underlyer.exchange = "SMART"
-    underlyer.currency = "USD"
-    cc = covered_call(underlyer, "C", float(bw["option"]["@strike"]), date_time_obj)
-    cc.set_stk_price(float(bw["underlyer"]["@price"]))
-    cc.set_opt_price(float(bw["option"]["@price"]))
-    itv[bwnum] = cc.getTimevalue()
-    #mainLogger.info('initial timevalue of %s is %f',underlyer.symbol,itv[bwnum])
+    cmw.initUI(ccdict)
 
-tickerId = initialTickerId
-for bwnum,bw in enumerate(ccdict["coveredCalls"]["bw"]):
-    pr["option"]  = close_price(bars, tickerId)
-    pr["stock"] = close_price(bars, tickerId+1)
+    cmw.show()
 
-    underlyer = Contract()
-    underlyer.symbol = bw["underlyer"]["@tickerSymbol"]
-    underlyer.secType = "STK"
-    underlyer.exchange = "SMART"
+    globvars.ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
+    api_thread = threading.Thread(target=run_loop, daemon=True)
 
-    cc = covered_call(underlyer, "C", float(bw["option"]["@strike"]), date_time_obj)
+    globvars.ibapp.reqAccountUpdates(True, "U806698")
 
-    cc.set_stk_price(pr["stock"].close)
-    cc.set_opt_price(pr["option"].close)
-    tv[bwnum] = cc.getTimevalue()
-    #mainLogger.info ("timevalue of %s is %f",underlyer.symbol,tv[bwnum])
-    tickerId +=2
+    dtnyse = find_last_sx_opening_time(const.STOCKEXCHANGE_NYSE)
+    ifdtnyse = dtnyse.strftime("%Y%m%d %H:%M:%S")
 
-for bwnum,bw in enumerate(ccdict["coveredCalls"]["bw"]):
-    mainLogger.info ("timevalue of %s is down to %f pct (from %f to %f)",bw["underlyer"]["@tickerSymbol"],100*tv[bwnum]/itv[bwnum], itv[bwnum], tv[bwnum])
+    dtcboe = find_last_sx_opening_time(const.STOCKEXCHANGE_CBOE)
+    ifdtcboe = dtcboe.strftime("%Y%m%d %H:%M:%S")
 
-app.disconnect()
+    for cc in globvars.bwl:
+        if cc == globvars.bwl[-1]:
+            break;
+        # dataList.append(cc.table_data())
 
+        mainLogger.info("querying no. %s: %s", bw["@id"], bw["underlyer"]["@tickerSymbol"])
+
+        nyseIsOpen = is_time_between(time(10, 00), time(22, 00)) and datetime.today().weekday() >= 0 and datetime.today().weekday() < 5
+        cboeIsOpen = is_time_between(time(15, 30), time(22, 00)) and datetime.today().weekday() >= 0 and datetime.today().weekday() < 5
+
+        #globvars.ibapp.reqContractDetails(cc.ticker_id(), cc.underlyer())
+
+        if nyseIsOpen:
+            globvars.ibapp.reqMktData(cc.ticker_id(), cc.underlyer(), "", False, False, [])
+        else:
+            # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
+            # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
+
+            globvars.ibapp.reqHistoricalData(cc.ticker_id(), cc.underlyer(), ifdtnyse, "3600 S", "5 mins", "TRADES", const.HISTDATA_OUTSIDERTH, 1, False, [])
+
+        if cboeIsOpen:
+
+            globvars.logger.info("ticker: %i", cc.ticker_id()+1)
+            globvars.ibapp.reqMktData(cc.ticker_id()+1   , cc.option(), "", False, False, [])
+            #globvars.ibapp.reqHistoricalData(cc.ticker_id()+1, cc.option(), dt, "2 D", "1 day", "MIDPOINT", 1, 1, False, [])
+        else:
+            # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
+            # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
+
+
+            globvars.ibapp.reqHistoricalData(cc.ticker_id()+1, cc.option(), ifdtcboe, "1 D", "1 hour", "MIDPOINT", 1, 1, False, [])
+
+    api_thread.start()
+
+    capp.exec_()
