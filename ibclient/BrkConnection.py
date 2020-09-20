@@ -1,8 +1,8 @@
-from globals import globvars
-import const
 import threading
 from datetime import datetime, time, timedelta
 
+from globals import globvars
+import const
 
 def run_loop():
     globvars.ibapp.run()
@@ -59,8 +59,6 @@ class BrkConnection:
 
     def connectToIBKR(self):
         globvars.ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
-        #globvars.connectionState = "CONNECTED"
-        # globvars.ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
         api_thread = threading.Thread(target=run_loop, daemon=True)
         api_thread.start()
 

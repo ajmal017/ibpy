@@ -1,6 +1,5 @@
 import datetime
 import time
-import const
 from collections import OrderedDict
 
 class Sleep:

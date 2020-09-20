@@ -1,7 +1,4 @@
-import logger as logger
 from datetime import datetime
-from globals import globvars
-import const
 
 class Account():
     def __init__(self):
@@ -23,7 +20,6 @@ class Account():
             return self.accountData["lastUpdate"]
 
     def update (self,key,value):
-        globvars.logger.info("%s => %s",key,value)
         self.accountData["lastUpdate"] = datetime.now().strftime("%H:%M:%S")
 
         if key == "AccountCode":
