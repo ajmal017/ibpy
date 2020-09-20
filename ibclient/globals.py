@@ -64,6 +64,10 @@ class globvars:
     cc                          = None
     header                      = None
     header1                     = OrderedDict()
+    total                       = 0
+    nlqInfo                   = None
+    apiUpdateCounterLabel       = None
+    #connectionState             = None
 
     def init_globvars():
         globvars.testscriptcounter           = 0
@@ -91,16 +95,18 @@ class globvars:
         globvars.tickerData                 = {}
         globvars.logger                     = None
         globvars.tvprofit                   = 0
+        globvars.total                      = 0
         globvars.ibapp                      = None
-
         globvars.bwl                        = []
         globvars.cc                         =  {}
-
+        globvars.nlqInfo                  = None
+        globvars.apiUpdateCounterLabel      = 0
+        #globvars.connectionState            = "NOT CONNECTED"
 
         globvars.header1['Id'         ] = "Unique Identifier"
         globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
-        globvars.header1['Industry'   ] = "Industry of Underlyer"
-        globvars.header1['Rolled'     ] = "How often this position was rolled"
+        globvars.header1['Ind'   ] = "Industry of Underlyer"
+        globvars.header1['Rld'     ] = "How often this position was rolled"
         globvars.header1['Pos'        ] = "How many legs"
         globvars.header1['Strike'     ] = "Strike"
         globvars.header1['Expiry'     ] = "Expiry"

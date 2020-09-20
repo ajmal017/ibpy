@@ -31,7 +31,8 @@ class CMTWidget(QWidget):
         self.table_model.setCCList(ccd)
         self.table_view = QTableView()
 
-        ft = QFont("Times", 12, QFont.Bold)
+        ft = QFont("MS Shell Dlg 2", 8, QFont.Bold)
+
         self.table_view.setFont(ft);
         self.table_view.setPalette(pal)
 
@@ -62,6 +63,11 @@ class CMTWidget(QWidget):
         self.timer.start(2000)
 
 
+    def changeFont(self, font):
+         #ft = QFont("Times", 12, QFont.Bold)
+        self.table_view.setFont(font)
+        self.table_view.resizeColumnsToContents()
+        self.table_view.update()
 
     def onSectionDoubleClicked(self, logicalIndex):
         self.table_view.hideColumn(logicalIndex)
@@ -76,6 +82,7 @@ class CMTWidget(QWidget):
         for ci, col in enumerate(self.columnsHidden):
             if col == True:
                 self.table_view.hideColumn((ci))
+
 
     def clearSelection(self):
         self.table_view.clearSelection()

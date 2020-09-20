@@ -1,13 +1,6 @@
 from ibapi.client import EClient
 from ibapi.wrapper import EWrapper
-from ibapi.wrapper import EWrapper
 from ibapi.contract import ContractDetails
-
-from ibapi.contract import Contract
-from ibapi.order_condition import Create, OrderCondition
-from ibapi.order import *
-from ibapi.ticktype import TickTypeEnum
-from Account import Account
 
 from globals import globvars
 import const
@@ -17,6 +10,10 @@ class BrkApi(EWrapper, EClient):
         EClient.__init__(self, self)
         self.endflag = {}
         self.account = ba
+        self.statusbar =  None
+
+    def setStatusBar(self, sb):
+        self.statusbar = sb
 
     def eDisconnect(self):
         Close()
@@ -79,8 +76,7 @@ class BrkApi(EWrapper, EClient):
                 elif tt == const.ASKPRICE:
                     globvars.cc[tickerId].tickerData["opask"] = float(value)
 
-    def updateAccountValue(self, key:str, val:str, currency:str,
-                            accountName:str):
+    def updateAccountValue(self, key:str, val:str, currency:str, accountName:str):
         self.account.update(key,val)
 
     def nextValidId(self, orderId: int):

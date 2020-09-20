@@ -6,53 +6,45 @@ from PyQt5.QtCore import QTimer
 from CMTWidget import CMTWidget
 from globals import globvars
 from BrkConnection import BrkConnection
+from StatusBar import StatusBar
+from datetime import datetime
 
 class CMainWindow(QMainWindow):
     def __init__(self, dataList, account):
         super().__init__()
 
-        self.statusbar = self.statusBar()
-        self.setStatusBar(self.statusbar)
+        globvars.nlqInfo = QLabel("NLQINFORMATION")
+        globvars.mrgInfo = QLabel("NLQINFORMATION")
+        globvars.apiUpdateCounterLabel = QLabel("ApiUpdate")
+        self.dtlbl = QLabel("")
+
+        self.statusBar().addPermanentWidget(QLabel("NLQ:"))
+        self.statusBar().addPermanentWidget(globvars.nlqInfo)
+        self.statusBar().addPermanentWidget(QLabel("MRG:"))
+        self.statusBar().addPermanentWidget(globvars.mrgInfo)
+        self.statusBar().addPermanentWidget(QLabel("CNT:"))
+        self.statusBar().addPermanentWidget(globvars.apiUpdateCounterLabel)
+        self.statusBar().addPermanentWidget(self.dtlbl)
+
         self.dataList = dataList
         self.account = account
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.updateStatusBar)
-        self.timer.start(10000)
-
+        self.timer.start(1000)
 
     def updateStatusBar(self):
-        profstr = ""
+
+        self.dtlbl.setText(datetime.now().strftime("%H:%M:%S"))
+
         if "NetLiquidation" in self.account.accountData:
+            self.statusBar().showMessage("last acctupdate: "+self.account.accountData["lastUpdate"])
+            globvars.nlqInfo.setText(str(self.account.accountData["NetLiquidation"]))
+            globvars.mrgInfo.setText(str(self.account.accountData["FullInitMarginReq"]))
+            globvars.apiUpdateCounterLabel.setText(str(self.account.updateCounter))
 
-            profstr += "NLQ: "
-            profstr += self.account.accountData["NetLiquidation"] + " CHF | "
-            globvars.total = 0
-            for cc in globvars.bwl:
-                # globvars.total = globvars.total + int((float(cc.tickerData["ullst"]) - float(cc.bw["underlyer"][
-                #                                              "@price"])) * cc.position * 100 + cc.realized + cc.itv() * cc.position * 100 - cc.ctv() * cc.position * 100)
-
-
-                globvars.total = globvars.total + cc.total
-
-            #profstr += self.account.accountData["NetLiquidation"] + " CHF ("+self.account.getLastUpdateTimestamp()+") | "
-
-        # if "NetLiquidationByCurrency" in self.account.accountData:
-        #     for cncid,cnc in enumerate(self.account.accountData["NetLiquidationByCurrency"]):
-        #         try:
-        #             profstr += cnc + " | "
-        #             profstr += " "
-        #         except:
-        #             pass
-        #
-        # profstr += " TVP: ALL "
-        # profstr += "{:.2f}".format(globvars.tvprofit)
-        #
-        # if "FullInitMarginReq" in self.account.accountData:
-        #     profstr += " InitMargin "
-        #     profstr += self.account.accountData["FullInitMarginReq"]
-        #
-        self.statusbar.showMessage(profstr)# + " " + "{:.2f}".format(globvars.total))
+        #self.statusBar().showMessage("now: "+datetime.now().strftime("%H:%M:%S"))
+        self.statusBar().update()
 
     def contextMenuEvent(self, event):
         cmenu = QMenu(self)
@@ -78,11 +70,23 @@ class CMainWindow(QMainWindow):
         return c
 
     def openFontDialog(self):
-        f = QFontDialog.getFont()
-        return f
+        (font,ok) = QFontDialog.getFont()
+        if ok:
+            self.cmtw.changeFont(font)
+        return font
 
     def openSettingsDialog(self):
         pass
+
+    def cmw_actionConnectToBrkApi(self):
+        self.actionConnectToBrkApi.setEnabled(False)
+        self.actionDisconnectFromBrkApi.setEnabled(True)
+        self.broker.connectToIBKR()
+
+    def cmw_actionDisconnectFromBrkApi(self):
+        self.actionConnectToBrkApi.setEnabled(True)
+        self.actionDisconnectFromBrkApi.setEnabled(False)
+        self.broker.disconnectFromIBKR()
 
     def initUI(self, ccd):
 
@@ -114,24 +118,29 @@ class CMainWindow(QMainWindow):
         actionSelectColor.setToolTip("Select Color")
         actionSelectColor.triggered.connect(self.openColorDialog)
 
-        actionConnectToBrkApi = QAction(QIcon('icons/Link - 01.png'), 'Connect', self)
-        actionConnectToBrkApi.setToolTip("Connect toIBKR")
-        actionConnectToBrkApi.triggered.connect(self.broker.connectToIBKR)
+        self.actionConnectToBrkApi = QAction(QIcon('icons/Link - 01.png'), 'Connect', self)
+        self.actionConnectToBrkApi.setToolTip("Connect toIBKR")
+        self.actionConnectToBrkApi.triggered.connect(self.cmw_actionConnectToBrkApi)
 
-        actionDisconnectFromBrkApi = QAction(QIcon('icons/Link - 02.png'), 'Disconnect', self)
-        actionDisconnectFromBrkApi.setToolTip("Disconnect from IBKR")
-        actionDisconnectFromBrkApi.triggered.connect(self.broker.disconnectFromIBKR)
+        self.actionDisconnectFromBrkApi = QAction(QIcon('icons/Link - 02.png'), 'Disconnect', self)
+        self.actionDisconnectFromBrkApi.setToolTip("Disconnect from IBKR")
+        self.actionDisconnectFromBrkApi.triggered.connect(self.cmw_actionDisconnectFromBrkApi)
 
         actionOpenSettings = QAction(QIcon('icons/Gear.png'), 'Disconnect', self)
         actionOpenSettings.setToolTip("Open Settings")
         actionOpenSettings.triggered.connect(self.openSettingsDialog)
 
+        actionClearLiveData = QAction(QIcon('icons/Alpha-Blending.png'), 'ClearLiveData', self)
+        actionClearLiveData.setToolTip("Clear Live Data")
+        actionClearLiveData.triggered.connect(self.broker.clearLiveData)
+
         toolbar = self.addToolBar('Exit')
         toolbar.addAction(actionSelectFont)
         toolbar.addAction(actionSelectColor)
-        toolbar.addAction(actionConnectToBrkApi)
-        toolbar.addAction(actionDisconnectFromBrkApi)
+        toolbar.addAction(self.actionConnectToBrkApi)
+        toolbar.addAction(self.actionDisconnectFromBrkApi)
         toolbar.addAction(actionOpenSettings)
+        toolbar.addAction((actionClearLiveData))
 
         self.setGeometry(100, 200, 1500, 500)
         self.setWindowTitle('Covered Call Analyzer Application')

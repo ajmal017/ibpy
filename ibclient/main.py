@@ -31,8 +31,8 @@ dt = now.strftime("%Y%m%d 21:59:59")
 
 if __name__ == '__main__':
     globvars.init_globvars()
-    capp = QApplication([])
     account = Account()
+    capp = QApplication([])
 
     globvars.ibapp = BrkApi(account)
 
@@ -68,9 +68,7 @@ if __name__ == '__main__':
         dataList.append(cc.table_data())
 
     cmw = CMainWindow(dataList, account)
-
     cmw.initUI(ccdict)
-
     cmw.show()
 
     dtnyse = BrkConnection.find_last_sx_opening_time(const.STOCKEXCHANGE_NYSE)
@@ -78,7 +76,5 @@ if __name__ == '__main__':
 
     dtcboe = BrkConnection.find_last_sx_opening_time(const.STOCKEXCHANGE_CBOE)
     ifdtcboe = dtcboe.strftime("%Y%m%d %H:%M:%S")
-
-
 
     capp.exec_()

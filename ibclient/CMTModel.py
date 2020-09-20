@@ -180,12 +180,16 @@ class CMTModel(QAbstractTableModel):
 
             pat = Qt.SolidPattern
 
-            if c == 15:
+            if c == const.COL_ULLAST:
                 pat = Qt.DiagCrossPattern
                 return QBrush(QtCore.Qt.gray, pat)
 
-            if c == 22 and cc.oplastcalculated:
+            if c == const.COL_OPLAST and cc.oplastcalculated:
                 pat = Qt.CrossPattern
+
+            if c == const.COL_OPLAST:
+                pat = Qt.DiagCrossPattern
+                return QBrush(QtCore.Qt.gray, pat)
 
             if (c == 34 and r == 21):
                 return QBrush(QtCore.Qt.yellow, Qt.SolidPattern)

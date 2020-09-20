@@ -1,6 +1,3 @@
-
-from BrkApi import BrkApi
-import logger as logger
 from globals import globvars
 import const
 import threading
@@ -62,6 +59,7 @@ class BrkConnection:
 
     def connectToIBKR(self):
         globvars.ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
+        #globvars.connectionState = "CONNECTED"
         # globvars.ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
         api_thread = threading.Thread(target=run_loop, daemon=True)
         api_thread.start()
@@ -105,3 +103,11 @@ class BrkConnection:
 
     def disconnectFromIBKR(self):
         globvars.ibapp.disconnect()
+
+    def clearLiveData(self):
+        for cc in globvars.bwl:
+            if cc == globvars.bwl[-1]:
+                break;
+
+            cc.tickerData["ullst"] = 0.0
+

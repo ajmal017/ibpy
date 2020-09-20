@@ -7,6 +7,7 @@ class Account():
     def __init__(self):
         self.data = {}
         self.idx = {}
+        self.updateCounter = 0
         self.accountData = {}
         self.accountData["AccountCode"] = ""
         self.accountData["NetLiquidation"] = ""
@@ -28,6 +29,7 @@ class Account():
         if key == "AccountCode":
             self.accountData[key] =  value
         elif key == "NetLiquidation":
+            self.updateCounter += 1
             self.accountData[key] = value
         elif key == "FullInitMarginReq":
             self.accountData[key] =  value
