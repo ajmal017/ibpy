@@ -61,6 +61,7 @@ class BrkConnection:
         globvars.ibapp.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
         api_thread = threading.Thread(target=run_loop, daemon=True)
         api_thread.start()
+        globvars.connectionState = "CONNECTED"
 
         globvars.ibapp.reqAccountUpdates(True, const.ACCOUNTNUMBER)
 
@@ -101,6 +102,7 @@ class BrkConnection:
 
     def disconnectFromIBKR(self):
         globvars.ibapp.disconnect()
+        globvars.connectionState = "DISCONNECTED"
 
     def clearLiveData(self):
         for cc in globvars.bwl:

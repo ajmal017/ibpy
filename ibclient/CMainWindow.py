@@ -29,22 +29,22 @@ class CMainWindow(QMainWindow):
         self.dataList = dataList
         self.account = account
 
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.updateStatusBar)
-        self.timer.start(1000)
+        # self.timer = QTimer()
+        # self.timer.timeout.connect(self.updateStatusBar)
+        # self.timer.start(1000)
 
     def updateStatusBar(self):
+        if globvars.connectionState == "CONNECTED":
+            self.dtlbl.setText(datetime.now().strftime("%H:%M:%S"))
 
-        self.dtlbl.setText(datetime.now().strftime("%H:%M:%S"))
+            if "NetLiquidation" in self.account.accountData:
+                self.statusBar().showMessage("last acctupdate: "+self.account.accountData["lastUpdate"])
+                globvars.nlqInfo.setText(str(self.account.accountData["NetLiquidation"]))
+                globvars.mrgInfo.setText(str(self.account.accountData["FullInitMarginReq"]))
+                globvars.apiUpdateCounterLabel.setText(str(self.account.updateCounter))
 
-        if "NetLiquidation" in self.account.accountData:
-            self.statusBar().showMessage("last acctupdate: "+self.account.accountData["lastUpdate"])
-            globvars.nlqInfo.setText(str(self.account.accountData["NetLiquidation"]))
-            globvars.mrgInfo.setText(str(self.account.accountData["FullInitMarginReq"]))
-            globvars.apiUpdateCounterLabel.setText(str(self.account.updateCounter))
-
-        #self.statusBar().showMessage("now: "+datetime.now().strftime("%H:%M:%S"))
-        self.statusBar().update()
+            #self.statusBar().showMessage("now: "+datetime.now().strftime("%H:%M:%S"))
+            self.statusBar().update()
 
     def contextMenuEvent(self, event):
         cmenu = QMenu(self)
@@ -134,6 +134,10 @@ class CMainWindow(QMainWindow):
         actionClearLiveData.setToolTip("Clear Live Data")
         actionClearLiveData.triggered.connect(self.broker.clearLiveData)
 
+        actionUpdateStatusBar = QAction(QIcon('icons/LOL.png'), 'UpdateStatusBar', self)
+        actionUpdateStatusBar.setToolTip("Update Statusbar")
+        actionUpdateStatusBar.triggered.connect(self.updateStatusBar)
+
         toolbar = self.addToolBar('Exit')
         toolbar.addAction(actionSelectFont)
         toolbar.addAction(actionSelectColor)
@@ -141,6 +145,7 @@ class CMainWindow(QMainWindow):
         toolbar.addAction(self.actionDisconnectFromBrkApi)
         toolbar.addAction(actionOpenSettings)
         toolbar.addAction((actionClearLiveData))
+        toolbar.addAction((actionUpdateStatusBar))
 
         self.setGeometry(100, 200, 1500, 500)
         self.setWindowTitle('Covered Call Analyzer Application')

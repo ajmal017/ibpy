@@ -100,7 +100,7 @@ class globvars:
         globvars.cc                         =  {}
         globvars.nlqInfo                  = None
         globvars.apiUpdateCounterLabel      = 0
-        #globvars.connectionState            = "NOT CONNECTED"
+        globvars.connectionState            = "DISCONNECTED"
 
         globvars.header1['Id'         ] = "Unique Identifier"
         globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"

@@ -89,6 +89,7 @@
         <rolling_activities>
             <rolled when="20200915 19:22:33" from="20200918" to="20201016" strike="24.5"  buyprice = "1.48" sellprice="1.81" ulprice="25.39" commission = "7.36"/>
         </rolling_activities>
+        <closed exitingTime="20200922 10:28:12" exitingPrice="" ulprice="22.49" optprice="0.64" commission = "4.00"/>
     </bw>
 
     <bw id="13" enteringTime="2020 AUG 24 18:56:26" enteringPrice="186.32" commission="1.49" quantity="1">
