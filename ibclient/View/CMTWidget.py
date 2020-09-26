@@ -1,67 +1,45 @@
-from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from PyQt5 import QtGui, QtCore
 from PyQt5.QtWidgets import *
 
-from CMTModel import CMTModel, PrxyModel
-from globals import globvars
-import const
-from covcall import covered_call
+from Model.CMTModel import CMTModel, PrxyModel
+from Controller.covcall import covered_call
 
 class CMTWidget(QWidget):
-    def __init__(self, dataList, ccd, *args):
+    def __init__(self, model, *args):
         QWidget.__init__(self, *args)
-
-
         pal = QPalette()
-        # pal.setColor(QPalette.Background, const.BLACK);
-        # pal.setColor(QPalette.Window, const.BLACK);
-        # pal.setColor(QPalette.Base, const.BLACK);
 
         self.autoUpdate = True
-        # setGeometry(x_pos, y_pos, width, height)
         self.setGeometry(70, 150, 1326, 582)
         self.setWindowTitle("Click on the header to sort table")
 
-        self.table_model = CMTModel(self, dataList)
-
-        self.proxy_model = PrxyModel()
-        self.proxy_model.setSourceModel(self.table_model)
-
-        self.table_model.setCCList(ccd)
         self.table_view = QTableView()
+        self.proxy_model = PrxyModel()
 
-        ft = QFont("MS Shell Dlg 2", 8, QFont.Bold)
+        self.table_model = model
+        self.proxy_model.setSourceModel(self.table_model)
+        self.table_view.setModel(self.proxy_model)
 
-        self.table_view.setFont(ft);
         self.table_view.setPalette(pal)
 
-        # self.table_view.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table_view.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
-        # bind cell click to a method reference
+
         self.table_view.clicked.connect(self.showSelection)
         self.table_view.clicked.connect(self.selectRow)
 
-        self.table_view.setModel(self.proxy_model)
         # enable sorting
         self.table_view.setSortingEnabled(True)
 
-        self.columnsHidden = covered_call.columns_hidden()
-
-        header = self.table_view.horizontalHeader();
-        header.sectionDoubleClicked.connect(self.onSectionDoubleClicked)
+        self.table_view.horizontalHeader().sectionDoubleClicked.connect(self.onSectionDoubleClicked)
 
         layout = QVBoxLayout(self)
         layout.addWidget(self.table_view)
-
+        # ft = QFont("MS Shell Dlg 2", 8, QFont.Bold)
+        ft = QFont("Courier New", 7, QFont.Bold)
+        self.table_view.setFont(ft);
         self.setLayout(layout)
-
-        self.timer = QTimer()
-        self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.resetAllColumns)
-        self.timer.start(2000)
-
+        self.table_view.resizeColumnsToContents();
 
     def changeFont(self, font):
          #ft = QFont("Times", 12, QFont.Bold)
@@ -73,27 +51,17 @@ class CMTWidget(QWidget):
         self.table_view.hideColumn(logicalIndex)
         print("onSectionDoubleClicked:", logicalIndex)
 
-    def showAllColumns (self):
-        l = self.table_model.columnCount(None)
-        for col in range(l):
-            self.table_view.showColumn(col)
-
     def resetAllColumns(self):
-        for ci, col in enumerate(self.columnsHidden):
+        for ci, col in enumerate(covered_call.columns_hidden()):
             if col == True:
                 self.table_view.hideColumn((ci))
 
+    def showAllColumns (self, l):
+        for col in range(l):
+            self.table_view.showColumn(col)
 
     def clearSelection(self):
         self.table_view.clearSelection()
-
-    def toggleAutoUpdate(self):
-        if self.autoUpdate == True:
-            self.autoUpdate = False
-        else:
-            self.autoUpdate = True
-
-        self.table_model.setAutoUpdate(self.autoUpdate)
 
     def showSelection(self, item):
         cellContent = item.data()

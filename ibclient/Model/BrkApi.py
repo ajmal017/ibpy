@@ -2,15 +2,19 @@ from ibapi.client import EClient
 from ibapi.wrapper import EWrapper
 from ibapi.contract import ContractDetails
 
-from globals import globvars
-import const
+from Misc.globals import globvars
+from Misc import const
+from Model.Account import Account
 
 class BrkApi(EWrapper, EClient):
-    def __init__(self, ba):
+    def __init__(self):
         EClient.__init__(self, self)
         self.endflag = {}
-        self.account = ba
+        self.account = Account()
         self.statusbar =  None
+
+    def setBwData(self,td):
+        self.buyWrites = td
 
     def setStatusBar(self, sb):
         self.statusbar = sb
@@ -23,16 +27,15 @@ class BrkApi(EWrapper, EClient):
         print("Error. Id:", reqId, "Code:", errorCode, "Msg:", errorString)
 
     def historicalData(self, reqId, bar):
-
         tickerId = str(reqId)
+        bw = self.buyWrites[tickerId]
+        globvars.logger.info("ticker: %s/%s: %s", tickerId, bw.statData.buyWrite["underlyer"]["@tickerSymbol"], str(bar.close))
 
-        if tickerId in globvars.cc:
-            bw = globvars.cc[tickerId]
-
-            if reqId % 2 == 0:
-                bw.set_stk_price(bar.close)
-            else:
-                bw.set_opt_price(bar.close)
+        print("ticker:",tickerId,"price",str(bar.close))
+        if reqId % 2 == 0:
+            bw.set_stk_price(bar.close)
+        else:
+            bw.set_opt_price(bar.close)
 
     def historicalDataEnd(self, reqId: int, start: str, end: str):
         if reqId not in self.endflag:
@@ -46,7 +49,8 @@ class BrkApi(EWrapper, EClient):
 
     def contractDetails(self, reqId: int, contractDetails: ContractDetails):
         tickerId = str(reqId)
-        bw = globvars.cc[tickerId]
+
+        bw = self.buyWrites[tickerId]
 
         super().contractDetails(reqId, contractDetails)
         industry = contractDetails.industry
@@ -59,22 +63,23 @@ class BrkApi(EWrapper, EClient):
 
     def tickPrice(self, reqId, tickType, value, attrib):
         tickerId = str(reqId)
+        bw = self.buyWrites[tickerId]
         tt = str(tickType)
-        if tickerId in globvars.cc:
-            if reqId % 2 == 0:
-                if tt == const.LASTPRICE:
-                    globvars.cc[tickerId].tickerData["ullst"]  = float(value)
-                elif tt == const.BIDPRICE:
-                    globvars.cc[tickerId].tickerData["ulbid"] = float(value)
-                elif tt == const.ASKPRICE:
-                    globvars.cc[tickerId].tickerData["ulask"] = float(value)
-            else:
-                if tt == const.LASTPRICE:
-                    globvars.cc[tickerId].tickerData["oplst"]  = float(value)
-                elif tt == const.BIDPRICE:
-                    globvars.cc[tickerId].tickerData["opbid"] = float(value)
-                elif tt == const.ASKPRICE:
-                    globvars.cc[tickerId].tickerData["opask"] = float(value)
+
+        if reqId % 2 == 0:
+            if tt == const.LASTPRICE:
+                bw.tickData.ullst  = float(value)
+            elif tt == const.BIDPRICE:
+                bw.tickData.ulbid = float(value)
+            elif tt == const.ASKPRICE:
+                bw.tickData.ulask = float(value)
+        else:
+            if tt == const.LASTPRICE:
+                bw.tickData.oplst  = float(value)
+            elif tt == const.BIDPRICE:
+                bw.tickData.opbid = float(value)
+            elif tt == const.ASKPRICE:
+                bw.tickData.opask = float(value)
 
     def updateAccountValue(self, key:str, val:str, currency:str, accountName:str):
         self.account.update(key,val)

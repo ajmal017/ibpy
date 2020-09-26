@@ -1,11 +1,14 @@
-import operator  # used for sorting
+import xmltodict
+
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
-from PyQt5 import QtGui, QtCore
-from PyQt5.QtWidgets import *
+from PyQt5 import QtCore
 
-from globals import globvars
-import const
+from Misc.globals import globvars
+from Misc import const
+from Controller.covcall import covered_call
+from .BrkConnection import BrkConnection
+from .Account import Account
 
 class PrxyModel(QSortFilterProxyModel):
 
@@ -65,15 +68,36 @@ class CMTModel(QAbstractTableModel):
     they are an integral part of the model
     """
 
-    def __init__(self, parent, mylist, *args):
-        QAbstractTableModel.__init__(self, parent, *args)
-        self.my_signal = pyqtSignal()
-        self.buywrites = mylist
-        self.header = globvars.header1.keys()
+    def __init__(self, *args):
+        QAbstractTableModel.__init__(self, *args)
+        self.bwl = {}
+        self.brkConnection = BrkConnection()
 
+    def initData(self, c):
+        self.controller = c
+
+        with open('Config/cc.xml') as fd:
+            ccdict = xmltodict.parse(fd.read())
+
+        tickerId = const.INITIALTTICKERID
+        for bw in ccdict["coveredCalls"]["bw"]:
+            self.bwl[str(tickerId)] = covered_call(bw, tickerId)
+            self.bwl[str(tickerId+1)] = self.bwl[str(tickerId)]
+            tickerId = tickerId + 2
+
+        self.brkConnection.setBwData(self.bwl)
+
+    def connectBroker(self):
+        self.brkConnection.connectToIBKR()
+
+    def disconnectBroker(self):
+        if globvars.connectionState == "CONNECTED":
+            self.brkConnection.disconnectFromIBKR()
+
+    def startModelTimer(self):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.updateModel)
-        self.timer.start(1000)
+        self.timer.start(5000)
         self.ccdict = {}
 
     def setCCList(self, ccd):
@@ -86,69 +110,76 @@ class CMTModel(QAbstractTableModel):
             self.timer.stop()
 
     def updateModel(self):
-        self.buywrites = []
-
         globvars.tvprofit = 0
 
+
+        k = list(self.bwl.keys())[0]
+
         sum = []
-        for i,d in enumerate(globvars.bwl[0].table_data()):
+        for i,d in enumerate(self.bwl[k].dispData):
             sum.append(0.0)
 
-        for cc in globvars.bwl:
-            if cc == globvars.bwl[-1]:
-                data = sum
-                self.buywrites.append(data)
-            else:
-                data = cc.table_data()
-                self.buywrites.append(data)
-                globvars.tvprofit = globvars.tvprofit + cc.tvprof()
+        for cc in self.bwl:
+            self.bwl[cc].updateData()
 
-                for  i,data_col in enumerate(data):
-                    try:
-                        if i in [
-                            const.COL_INITINTRNSCVALDOLL,
-                            const.COL_INITTIMEVALDOLL,
-                            const.COL_CURRINTRNSCVALDOLL,
-                            const.COL_CURRINTRNSCVAL,
-                            const.COL_CURRINTRNSCVALDOLL,
-                            const.COL_CURRTIMEVAL,
-                            const.COL_CURRTIMEVALDOLL,
-                            const.COL_TIMEVALCHANGEPCT,
-                            const.COL_TIMEVALPROFIT,
-                            const.COL_REALIZED,
-                            const.COL_ULUNREALIZED,
-                            const.COL_TOTAL
-                        ]:
-                            sum[i] = sum[i] + float(data_col)
-                        elif i == const.COL_ULLAST:
-                            sum[i] = sum[i] + cc.position * 100 * cc.tickerData["ullst"]
-                        elif i == const.COL_OPLAST:
-                            sum[i] = sum[i] + cc.position * 100 * cc.tickerData["oplst"]
-                        elif i == const.COL_BWPRICE:
-                            sum[i] = sum[i] + cc.position * 100 * float(cc.bw["@enteringPrice"])
+        #     if cc == globvars.bwl[-1]:
+        #         data = sum
+        #         for x in range(len(data)):
+        #             self.buywrites[int(data[0])][x] = data[x]
+        #     else:
+        #         data = cc.table_data()
+        #         idx = int(data[0])
+        #
+        #         for x in range(len(data)):
+        #                 self.buywrites[int(data[0])][x] = data[x]
+        #
+        #         globvars.tvprofit = globvars.tvprofit + cc.tvprof()
+        #
+        #         for  i,data_col in enumerate(data):
+        #             try:
+        #                 if i in [
+        #                     const.COL_INITINTRNSCVALDOLL,
+        #                     const.COL_INITTIMEVALDOLL,
+        #                     const.COL_CURRINTRNSCVALDOLL,
+        #                     const.COL_CURRINTRNSCVAL,
+        #                     const.COL_CURRINTRNSCVALDOLL,
+        #                     const.COL_CURRTIMEVAL,
+        #                     const.COL_CURRTIMEVALDOLL,
+        #                     const.COL_TIMEVALCHANGEPCT,
+        #                     const.COL_TIMEVALPROFIT,
+        #                     const.COL_REALIZED,
+        #                     const.COL_ULUNREALIZED,
+        #                     const.COL_TOTAL
+        #                 ]:
+        #                     sum[i] = sum[i] + float(data_col)
+        #                 elif i == const.COL_ULLAST:
+        #                     sum[i] = sum[i] + cc.position * 100 * cc.tickerData["ullst"]
+        #                 elif i == const.COL_OPLAST:
+        #                     sum[i] = sum[i] + cc.position * 100 * cc.tickerData["oplst"]
+        #                 elif i == const.COL_BWPRICE:
+        #                     sum[i] = sum[i] + cc.position * 100 * float(cc.bw["@enteringPrice"])
+        #
+        #                 else:
+        #                     sum[i] = 0
+        #             except:
+        #                 pass
 
-                        else:
-                            sum[i] = 0
-                    except:
-                        pass
-
-        globvars.bwl[-1].set_summary(sum)
+        # globvars.bwl[-1].set_summary(sum)
 
         a = []
-        # for s in sum:
-        #     a.append("{:.2f}".format(s))
-        #
-        # self.buywrites.append(a)
+        for s in sum:
+            a.append("{:.2f}".format(s))
 
         self.layoutAboutToBeChanged.emit()
         self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
         self.layoutChanged.emit()
 
     def rowCount(self, parent):
-        return len(self.buywrites)
+        return int(len(self.bwl.keys())/2)
 
     def columnCount(self, parent):
-        return len(self.buywrites[0])
+        k = list(self.bwl.keys())[0]
+        return len(self.bwl[k].dispData)
 
 
     def data(self, index, role):
@@ -159,13 +190,19 @@ class CMTModel(QAbstractTableModel):
         r = index.row()
         c = index.column()
 
-        if len(globvars.bwl) < int(r):
-            globvars.logger.error("buywrite member %i does not exist", r)
-            return None
+        # if len(globvars.bwl) < int(r):
+        #     globvars.logger.error("buywrite member %i does not exist", r)
+        #     return None
 
-        # globvars.logger.info("row %i column %i role %i", r, c, role)
 
-        cc = globvars.bwl[int(r)]
+        # if int(r) != len(globvars.bwl):
+        #     cc = globvars.bwl[int(r)]
+        # else:
+        #     cc = globvars.bwl[int(r)-1]
+        # if int(r) != len(globvars.bwl):
+        #     cc = globvars.bwl[int(r)]
+        # else:
+        #     cc = globvars.bwl[int(r)-1]
 
         # globvars.logger.info("")
 
@@ -173,10 +210,12 @@ class CMTModel(QAbstractTableModel):
         #     return value
 
             # globvars.logger.info("")
+        #globvars.logger.info("row %i column %i role %i", r, c, role)
 
         if role == QtCore.Qt.BackgroundRole:
             # globvars.logger.info("")
 
+            cc = self.bwl[str(((index.row()*2)+const.INITIALTTICKERID))]
 
             pat = Qt.SolidPattern
 
@@ -210,34 +249,40 @@ class CMTModel(QAbstractTableModel):
 
                 return QBrush(QtCore.Qt.gray, pat)
 
+            return QBrush(QtCore.Qt.gray, pat)
+
         elif role == QtCore.Qt.DisplayRole:
-            value = self.buywrites[index.row()][index.column()]
+            value = self.bwl[str(((index.row()*2)+const.INITIALTTICKERID))].dispData[index.column()]
+            #value = 0
             return value
 
-        elif role == QtCore.Qt.ToolTipRole:
-            if c == 5:
-                s = cc.symbol + cc.expiry + " "
-                s += "IROO:"
-                s += "{:.2f}".format(cc.itv())+" "
-                s += "Price: " + "{:.2f}".format(cc.inibwprice)
-                s += " = " + "{:.2f}".format(100*float(cc.itv()) / float(cc.inibwprice)) + " %"
-
-                if cc.strike < cc.inistkprice:
-                    s += " ITM: Downside protection of " + "{:.2f}".format(100*float((cc.inistkprice - cc.strike)/cc.inistkprice))+" % "
-                else:
-                    s += " OTM: Upside Potential of " + "{:.2f}".format(100*float((cc.strike - cc.inistkprice) / cc.inistkprice)) + " % "
-
-                return s
-
-            if c == 7:
-                return cc.symbol + cc.expiry + " " + "time of this price was "+cc.ul_ts
-            elif c == 1:
-                if cc.uncertaintyFlag:
-                    return cc.symbol + cc.expiry + " " + "Grosse Unsicherheit wegen unscharfem Optionspreis"
-                else:
-                    return cc.symbol + cc.expiry + " " + "Kleine Unsicherheit wegen relativ genauem Optionspreis"
-
-            return cc.symbol + " " + cc.expiry + " " + str(index.column())+" "+str(index.row())
+        # elif role == QtCore.Qt.ToolTipRole:
+        #     if c == const.COL_STRIKE:
+        #         s = cc.symbol + cc.expiry + " "
+        #         s += "IROO:"
+        #         s += "{:.2f}".format(cc.itv())+" "
+        #         s += "Price: " + "{:.2f}".format(cc.inibwprice)
+        #         try:
+        #             s += " = " + "{:.2f}".format(100*float(cc.itv()) / float(cc.inibwprice)) + " %"
+        #         except:
+        #             pass
+        #
+        #         if cc.strike < cc.inistkprice:
+        #             s += " ITM: Downside protection of " + "{:.2f}".format(100*float((cc.inistkprice - cc.strike)/cc.inistkprice))+" % "
+        #         else:
+        #             s += " OTM: Upside Potential of " + "{:.2f}".format(100*float((cc.strike - cc.inistkprice) / cc.inistkprice)) + " % "
+        #
+        #         return s
+        #
+        #     if c == const.COL_EARNGSCALL:
+        #         return cc.symbol + cc.expiry + " " + "time of this price was "+cc.ul_ts
+        #     elif c == 1:
+        #         if cc.uncertaintyFlag:
+        #             return cc.symbol + cc.expiry + " " + "Grosse Unsicherheit wegen unscharfem Optionspreis"
+        #         else:
+        #             return cc.symbol + cc.expiry + " " + "Kleine Unsicherheit wegen relativ genauem Optionspreis"
+        #
+        #     return cc.symbol + " " + cc.expiry + " " + str(index.column())+" "+str(index.row())
 
 
     def headerData(self, col, orientation, role):
@@ -286,3 +331,25 @@ class CMTModel(QAbstractTableModel):
         print(">>> setData() index.column = ", index.column())
         self.dataChanged.emit(index, index)
         return True
+
+        # dataList = []
+        #
+        # for bw in ccdict["coveredCalls"]["bw"]:
+        #     globvars.cc[str(tickerId)] = self.controller.covered_call(bw, tickerId)
+        #     globvars.bwl.append(globvars.cc[str(tickerId)])
+        #     globvars.cc[str(tickerId + 1)] = globvars.cc[str(tickerId)]
+        #     tickerId += 2
+        #
+        # for cc in globvars.bwl:
+        #     dataList.append(cc.table_data())
+        #
+        # self.buywrites = []
+        # self.broker = BrkConnection()
+        # self.account = Account()
+        #
+        # for numr, dlrow in enumerate(dataList):
+        #     self.buywrites.append([])
+        #     for numc,c in enumerate(dlrow):
+        #         el = dataList[numr][numc]
+        #         self.buywrites[-1].append(el)
+

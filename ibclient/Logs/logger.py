@@ -1,5 +1,5 @@
 import logging
-from globals import globvars
+from Misc.globals import globvars
 
 def initMainLogger():
     mainLogger = logging.getLogger(__name__)
