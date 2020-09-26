@@ -231,10 +231,10 @@ class CMTModel(QAbstractTableModel):
             if cc.is_valid():
                 if cc.tickData.ullst < cc.statData.inibwprice:
                     #below breakeven
-                    return QBrush(QtCore.Qt.darkRed, pat)
+                    return QBrush(QtCore.Qt.red, pat)
                 elif cc.tickData.ullst < cc.statData.strike:
                     #below strike
-                    return QBrush(QtCore.Qt.red, pat)
+                    return QBrush(QColor(255, 100, 100, 200), pat)
                 else:
                     #otherwise we are green...
                     return QBrush(QtCore.Qt.green, pat)

@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QMainWindow, QAction, QMenu, QLabel, QColorDialog, Q
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QTimer
 
-from Misc.globals import globvars
+from .StatusBar import StatusBar
 
 class CMainWindow(QMainWindow):
     def __init__(self, w, c ):
@@ -13,18 +13,7 @@ class CMainWindow(QMainWindow):
         self.cwidget = w
         self.controller = c
 
-        globvars.nlqInfo = QLabel("NLQINFORMATION")
-        globvars.mrgInfo = QLabel("NLQINFORMATION")
-        globvars.apiUpdateCounterLabel = QLabel("ApiUpdate")
-        self.dtlbl = QLabel("")
-
-        self.statusBar().addPermanentWidget(QLabel("NLQ:"))
-        self.statusBar().addPermanentWidget(globvars.nlqInfo)
-        self.statusBar().addPermanentWidget(QLabel("MRG:"))
-        self.statusBar().addPermanentWidget(globvars.mrgInfo)
-        self.statusBar().addPermanentWidget(QLabel("CNT:"))
-        self.statusBar().addPermanentWidget(globvars.apiUpdateCounterLabel)
-        self.statusBar().addPermanentWidget(self.dtlbl)
+        self.statusBar = StatusBar(c)
 
     def initUI(self):
         self.setCentralWidget(self.cwidget)
@@ -75,20 +64,13 @@ class CMainWindow(QMainWindow):
         toolbar.addAction((actionClearLiveData))
         toolbar.addAction((actionUpdateStatusBar))
 
+        self.setStatusBar(self.statusBar)
+
         self.setGeometry(100, 200, 1500, 500)
         self.setWindowTitle('Covered Call Analyzer Application')
 
     def updateStatusBar(self):
-        if globvars.connectionState == "CONNECTED":
-            self.dtlbl.setText(datetime.now().strftime("%H:%M:%S"))
-            act = self.controller.model.account
-            if "NetLiquidation" in act.accountData:
-                self.statusBar().showMessage("last acctupdate: "+act.accountData["lastUpdate"])
-                globvars.nlqInfo.setText(str(act.accountData["NetLiquidation"]))
-                globvars.mrgInfo.setText(str(act.accountData["FullInitMarginReq"]))
-                globvars.apiUpdateCounterLabel.setText(str(act.updateCounter))
-
-            self.statusBar().update()
+            self.statusBar.update()
 
     def contextMenuEvent(self, event):
         cmenu = QMenu(self)
