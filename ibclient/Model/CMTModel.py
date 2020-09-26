@@ -153,7 +153,7 @@ class CMTModel(QAbstractTableModel):
         #                 ]:
         #                     sum[i] = sum[i] + float(data_col)
         #                 elif i == const.COL_ULLAST:
-        #                     sum[i] = sum[i] + cc.position * 100 * cc.tickerData["ullst"]
+        #                     sum[i] = sum[i] + cc.position * 100 * cc.tickData.ullst
         #                 elif i == const.COL_OPLAST:
         #                     sum[i] = sum[i] + cc.position * 100 * cc.tickerData["oplst"]
         #                 elif i == const.COL_BWPRICE:
@@ -219,41 +219,32 @@ class CMTModel(QAbstractTableModel):
 
             pat = Qt.SolidPattern
 
-            if c == const.COL_ULLAST:
+            if c == const.COL_ULLAST or c == const.COL_OPLAST:
                 pat = Qt.DiagCrossPattern
                 return QBrush(QtCore.Qt.gray, pat)
-
-            if c == const.COL_OPLAST and cc.oplastcalculated:
-                pat = Qt.CrossPattern
-
-            if c == const.COL_OPLAST:
-                pat = Qt.DiagCrossPattern
-                return QBrush(QtCore.Qt.gray, pat)
-
-            if (c == 34 and r == 21):
-                return QBrush(QtCore.Qt.yellow, Qt.SolidPattern)
-
-            if c == 1 and cc.uncertaintyFlag:
+            elif (c == const.COL_OPLAST and cc.oplastcalculated) or (c == const.COL_SYMBOL and cc.uncertaintyFlag):
                 pat = Qt.CrossPattern
 
             if cc.is_valid():
-                if cc.tickerData["ullst"] < cc.inibwprice:
+                if cc.tickData.ullst < cc.statData.inibwprice:
+                    #below breakeven
                     return QBrush(QtCore.Qt.darkRed, pat)
-                elif cc.tickerData["ullst"] < cc.strike:
+                elif cc.tickData.ullst < cc.statData.strike:
+                    #below strike
                     return QBrush(QtCore.Qt.red, pat)
                 else:
+                    #otherwise we are green...
                     return QBrush(QtCore.Qt.green, pat)
             else:
+                #data not valid for whatever reasons
                 if cc.uncertaintyFlag == True:
                     pat = Qt.Dense6Pattern
-
                 return QBrush(QtCore.Qt.gray, pat)
 
             return QBrush(QtCore.Qt.gray, pat)
 
         elif role == QtCore.Qt.DisplayRole:
             value = self.bwl[str(((index.row()*2)+const.INITIALTTICKERID))].dispData[index.column()]
-            #value = 0
             return value
 
         # elif role == QtCore.Qt.ToolTipRole:

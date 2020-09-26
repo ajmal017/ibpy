@@ -145,5 +145,3 @@ class CMainWindow(QMainWindow):
         self.controller.disconnect()
         print('event: {0}'.format(event))
         event.accept()
-
-

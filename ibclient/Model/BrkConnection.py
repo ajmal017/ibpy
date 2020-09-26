@@ -51,9 +51,9 @@ class BrkConnection:
             icco = int(cc) + 1
             ifdtnyse = '20200924 20:00:00'
             ifdtcboe = '20200924 20:00:00'
-            self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, "1 D", "1 hour", "MIDPOINT",
+            self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, "1 D", "1 day", "MIDPOINT",
                                              const.HISTDATA_OUTSIDERTH, 1, False, [])
-            self.brkApi.reqHistoricalData(icco, op, ifdtcboe, "1 D", "1 hour", "MIDPOINT", 1,
+            self.brkApi.reqHistoricalData(icco, op, ifdtcboe, "1 D", "1 day", "MIDPOINT", 1,
                                              1, False, [])
 
         for cc in self.bw:
