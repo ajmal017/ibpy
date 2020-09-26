@@ -10,8 +10,11 @@ class BrkApi(EWrapper, EClient):
     def __init__(self):
         EClient.__init__(self, self)
         self.endflag = {}
-        self.account = Account()
+
         self.statusbar =  None
+
+    def setAccount(self, act):
+        self.account = act
 
     def setBwData(self,td):
         self.buyWrites = td
@@ -29,9 +32,8 @@ class BrkApi(EWrapper, EClient):
     def historicalData(self, reqId, bar):
         tickerId = str(reqId)
         bw = self.buyWrites[tickerId]
-        globvars.logger.info("ticker: %s/%s: %s", tickerId, bw.statData.buyWrite["underlyer"]["@tickerSymbol"], str(bar.close))
+        # globvars.logger.info("ticker: %s/%s: %s", tickerId, bw.statData.buyWrite["underlyer"]["@tickerSymbol"], str(bar.close))
 
-        print("ticker:",tickerId,"price",str(bar.close))
         if reqId % 2 == 0:
             bw.set_stk_price(bar.close)
         else:

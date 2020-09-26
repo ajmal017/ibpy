@@ -118,6 +118,7 @@ class covered_call():
 
     def updateData(self):
         self.dispData = self.table_data()
+        pass
 
     @staticmethod
     def columns_hidden():
@@ -190,54 +191,53 @@ class covered_call():
         ullstrikemargin = 0
         pcttvloss = 0
 
-        # a = self.tickData.opask
-        # b = self.tickData.opbid
-        #
-        # if self.tickData.oplst < 0.001:
-        #     if a > 0.01 and b > 0.01:
-        #         self.tickData.oplst = (a + b) / 2
-        #         if (a-b)/(a+b) < 0.3:
-        #             #Abweichung ask/bid nur 30%
-        #             self.oplastcalculated = True
-        #             self.uncertaintyFlag = False
-        #         else:
-        #
-        #             #Abweichung sehr hoch: markieren
-        #             self.uncertaintyFlag = True
-        #     else:
-        #         #Abweichung sehr hoch: markieren
-        #         self.uncertaintyFlag = True
-        # else:
-        #     if self.oplastcalculated == True or self.tickData.oplst < b or self.tickData.oplst > a:
-        #         if a > 0.01 and b > 0.01:
-        #             self.tickData.oplst = (a + b) / 2
-        #             self.oplastcalculated = True
-        #
-        #     self.uncertaintyFlag = False
-        #
-        #
-        # try:
-        #     pcttvloss = self.ctv()/self.statData.itv()
-        # except ZeroDivisionError:
-        #     pcttvloss  = 0
-        #
-        # try:
-        #     ullstrikemargin = (self.tickData.ullst - self.statData.strike) / self.tickData.ullst
-        # except ZeroDivisionError:
-        #     ullstrikemargin  = 0
+        a = self.tickData.opask
+        b = self.tickData.opbid
+
+        if self.tickData.oplst < 0.001:
+            if a > 0.01 and b > 0.01:
+                self.tickData.oplst = (a + b) / 2
+                if (a-b)/(a+b) < 0.3:
+                    #Abweichung ask/bid nur 30%
+                    self.oplastcalculated = True
+                    self.uncertaintyFlag = False
+                else:
+
+                    #Abweichung sehr hoch: markieren
+                    self.uncertaintyFlag = True
+            else:
+                #Abweichung sehr hoch: markieren
+                self.uncertaintyFlag = True
+        else:
+            if self.oplastcalculated == True or self.tickData.oplst < b or self.tickData.oplst > a:
+                if a > 0.01 and b > 0.01:
+                    self.tickData.oplst = (a + b) / 2
+                    self.oplastcalculated = True
+
+            self.uncertaintyFlag = False
 
 
-        # if float(self.tickData.ullst) > 0.1:
-        #     self.total = (float(self.tickData.ullst) - float(self.statData.inistkprice)) * self.statData.position * 100 + \
-        #                  self.realized + self.statData.itv() * self.statData.position * 100 - \
-        #                  self.ctv() * self.statData.position * 100 - \
-        #                  self.civ() * self.statData.position * 100 + \
-        #                  self.statData.iiv() * self.statData.position * 100
-        #     ulurpnl = (float(self.tickData.ullst) - float(self.statData.inistkprice)) * self.statData.position * 100
+        try:
+            pcttvloss = self.ctv()/self.statData.itv()
+        except ZeroDivisionError:
+            pcttvloss  = 0
 
-        # else:
-        #     self.total = 0
-        #     ulurpnl = 0
+        try:
+            ullstrikemargin = (self.tickData.ullst - self.statData.strike) / self.tickData.ullst
+        except ZeroDivisionError:
+            ullstrikemargin  = 0
+
+
+        if float(self.tickData.ullst) > 0.1:
+            self.total = (float(self.tickData.ullst) - float(self.statData.inistkprice)) * self.statData.position * 100 + \
+                         self.realized + self.statData.itv() * self.statData.position * 100 - \
+                         self.ctv() * self.statData.position * 100 - \
+                         self.civ() * self.statData.position * 100 + \
+                         self.statData.iiv() * self.statData.position * 100
+            ulurpnl = (float(self.tickData.ullst) - float(self.statData.inistkprice)) * self.statData.position * 100
+        else:
+            self.total = 0
+            ulurpnl = 0
 
         return (
             self.statData.buyWrite["@id"],

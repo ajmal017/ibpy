@@ -21,15 +21,16 @@ class Support:
         if which_stockexchange == const.STOCKEXCHANGE_NYSE:
             opening_hour = time(10, 00, 00, 00)
             closing_hour = time(22, 00, 00, 00)
-            seIsOpen = Support.is_time_between(time(10, 00), time(22,
-                                                          00)) and datetime.today().weekday() >= 0 and datetime.today().weekday() < 5
+            seIsOpen = Support.is_time_between(opening_hour, closing_hour) and \
+                       datetime.today().weekday() >= 0 and datetime.today().weekday() < 5
             if seIsOpen:
                 return datetime.now()
         else:
-            closing_hour = time(22, 00, 00, 00)
             opening_hour = time(15, 30, 00, 00)
+            closing_hour = time(22, 00, 00, 00)
 
-            seIsOpen = Support.is_time_between(time(15, 30), time(22, 00)) and datetime.today().weekday() >= 0 and datetime.today().weekday() < 5
+            seIsOpen = Support.is_time_between(opening_hour, closing_hour) and \
+                       datetime.today().weekday() >= 0 and datetime.today().weekday() < 5
             if seIsOpen:
                 return datetime.now()
 

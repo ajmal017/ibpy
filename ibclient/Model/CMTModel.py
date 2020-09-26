@@ -70,6 +70,7 @@ class CMTModel(QAbstractTableModel):
 
     def __init__(self, *args):
         QAbstractTableModel.__init__(self, *args)
+        self.account  = Account()
         self.bwl = {}
         self.brkConnection = BrkConnection()
 
@@ -81,11 +82,13 @@ class CMTModel(QAbstractTableModel):
 
         tickerId = const.INITIALTTICKERID
         for bw in ccdict["coveredCalls"]["bw"]:
+            if "closed" in bw:
+                continue
             self.bwl[str(tickerId)] = covered_call(bw, tickerId)
             self.bwl[str(tickerId+1)] = self.bwl[str(tickerId)]
             tickerId = tickerId + 2
 
-        self.brkConnection.setBwData(self.bwl)
+        self.brkConnection.setData(self.bwl, self.account)
 
     def connectBroker(self):
         self.brkConnection.connectToIBKR()
