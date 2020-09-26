@@ -8,7 +8,6 @@ from Misc.globals import globvars
 
 class CMainWindow(QMainWindow):
     def __init__(self, w, c ):
-
         super().__init__()
 
         self.cwidget = w
@@ -82,14 +81,14 @@ class CMainWindow(QMainWindow):
     def updateStatusBar(self):
         if globvars.connectionState == "CONNECTED":
             self.dtlbl.setText(datetime.now().strftime("%H:%M:%S"))
+            act = self.controller.model.account
+            if "NetLiquidation" in act.accountData:
+                self.statusBar().showMessage("last acctupdate: "+act.accountData["lastUpdate"])
+                globvars.nlqInfo.setText(str(act.accountData["NetLiquidation"]))
+                globvars.mrgInfo.setText(str(act.accountData["FullInitMarginReq"]))
+                globvars.apiUpdateCounterLabel.setText(str(act.updateCounter))
 
-            # if "NetLiquidation" in self.account.accountData:
-            #     self.statusBar().showMessage("last acctupdate: "+self.account.accountData["lastUpdate"])
-            #     globvars.nlqInfo.setText(str(self.account.accountData["NetLiquidation"]))
-            #     globvars.mrgInfo.setText(str(self.account.accountData["FullInitMarginReq"]))
-            #     globvars.apiUpdateCounterLabel.setText(str(self.account.updateCounter))
-            #
-            # self.statusBar().update()
+            self.statusBar().update()
 
     def contextMenuEvent(self, event):
         cmenu = QMenu(self)

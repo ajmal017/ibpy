@@ -15,9 +15,10 @@ class BrkConnection:
     def initConnection(self):
         globvars.connectionState = "INITIALIZED"
 
-    def setBwData(self, td):
+    def setData(self, td, act):
         self.bw = td
         self.brkApi.setBwData(td)
+        self.brkApi.setAccount(act)
 
     def run_loop(self):
         self.brkApi.run()
@@ -40,21 +41,20 @@ class BrkConnection:
         ifdtcboe = dtcboe.strftime("%Y%m%d %H:%M:%S")
 
         for cc in self.bw:
-
-            # globvars.logger.info("querying no. %s: %s", cc.bw["@id"], cc.bw["underlyer"]["@tickerSymbol"])
-
             # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
             # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
             ul = self.bw[cc].underlyer()
             op = self.bw[cc].option()
             icc = int(cc)
-            icco = int(cc) + 1
-            ifdtnyse = '20200924 20:00:00'
-            ifdtcboe = '20200924 20:00:00'
-            self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, "1 D", "1 day", "MIDPOINT",
-                                             const.HISTDATA_OUTSIDERTH, 1, False, [])
-            self.brkApi.reqHistoricalData(icco, op, ifdtcboe, "1 D", "1 day", "MIDPOINT", 1,
-                                             1, False, [])
+            # ifdtnyse = '20200926 02:00:00'
+            # ifdtcboe = '20200925 22:00:00'
+            if icc %2 == 0:
+                self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, "120 S", "1 min", "MIDPOINT",
+                                                 const.HISTDATA_OUTSIDERTH, 1, False, [])
+            else:
+                # globvars.logger.info("querying no. %s => %s", str(icco), cc.bw["underlyer"]["@tickerSymbol"])
+                self.brkApi.reqHistoricalData(icc, op, ifdtcboe, "120 S", "1 min", "MIDPOINT", 1,
+                                                 1, False, [])
 
         for cc in self.bw:
 
