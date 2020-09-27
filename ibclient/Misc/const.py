@@ -1,5 +1,7 @@
 from PyQt5.QtGui import QPalette, QColor
 
+APPLICATION_NAME    = "IBPY"
+COMPANY_NAME        = "MITEC"
 BIDSIZE     = "0"
 BIDPRICE    = "1"
 ASKPRICE    = "2"

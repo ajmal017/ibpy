@@ -15,6 +15,9 @@ class Controller:
     def disconnect(self):
         self.model.disconnectBroker()
 
+    def changeBrokerPort(self, port):
+        self.model.changeBrokerPort(port)
+
     def toggleAutoUpdate(self):
         if self.autoUpdate == True:
             self.autoUpdate = False

@@ -11,9 +11,13 @@ class BrkConnection:
     def __init__(self):
         self.initConnection()
         self.brkApi = BrkApi()
+        self.brokerPort = const.IBPORT
 
     def initConnection(self):
         globvars.connectionState = "INITIALIZED"
+
+    def changeBrokerPort(self, newport):
+        self.brokerPort = newport
 
     def setData(self, td, act):
         self.bw = td
@@ -24,7 +28,7 @@ class BrkConnection:
         self.brkApi.run()
 
     def connectToIBKR(self):
-        self.brkApi.connect('127.0.0.1', const.IBPORT, const.IBCLIENTID)
+        self.brkApi.connect('127.0.0.1', self.brokerPort, const.IBCLIENTID)
         api_thread = threading.Thread(target=self.run_loop, daemon=True)
         api_thread.start()
         globvars.connectionState = "CONNECTED"

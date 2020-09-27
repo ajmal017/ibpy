@@ -1,15 +1,16 @@
 from datetime import datetime
 
-from PyQt5.QtWidgets import QMainWindow, QAction, QMenu, QLabel, QColorDialog, QFontDialog
+from PyQt5.QtWidgets import QMainWindow, QAction, QMenu, QLabel, QColorDialog, QFontDialog, QComboBox
 from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QTimer
+from PyQt5.QtCore import QTimer, QSettings
 
 from .StatusBar import StatusBar
+import Misc.const
 
 class CMainWindow(QMainWindow):
     def __init__(self, w, c ):
         super().__init__()
-
+        self.settings = QSettings(Misc.const.COMPANY_NAME, Misc.const.APPLICATION_NAME)
         self.cwidget = w
         self.controller = c
 
@@ -55,6 +56,22 @@ class CMainWindow(QMainWindow):
         actionUpdateStatusBar.setToolTip("Update Statusbar")
         actionUpdateStatusBar.triggered.connect(self.updateStatusBar)
 
+        self.portSelectorCombo = QComboBox()
+        self.portSelectorCombo.addItem("TWS REAL  7495")
+        self.portSelectorCombo.addItem("TWS PAPER 7497")
+        self.portSelectorCombo.addItem("GTW REAL  4001")
+        self.portSelectorCombo.addItem("GTW PAPER 4002")
+        self.portSelectorCombo.currentIndexChanged.connect(self.changeBrokerPort)
+
+        if (Misc.const.IBPORT == 7495):
+            self.portSelectorCombo.setCurrentIndex(0)
+        elif (Misc.const.IBPORT == 7497):
+            self.portSelectorCombo.setCurrentIndex(1)
+        elif (Misc.const.IBPORT == 4001):
+            self.portSelectorCombo.setCurrentIndex(2)
+        elif (Misc.const.IBPORT == 4002):
+            self.portSelectorCombo.setCurrentIndex(3)
+
         toolbar = self.addToolBar('Exit')
         toolbar.addAction(actionSelectFont)
         toolbar.addAction(actionSelectColor)
@@ -63,11 +80,25 @@ class CMainWindow(QMainWindow):
         toolbar.addAction(actionOpenSettings)
         toolbar.addAction((actionClearLiveData))
         toolbar.addAction((actionUpdateStatusBar))
+        toolbar.addWidget(self.portSelectorCombo)
 
         self.setStatusBar(self.statusBar)
 
         self.setGeometry(100, 200, 1500, 500)
         self.setWindowTitle('Covered Call Analyzer Application')
+
+    def changeBrokerPort(self):
+        port = 4002
+        if self.portSelectorCombo.currentText() == "TWS REAL  7495":
+            port= 7495
+        if self.portSelectorCombo.currentText() == "TWS PAPER 7497":
+            port= 7497
+        if self.portSelectorCombo.currentText() == "GTW REAL  4001":
+            port= 4001
+        if self.portSelectorCombo.currentText() == "GTW PAPER 4002":
+            port= 4002
+
+        self.controller.changeBrokerPort(port)
 
     def updateStatusBar(self):
             self.statusBar.update()
@@ -103,6 +134,7 @@ class CMainWindow(QMainWindow):
         return font
 
     def openSettingsDialog(self):
+
         pass
 
     def cmw_actionConnectToBrkApi(self):
@@ -118,7 +150,7 @@ class CMainWindow(QMainWindow):
     def startUpdateTimer(self):
         self.timer = QTimer()
         self.timer.timeout.connect(self.updateStatusBar)
-        self.timer.start(1000)
+        self.timer.start(30000)
         self.controller.startModelTimer()
 
     def closeEvent(self, event):

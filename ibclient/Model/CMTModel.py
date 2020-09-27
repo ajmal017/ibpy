@@ -90,6 +90,9 @@ class CMTModel(QAbstractTableModel):
 
         self.brkConnection.setData(self.bwl, self.account)
 
+    def changeBrokerPort(self,newport):
+        self.brkConnection.changeBrokerPort(newport)
+
     def connectBroker(self):
         self.brkConnection.connectToIBKR()
 
