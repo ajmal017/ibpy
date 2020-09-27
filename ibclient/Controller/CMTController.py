@@ -1,5 +1,5 @@
 import Model
-
+from Misc.globals import globvars
 
 class Controller:
     def __init__(self, model):
@@ -8,6 +8,10 @@ class Controller:
 
     def initData(self,v):
         self.view = v
+
+    def getStockData(self, cc):
+        self.model.getHistStockData(cc)
+        pass
 
     def connect(self):
         self.model.connectBroker()

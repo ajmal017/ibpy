@@ -56,6 +56,38 @@ class CMainWindow(QMainWindow):
         actionUpdateStatusBar.setToolTip("Update Statusbar")
         actionUpdateStatusBar.triggered.connect(self.updateStatusBar)
 
+        self.actionVisualize0 = QAction(QIcon('View/icons/Torch.png'), '', self)
+        self.actionVisualize1 = QAction(QIcon("View/icons/I don't know.png"), '', self)
+        self.actionVisualize2 = QAction(QIcon('View/icons/Palm-Tree.png'), '', self)
+        self.actionVisualize3 = QAction(QIcon('View/icons/Wand - 01.png'), '', self)
+        self.actionVisualize4 = QAction(QIcon('View/icons/Wand - 02.png'), '', self)
+        self.actionVisualize5 = QAction(QIcon('View/icons/Tool - Hammer.png'), '', self)
+        self.actionVisualize6 = QAction(QIcon('View/icons/Television.png'), '', self)
+        self.actionVisualize7 = QAction(QIcon('View/icons/Table-Fan.png'), '', self)
+        self.actionVisualize8 = QAction(QIcon('View/icons/Sword-03.png'), '', self)
+        self.actionVisualize9 = QAction(QIcon('View/icons/Wine Glass - 01.png'), '', self)
+
+        self.actionVisualize0.setToolTip("")
+        self.actionVisualize0.triggered.connect(self.doActionVisualize0)
+        self.actionVisualize1.setToolTip("")
+        self.actionVisualize1.triggered.connect(self.doActionVisualize1)
+        self.actionVisualize2.setToolTip("")
+        self.actionVisualize2.triggered.connect(self.doActionVisualize2)
+        self.actionVisualize3.setToolTip("")
+        self.actionVisualize3.triggered.connect(self.doActionVisualize3)
+        self.actionVisualize4.setToolTip("")
+        self.actionVisualize4.triggered.connect(self.doActionVisualize4)
+        self.actionVisualize5.setToolTip("")
+        self.actionVisualize5.triggered.connect(self.doActionVisualize5)
+        self.actionVisualize6.setToolTip("")
+        self.actionVisualize6.triggered.connect(self.doActionVisualize6)
+        self.actionVisualize7.setToolTip("")
+        self.actionVisualize7.triggered.connect(self.doActionVisualize7)
+        self.actionVisualize8.setToolTip("")
+        self.actionVisualize8.triggered.connect(self.doActionVisualize8)
+        self.actionVisualize9.setToolTip("")
+        self.actionVisualize9.triggered.connect(self.doActionVisualize9)
+
         self.portSelectorCombo = QComboBox()
         self.portSelectorCombo.addItem("TWS REAL  7495")
         self.portSelectorCombo.addItem("TWS PAPER 7497")
@@ -75,17 +107,54 @@ class CMainWindow(QMainWindow):
         toolbar = self.addToolBar('Exit')
         toolbar.addAction(actionSelectFont)
         toolbar.addAction(actionSelectColor)
+        toolbar.addWidget(self.portSelectorCombo)
         toolbar.addAction(self.actionConnectToBrkApi)
         toolbar.addAction(self.actionDisconnectFromBrkApi)
         toolbar.addAction(actionOpenSettings)
         toolbar.addAction((actionClearLiveData))
         toolbar.addAction((actionUpdateStatusBar))
-        toolbar.addWidget(self.portSelectorCombo)
+        toolbar.addAction(self.actionVisualize0)
+        toolbar.addAction(self.actionVisualize1)
+        toolbar.addAction(self.actionVisualize2)
+        toolbar.addAction(self.actionVisualize3)
+        toolbar.addAction(self.actionVisualize4)
+        toolbar.addAction(self.actionVisualize5)
+        toolbar.addAction(self.actionVisualize6)
+        toolbar.addAction(self.actionVisualize7)
+        toolbar.addAction(self.actionVisualize8)
+        toolbar.addAction(self.actionVisualize9)
+
 
         self.setStatusBar(self.statusBar)
 
         self.setGeometry(100, 200, 1500, 500)
         self.setWindowTitle('Covered Call Analyzer Application')
+
+    def doActionVisualize1(self):
+        pass
+    def doActionVisualize0(self):
+        pass
+
+    def doActionVisualize2(self):
+        cc = self.cwidget.getSelectedRow()
+        if cc != None:
+            self.controller.getStockData(cc)
+        self.cwidget.updateMplChart(cc)
+
+    def doActionVisualize3(self):
+        pass
+    def doActionVisualize4(self):
+        pass
+    def doActionVisualize5(self):
+        pass
+    def doActionVisualize6(self):
+        pass
+    def doActionVisualize7(self):
+        pass
+    def doActionVisualize8(self):
+        pass
+    def doActionVisualize9(self):
+        pass
 
     def changeBrokerPort(self):
         port = 4002

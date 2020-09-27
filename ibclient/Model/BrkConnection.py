@@ -1,4 +1,6 @@
-from datetime import datetime, time, timedelta
+import datetime
+import time
+#from datetime import datetime, time,
 import threading
 
 from Misc.globals import globvars
@@ -26,6 +28,33 @@ class BrkConnection:
 
     def run_loop(self):
         self.brkApi.run()
+
+    def getStockData(self, cc):
+
+        ul = cc.underlyer()
+        op = cc.option()
+
+        dtnyse = Support.find_last_sx_opening_time(const.STOCKEXCHANGE_NYSE)
+        ifdtnyse = dtnyse.strftime("%Y%m%d %H:%M:%S")
+
+        icc = cc.tickData.tickerId
+
+        self.brkApi.resetHistData(icc)
+
+        self.brkApi.endflag[icc] = False
+        if icc % 2 == 0:
+            self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, "30 D", "1 day", "MIDPOINT",
+                                          const.HISTDATA_OUTSIDERTH, 1, False, [])
+
+        while self.brkApi.endflag[icc] == False:
+            time.sleep(1)
+
+        cc.histData =  self.brkApi.getHistData(icc)
+
+        # else:
+        #     # globvars.logger.info("querying no. %s => %s", str(icco), cc.bw["underlyer"]["@tickerSymbol"])
+        #     self.brkApi.reqHistoricalData(icc, op, ifdtcboe, "120 S", "1 min", "MIDPOINT", 1,
+        #                                   1, False, [])
 
     def connectToIBKR(self):
         self.brkApi.connect('127.0.0.1', self.brokerPort, const.IBCLIENTID)
@@ -64,10 +93,10 @@ class BrkConnection:
 
             # globvars.logger.info("querying no. %s: %s", cc.bw["@id"], cc.bw["underlyer"]["@tickerSymbol"])
 
-            nyseIsOpen = Support.is_time_between(time(10, 00), time(22,
-                                                            00)) and datetime.today().weekday() >= 0 and datetime.today().weekday() < 5
-            cboeIsOpen = Support.is_time_between(time(15, 30), time(22,
-                                                            00)) and datetime.today().weekday() >= 0 and datetime.today().weekday() < 5
+            nyseIsOpen = Support.is_time_between(datetime.time(10, 00), datetime.time(22,
+                                                            00)) and datetime.datetime.today().weekday() >= 0 and datetime.datetime.today().weekday() < 5
+            cboeIsOpen = Support.is_time_between(datetime.time(15, 30), datetime.time(22,
+                                                            00)) and datetime.datetime.today().weekday() >= 0 and datetime.datetime.today().weekday() < 5
             icc = int(cc)
             icco = int(cc) + 1
 

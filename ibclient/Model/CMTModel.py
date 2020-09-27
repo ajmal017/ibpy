@@ -100,6 +100,10 @@ class CMTModel(QAbstractTableModel):
         if globvars.connectionState == "CONNECTED":
             self.brkConnection.disconnectFromIBKR()
 
+    def getHistStockData(self, cc):
+        cc.histData = []
+        self.brkConnection.getStockData(cc)
+
     def startModelTimer(self):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.updateModel)
@@ -349,4 +353,3 @@ class CMTModel(QAbstractTableModel):
         #     for numc,c in enumerate(dlrow):
         #         el = dataList[numr][numc]
         #         self.buywrites[-1].append(el)
-

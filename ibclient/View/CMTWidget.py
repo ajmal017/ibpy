@@ -5,8 +5,14 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 import pandas as pd
+import matplotlib.dates as mdates
 from scipy.integrate import quad
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, FigureCanvas, NavigationToolbar2QT as NavigationToolbar
+from mplfinance.original_flavor import candlestick_ohlc
+
+
+# from mpl_finance import candlestick_ohlc
+import matplotlib.dates as mpl_dates
 
 from matplotlib.figure import Figure
 
@@ -14,6 +20,7 @@ import numpy as np
 
 from Model.CMTModel import CMTModel, PrxyModel
 from Controller.covcall import covered_call
+import Misc.const
 
 ## Helper functions ##
 def dN(x):
@@ -141,80 +148,21 @@ class CMTWidget(QWidget):
         h = np.maximum(S - K, 0)  # payoff of the option
         C = [BSM_call_value(Szero, K, 0, T, r, vol) for Szero in S]  # BS call option values
 
-        # sc = MplCanvas(self, width=2, height=4, dpi=100)
-        #sc = FigureCanvasQTAgg(Figure(figsize=(5, 3)))
-
         sc = FigureCanvasQTAgg(Figure(figsize=(1, 3)))
+        self.sc_ax = sc.figure.subplots()
+        daily = pd.read_csv("Misc/Demo/yahoofinance-INTC-19950101-20040412.csv", index_col=0, parse_dates=True)
+        daily.drop('Adj Close', axis = 1, inplace = True)
+        daily.reset_index(inplace=True)
+        daily.index.name = 'Date'
+        daily["Date"] = mdates.date2num(daily["Date"].values)
+        cols = ['Date', 'Open', 'High', 'Low', 'Close']
+        daily = daily[cols]
 
-        sc_ax = sc.figure.subplots()
+        candlestick_ohlc(self.sc_ax, daily.values, colorup="g", colordown="r", width=0.8)
 
-        #1)
-        # sc.axes.plot([0, 1, 2, 3, 4], [10, 1, 20, 3, 40])
-
-        #2)
-        # sc.axes.plot(S, h, 'b-.', lw=2.5, label='payoff')  # plot inner value at maturity
-        # sc.axes.plot(S, C, 'r', lw=2.5, label='present value')  # plot option present value
-        # sc.axes.grid(True)
-        # sc.axes.grid(True)
-        # sc.axes.legend(loc=0)
-        # sc.axes.xlabel('index level $S_0$')
-        # sc.axes.ylabel('present value $C(t=0)$')
-
-        #3)
-        # model parameters
-
-        # model parameters
-        S0 = 100.0  # initial index level
-        T = 10.0  # time horizon
-        r = 0.05  # risk-less short rate
-        vol = 0.2  # instantaneous volatility
-        # simulation parameters
-        np.random.seed(250000)
-        # generate a pd array with business dates, ignores holidays
-        gbm_dates = pd.DatetimeIndex(start='10-05-2007', end='10-05-2017', freq='B')
-        M = len(gbm_dates)  # time steps
-        I = 1  # index level paths
-        dt = 1 / 252.  # 252 business days a year
-        df = math.exp(-r * dt)  # discount factor
-
-        # stock price paths
-        rand = np.random.standard_normal((M, I))  # random numbers
-        S = np.zeros_like(rand)  # stock matrix
-        S[0] = S0  # initial values
-        for t in range(1, M):  # stock price paths using Eq.5
-            S[t] = S[t - 1] * np.exp((r - vol ** 2 / 2) * dt + vol * rand[t] * math.sqrt(dt))
-        # create a pd dataframe with date as index and a column named "spot"
-        gbm = pd.DataFrame(S[:, 0], index=gbm_dates, columns=['spot'])
-        gbm['returns'] = np.log(gbm['spot'] / gbm['spot'].shift(1))  # log returns
-        # Realized Volatility
-        gbm['realized_var'] = 252 * np.cumsum(gbm['returns'] ** 2) / np.arange(len(gbm))
-        gbm['realized_vol'] = np.sqrt(gbm['realized_var'])
-        print(gbm.head())
-        gbm = gbm.dropna()
-
-        #t = np.linspace(0, 10, 501)
-        # sc_ax.plot(t, np.tan(t), ".")
-
-        t = np.linspace(1, M, 2610)
-        sc_ax.plot(t, S, ".")
-
-        # sc.axes.figure(figsize=(9, 6))
-        #sc.subplot(211)
-        #gbm['spot'].plot()
-        #sc.axes.ylabel('daily quotes')
-        # sc.axes.grid(True)
-        # sc.axes.axis('tight')
-        # #sc.axes.subplot(212)
-        # gbm['returns'].plot()
-        # #sc.axes.ylabel('daily log returns')
-        # sc.axes.grid(True)
-        # sc.axes.axis('tight')
-
-        #end of 3)
-
-
-
-
+        self.sc_ax.xaxis_date()
+        self.sc_ax.grid(True)
+        self.sc_ax.legend(loc=0)
 
         vs = QSplitter(Qt.Vertical)
         hs = QSplitter(Qt.Horizontal)
@@ -226,13 +174,48 @@ class CMTWidget(QWidget):
 
         vs.addWidget(hs)
         vs.addWidget(tw)
-
         vlayout.addWidget(vs)
-
         ft = QFont("Courier New", 7, QFont.Bold)
         self.table_view.setFont(ft);
         self.setLayout(vlayout)
         self.table_view.resizeColumnsToContents();
+
+    def updateMplChart(self, cc):
+        self.sc_ax.clear()
+        # self.sc_ax.plot([0, 1, 2], [10, 1, 20])
+
+        data = cc.histData
+        d = {'Date': [x.date for x in data[2:]],
+             'Open': [x.open for x in data[2:]],
+             'High': [x.open for x in data[2:]],
+             'Low': [x.open for x in data[2:]],
+             'Close': [x.open for x in data[2:]],
+             }
+
+        df = pd.DataFrame(data=d)
+
+        df.reset_index(inplace=True)
+        df.index.name = 'Date'
+        df["Date"] = mdates.date2num(df["Date"].values)
+        cols = ['Date', 'Open', 'High', 'Low', 'Close']
+        daily = df[cols]
+
+        candlestick_ohlc(self.sc_ax, daily.values, colorup="g", colordown="r", width=0.8)
+
+        # for d in data:
+        #     print("%s %f %f %f %f %f")
+        self.update()
+
+    def getSelectedRow(self):
+        indexes = self.table_view.selectionModel().selectedRows()
+
+        for index in sorted(indexes):
+            index = self.proxy_model.mapToSource(index)
+            cc = self.table_model.bwl[str(((index.row() * 2) + Misc.const.INITIALTTICKERID))]
+            print('Row %d is selected' % index.row())
+            return cc
+
+        return None
 
     def changeFont(self, font):
          #ft = QFont("Times", 12, QFont.Bold)

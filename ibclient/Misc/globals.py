@@ -67,6 +67,7 @@ class globvars:
     nlqInfo                   = None
     apiUpdateCounterLabel       = None
     #connectionState             = None
+    waitForStockData            = None
 
     def init_globvars():
         globvars.testscriptcounter           = 0
@@ -101,6 +102,7 @@ class globvars:
         globvars.nlqInfo                  = None
         globvars.apiUpdateCounterLabel      = 0
         globvars.connectionState            = "DISCONNECTED"
+        globvars.waitForStockData           = False
 
         globvars.header1['Id'         ] = "Unique Identifier"
         globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
