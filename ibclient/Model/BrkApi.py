@@ -2,9 +2,12 @@ from ibapi.client import EClient
 from ibapi.wrapper import EWrapper
 from ibapi.contract import ContractDetails
 
+import matplotlib.dates as mdates
+
 from Misc.globals import globvars
 from Misc import const
 from Model.Account import Account
+import datetime
 
 class BrkApi(EWrapper, EClient):
     def __init__(self):
@@ -44,9 +47,19 @@ class BrkApi(EWrapper, EClient):
             self.histdata[reqId] = []
 
         if reqId % 2 == 0:
+            if len(bar.date) == 8:
+                bar.date = mdates.date2num(datetime.datetime.strptime(bar.date + " 00:00:00", "%Y%m%d %H:%M:%S"))
+            else:
+                bar.date = mdates.date2num(datetime.datetime.strptime(bar.date, "%Y%m%d %H:%M:%S"))
+
             bw.set_stk_price(bar.close)
         else:
+            if len(bar.date) == 8:
+                bar.date = mdates.date2num(datetime.datetime.strptime(bar.date + " 00:00:00", "%Y%m%d %H:%M:%S"))
+            else:
+                bar.date = mdates.date2num(datetime.datetime.strptime(bar.date, "%Y%m%d %H:%M:%S"))
             bw.set_opt_price(bar.close)
+
 
         self.histdata[reqId].append(bar)
 

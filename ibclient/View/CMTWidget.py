@@ -128,7 +128,7 @@ class CMTWidget(QWidget):
         tw = QTabWidget()
         twt1 = QWidget()
         twt2 = QWidget()
-        tw.resize(300,200)
+        tw.resize(200,50)
 
         tw.addTab(twt1,"Tab 1")
         tw.addTab(twt2,"Tab 2")
@@ -148,31 +148,35 @@ class CMTWidget(QWidget):
         h = np.maximum(S - K, 0)  # payoff of the option
         C = [BSM_call_value(Szero, K, 0, T, r, vol) for Szero in S]  # BS call option values
 
-        sc = FigureCanvasQTAgg(Figure(figsize=(1, 3)))
-        self.sc_ax = sc.figure.subplots()
+        self.sc = FigureCanvasQTAgg(Figure(figsize=(1, 1)))
+        self.sc_ax = self.sc.figure.subplots()
+
         daily = pd.read_csv("Misc/Demo/yahoofinance-INTC-19950101-20040412.csv", index_col=0, parse_dates=True)
         daily.drop('Adj Close', axis = 1, inplace = True)
         daily.reset_index(inplace=True)
         daily.index.name = 'Date'
         daily["Date"] = mdates.date2num(daily["Date"].values)
         cols = ['Date', 'Open', 'High', 'Low', 'Close']
-        daily = daily[cols]
+        self.daily = daily[cols]
 
-        candlestick_ohlc(self.sc_ax, daily.values, colorup="g", colordown="r", width=0.8)
+        candlestick_ohlc(self.sc_ax, self.daily.values, colorup="g", colordown="r", width=0.8)
+        for label in self.sc_ax.xaxis.get_ticklabels():
+            label.set_rotation(45)
 
         self.sc_ax.xaxis_date()
         self.sc_ax.grid(True)
         self.sc_ax.legend(loc=0)
+        self.sc.update()
 
         vs = QSplitter(Qt.Vertical)
-        hs = QSplitter(Qt.Horizontal)
+        self.hs = QSplitter(Qt.Horizontal)
         vlayout = QVBoxLayout(self)
         upperPart = QHBoxLayout(self)
-        hs.addWidget(self.table_view)
-        hs.addWidget(sc)
-        upperPart.addWidget(hs)
+        self.hs.addWidget(self.table_view)
+        self.hs.addWidget(self.sc)
+        upperPart.addWidget(self.hs)
 
-        vs.addWidget(hs)
+        vs.addWidget(self.hs)
         vs.addWidget(tw)
         vlayout.addWidget(vs)
         ft = QFont("Courier New", 7, QFont.Bold)
@@ -182,29 +186,32 @@ class CMTWidget(QWidget):
 
     def updateMplChart(self, cc):
         self.sc_ax.clear()
-        # self.sc_ax.plot([0, 1, 2], [10, 1, 20])
-
         data = cc.histData
+
         d = {'Date': [x.date for x in data[2:]],
              'Open': [x.open for x in data[2:]],
-             'High': [x.open for x in data[2:]],
-             'Low': [x.open for x in data[2:]],
-             'Close': [x.open for x in data[2:]],
+             'High': [x.high for x in data[2:]],
+             'Low': [x.low for x in data[2:]],
+             'Close': [x.close for x in data[2:]],
              }
 
         df = pd.DataFrame(data=d)
-
         df.reset_index(inplace=True)
         df.index.name = 'Date'
-        df["Date"] = mdates.date2num(df["Date"].values)
         cols = ['Date', 'Open', 'High', 'Low', 'Close']
-        daily = df[cols]
+        self.dailys = df[cols]
+        #self.dailys = df
+        candlestick_ohlc(self.sc_ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.4)
+        for label in self.sc_ax.xaxis.get_ticklabels():
+            label.set_rotation(45)
 
-        candlestick_ohlc(self.sc_ax, daily.values, colorup="g", colordown="r", width=0.8)
+        self.sc_ax.xaxis_date()
+        self.sc_ax.grid(True)
+        self.sc_ax.legend(loc=0)
+        self.sc.draw()
 
-        # for d in data:
-        #     print("%s %f %f %f %f %f")
-        self.update()
+        # self.hs.hide()
+        # self.hs.show()
 
     def getSelectedRow(self):
         indexes = self.table_view.selectionModel().selectedRows()

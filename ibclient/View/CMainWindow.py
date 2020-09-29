@@ -219,7 +219,7 @@ class CMainWindow(QMainWindow):
     def startUpdateTimer(self):
         self.timer = QTimer()
         self.timer.timeout.connect(self.updateStatusBar)
-        self.timer.start(30000)
+        # self.timer.start(20000)
         self.controller.startModelTimer()
 
     def closeEvent(self, event):

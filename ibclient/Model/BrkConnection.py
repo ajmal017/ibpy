@@ -43,8 +43,8 @@ class BrkConnection:
 
         self.brkApi.endflag[icc] = False
         if icc % 2 == 0:
-            self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, "30 D", "1 day", "MIDPOINT",
-                                          const.HISTDATA_OUTSIDERTH, 1, False, [])
+            self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, "30 D", "4 hours", "MIDPOINT",
+                                          const.HISTDATA_INSIDERTH, 1, False, [])
 
         while self.brkApi.endflag[icc] == False:
             time.sleep(1)
@@ -92,18 +92,20 @@ class BrkConnection:
         for cc in self.bw:
 
             # globvars.logger.info("querying no. %s: %s", cc.bw["@id"], cc.bw["underlyer"]["@tickerSymbol"])
+            ul = self.bw[cc].underlyer()
+            op = self.bw[cc].option()
+            icc = int(cc)
 
             nyseIsOpen = Support.is_time_between(datetime.time(10, 00), datetime.time(22,
                                                             00)) and datetime.datetime.today().weekday() >= 0 and datetime.datetime.today().weekday() < 5
             cboeIsOpen = Support.is_time_between(datetime.time(15, 30), datetime.time(22,
                                                             00)) and datetime.datetime.today().weekday() >= 0 and datetime.datetime.today().weekday() < 5
-            icc = int(cc)
-            icco = int(cc) + 1
-
-            if nyseIsOpen:
-                self.brkApi.reqMktData(icc, self.bw[cc].underlyer(), "", False, False, [])
-            if cboeIsOpen:
-                self.brkApi.reqMktData(icco, self.bw[cc].option(), "", False, False, [])
+            if icc %2 == 0:
+                if nyseIsOpen:
+                    self.brkApi.reqMktData(icc, self.bw[cc].underlyer(), "", False, False, [])
+            else:
+                if cboeIsOpen:
+                    self.brkApi.reqMktData(icc, self.bw[cc].option(), "", False, False, [])
 
     def disconnectFromIBKR(self):
         self.brkApi.disconnect()

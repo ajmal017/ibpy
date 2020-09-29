@@ -107,7 +107,7 @@ class CMTModel(QAbstractTableModel):
     def startModelTimer(self):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.updateModel)
-        self.timer.start(5000)
+        self.timer.start(1000)
         self.ccdict = {}
 
     def setCCList(self, ccd):
@@ -257,33 +257,35 @@ class CMTModel(QAbstractTableModel):
             value = self.bwl[str(((index.row()*2)+const.INITIALTTICKERID))].dispData[index.column()]
             return value
 
-        # elif role == QtCore.Qt.ToolTipRole:
-        #     if c == const.COL_STRIKE:
-        #         s = cc.symbol + cc.expiry + " "
-        #         s += "IROO:"
-        #         s += "{:.2f}".format(cc.itv())+" "
-        #         s += "Price: " + "{:.2f}".format(cc.inibwprice)
-        #         try:
-        #             s += " = " + "{:.2f}".format(100*float(cc.itv()) / float(cc.inibwprice)) + " %"
-        #         except:
-        #             pass
-        #
-        #         if cc.strike < cc.inistkprice:
-        #             s += " ITM: Downside protection of " + "{:.2f}".format(100*float((cc.inistkprice - cc.strike)/cc.inistkprice))+" % "
-        #         else:
-        #             s += " OTM: Upside Potential of " + "{:.2f}".format(100*float((cc.strike - cc.inistkprice) / cc.inistkprice)) + " % "
-        #
-        #         return s
-        #
-        #     if c == const.COL_EARNGSCALL:
-        #         return cc.symbol + cc.expiry + " " + "time of this price was "+cc.ul_ts
-        #     elif c == 1:
-        #         if cc.uncertaintyFlag:
-        #             return cc.symbol + cc.expiry + " " + "Grosse Unsicherheit wegen unscharfem Optionspreis"
-        #         else:
-        #             return cc.symbol + cc.expiry + " " + "Kleine Unsicherheit wegen relativ genauem Optionspreis"
-        #
-        #     return cc.symbol + " " + cc.expiry + " " + str(index.column())+" "+str(index.row())
+        elif role == QtCore.Qt.ToolTipRole:
+            cc = self.bwl[str(((index.row()*2)+const.INITIALTTICKERID))]
+
+            if c == const.COL_STRIKE:
+                s = cc.statData.buyWrite["underlyer"]["@tickerSymbol"] + cc.statData.buyWrite["option"]["@expiry"] + " "
+                s += "IROO:"
+                s += "{:.2f}".format(cc.statData.itv())+" "
+                s += "Price: " + "{:.2f}".format(cc.statData.inibwprice)
+                try:
+                    s += " = " + "{:.2f}".format(100*float(cc.statData.itv()) / float(cc.statData.inibwprice)) + " %"
+                except:
+                    pass
+
+                if cc.statData.strike < cc.statData.inistkprice:
+                    s += " ITM: Downside protection of " + "{:.2f}".format(100*float((cc.statData.inistkprice - cc.statData.strike)/cc.statData.inistkprice))+" % "
+                else:
+                    s += " OTM: Upside Potential of " + "{:.2f}".format(100*float((cc.statData.strike - cc.statData.inistkprice) / cc.statData.inistkprice)) + " % "
+
+                return s
+
+            # if c == const.COL_EARNGSCALL:
+            #     return cc.symbol + cc.expiry + " " + "time of this price was "+cc.ul_ts
+            # elif c == 1:
+            #     if cc.uncertaintyFlag:
+            #         return cc.statData.buyWrite["underlyer"]["@tickerSymbol"] + cc.expiry + " " + "Grosse Unsicherheit wegen unscharfem Optionspreis"
+            #     else:
+            #         return cc.symbol + cc.expiry + " " + "Kleine Unsicherheit wegen relativ genauem Optionspreis"
+            #
+            # return cc.symbol + " " + cc.expiry + " " + str(index.column())+" "+str(index.row())
 
 
     def headerData(self, col, orientation, role):

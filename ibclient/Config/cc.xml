@@ -71,6 +71,7 @@
         <option expiry="20200918" strike="190" multiplier="100" price = "34.378"/>
         <rolling_activities>
             <rolled when="20200915 19:37:36" from="20200918" to="20201016" strike="190"  buyprice = "10.79" sellprice="19.65" ulprice="198.35" commission = "1.41"/>
+            <rolled when="20200929 19:37:48" from="20201016" to="20201120" strike="210"  buyprice = "42.65" sellprice="38.95" ulprice="229.91" commission = "1.46"/>
         </rolling_activities>
     </bw>
 
@@ -175,6 +176,16 @@
     <option expiry="20201016" strike="80" multiplier="100" price = "2.82"/>
         <rolling_activities>
         </rolling_activities>
+   </bw>
+
+   <bw id="23" enteringTime="2020 SEP 28 20:15:16" enteringPrice="12.04" commission="4.96" quantity="5">
+        <underlyer type="STK" tickerSymbol="MITK" price = "12.74" earningscall = "20201029"/>
+        <option expiry="20201016" strike="12.5" multiplier="100" price = "0.70"/>
+   </bw>
+
+   <bw id="24" enteringTime="2020 SEP 28 20:42:33" enteringPrice="41.70" commission="1.47" quantity="1">
+        <underlyer type="STK" tickerSymbol="BIG" price = "47.77" earningscall = "20201127"/>
+        <option expiry="20201016" strike="42.5" multiplier="100" price = "6.07"/>
    </bw>
 
 <!--   <bw id="23" name="AMZN" enteringTime="2020 SEP 2 19:35:18" enteringPrice="3023.85" commission="1.49" quantity="1" exchange="SMART">-->
