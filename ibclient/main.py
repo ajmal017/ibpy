@@ -27,5 +27,4 @@ if __name__ == '__main__':
 
     cmw.initUI()
     cmw.show()
-    cmw.startUpdateTimer()
     capp.exec_()

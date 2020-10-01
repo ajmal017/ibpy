@@ -1,6 +1,7 @@
 from datetime import datetime
 
 from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, QMenu, QLabel, QColorDialog, QFontDialog, QStatusBar
+from PyQt5.QtCore import QTimer
 
 from Misc.globals import globvars
 
@@ -20,6 +21,10 @@ class StatusBar(QStatusBar):
         self.addPermanentWidget(QLabel("CNT:"))
         self.addPermanentWidget(self.apiUpdateCounterLabel)
         self.addPermanentWidget(self.dtlbl)
+
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.update)
+        self.timer.start(20000)
 
     def update(self):
         if globvars.connectionState == "CONNECTED":

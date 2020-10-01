@@ -132,50 +132,6 @@ class CMTModel(QAbstractTableModel):
         for cc in self.bwl:
             self.bwl[cc].updateData()
 
-        #     if cc == globvars.bwl[-1]:
-        #         data = sum
-        #         for x in range(len(data)):
-        #             self.buywrites[int(data[0])][x] = data[x]
-        #     else:
-        #         data = cc.table_data()
-        #         idx = int(data[0])
-        #
-        #         for x in range(len(data)):
-        #                 self.buywrites[int(data[0])][x] = data[x]
-        #
-        #         globvars.tvprofit = globvars.tvprofit + cc.tvprof()
-        #
-        #         for  i,data_col in enumerate(data):
-        #             try:
-        #                 if i in [
-        #                     const.COL_INITINTRNSCVALDOLL,
-        #                     const.COL_INITTIMEVALDOLL,
-        #                     const.COL_CURRINTRNSCVALDOLL,
-        #                     const.COL_CURRINTRNSCVAL,
-        #                     const.COL_CURRINTRNSCVALDOLL,
-        #                     const.COL_CURRTIMEVAL,
-        #                     const.COL_CURRTIMEVALDOLL,
-        #                     const.COL_TIMEVALCHANGEPCT,
-        #                     const.COL_TIMEVALPROFIT,
-        #                     const.COL_REALIZED,
-        #                     const.COL_ULUNREALIZED,
-        #                     const.COL_TOTAL
-        #                 ]:
-        #                     sum[i] = sum[i] + float(data_col)
-        #                 elif i == const.COL_ULLAST:
-        #                     sum[i] = sum[i] + cc.position * 100 * cc.tickData.ullst
-        #                 elif i == const.COL_OPLAST:
-        #                     sum[i] = sum[i] + cc.position * 100 * cc.tickerData["oplst"]
-        #                 elif i == const.COL_BWPRICE:
-        #                     sum[i] = sum[i] + cc.position * 100 * float(cc.bw["@enteringPrice"])
-        #
-        #                 else:
-        #                     sum[i] = 0
-        #             except:
-        #                 pass
-
-        # globvars.bwl[-1].set_summary(sum)
-
         a = []
         for s in sum:
             a.append("{:.2f}".format(s))
@@ -199,28 +155,6 @@ class CMTModel(QAbstractTableModel):
 
         r = index.row()
         c = index.column()
-
-        # if len(globvars.bwl) < int(r):
-        #     globvars.logger.error("buywrite member %i does not exist", r)
-        #     return None
-
-
-        # if int(r) != len(globvars.bwl):
-        #     cc = globvars.bwl[int(r)]
-        # else:
-        #     cc = globvars.bwl[int(r)-1]
-        # if int(r) != len(globvars.bwl):
-        #     cc = globvars.bwl[int(r)]
-        # else:
-        #     cc = globvars.bwl[int(r)-1]
-
-        # globvars.logger.info("")
-
-        # if role == QtCore.Qt.EditRole:
-        #     return value
-
-            # globvars.logger.info("")
-        #globvars.logger.info("row %i column %i role %i", r, c, role)
 
         if role == QtCore.Qt.BackgroundRole:
             # globvars.logger.info("")

@@ -30,9 +30,6 @@ class Controller:
 
         self.model.setAutoUpdate(self.autoUpdate)
 
-    def startModelTimer(self):
-        self.model.startModelTimer()
-
     def resetAllColumns(self):
         self.view.resetAllColumns()
 

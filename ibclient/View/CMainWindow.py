@@ -216,12 +216,6 @@ class CMainWindow(QMainWindow):
         self.actionDisconnectFromBrkApi.setEnabled(False)
         self.controller.disconnect()
 
-    def startUpdateTimer(self):
-        self.timer = QTimer()
-        self.timer.timeout.connect(self.updateStatusBar)
-        # self.timer.start(20000)
-        self.controller.startModelTimer()
-
     def closeEvent(self, event):
         print('Calling')
         self.controller.disconnect()

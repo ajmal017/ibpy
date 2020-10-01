@@ -10,7 +10,7 @@ LASTPRICE   = "4"
 LASTSIZE    = "5"
 
 #TWS Realtrading
-#IBPORT      = 7495
+IBPORT      = 7495
 
 #TWS Papertrading
 #IBPORT      = 7497
@@ -19,7 +19,7 @@ LASTSIZE    = "5"
 #IBPORT      = 4001
 
 #GW Papertrading:
-IBPORT      = 4002
+#IBPORT      = 4002
 
 INITIALTTICKERID = 4100
 IBCLIENTID  = 1
