@@ -1,4 +1,4 @@
-# ibpy - portfoliomanager-tool for covered call positions working with IB API
+# ibpy - covered call position manager 
 
 Visualize the status and track as closely as possible the timevalue and impied volatility of options as part of a pure covered callportfolio. The portfolio should be managed according  to the rules of the BLue Collar Investor (promoted by Alan Ellman, see https://www.thebluecollarinvestor.com/)
 
