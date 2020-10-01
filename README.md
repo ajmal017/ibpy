@@ -1,6 +1,6 @@
-# ibpy - covered call position manager 
+# ibpy - A Covered Call Position Manager 
 
-Visualize the status and track as closely as possible the timevalue and impied volatility of options as part of a pure covered callportfolio. The portfolio should be managed according  to the rules of the BLue Collar Investor (promoted by Alan Ellman, see https://www.thebluecollarinvestor.com/)
+Task is to visualize the status and track timevalue and volatility of options which are part of a pure covered callportfolio. The portfoliomanagement happens according to the rules of the BLue Collar Investor (promoted by Alan Ellman, see https://www.thebluecollarinvestor.com/). This tool should serve as a helpertool for this purpose. I.e. managing Enties and Rollovers and Exits. Calculate yourPNL, logging each and every activity in this portfolio for that you are able to reproduce each and every step later to check why or why not you are more andless successful. Having a basis like this one gets the opportunityfor optimization of almost all aspects of the covered call position management.
 
 ![screenshot](screenshots/Capture.PNG)
 
