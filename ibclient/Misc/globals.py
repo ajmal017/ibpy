@@ -68,6 +68,9 @@ class globvars:
     apiUpdateCounterLabel       = None
     #connectionState             = None
     waitForStockData            = None
+    total                       = None
+    totalItv                    = None
+    totalCtv                    = None
 
     def init_globvars():
         globvars.testscriptcounter           = 0
@@ -103,12 +106,16 @@ class globvars:
         globvars.apiUpdateCounterLabel      = 0
         globvars.connectionState            = "DISCONNECTED"
         globvars.waitForStockData           = False
+        globvars.total                           = 0
+        globvars.totalItv                   = 0
+        globvars.totalCtv                   = 0
 
         globvars.header1['Id'         ] = "Unique Identifier"
         globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
         globvars.header1['Ind'   ] = "Industry of Underlyer"
         globvars.header1['Rld'     ] = "How often this position was rolled"
         globvars.header1['Pos'        ] = "How many legs"
+        globvars.header1['Dur'        ] = "Held since how many days"
         globvars.header1['Strike'     ] = "Strike"
         globvars.header1['Expiry'     ] = "Expiry"
         globvars.header1['Earngs Call'     ] = "Next Earningscall Date"

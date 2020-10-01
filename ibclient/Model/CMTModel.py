@@ -10,6 +10,18 @@ from Controller.covcall import covered_call
 from .BrkConnection import BrkConnection
 from .Account import Account
 
+class Summary():
+    def __init__(self):
+        self.total = 0
+        self.totalitv = 0
+        self.totalctv = 0
+
+    def set_total(self,t):
+        self.total = t
+
+    def get_total(self,t):
+        return self.total
+
 class PrxyModel(QSortFilterProxyModel):
 
     def __init__(self):
@@ -23,6 +35,7 @@ class PrxyModel(QSortFilterProxyModel):
                 const.COL_ID                    ,
                 const.COL_ROLLED                ,
                 const.COL_POSITION              ,
+                const.COL_DURATION              ,
                 const.COL_STRIKE                ,
                 const.COL_STATUS                ,
                 const.COL_ULINIT                ,
@@ -72,6 +85,7 @@ class CMTModel(QAbstractTableModel):
         QAbstractTableModel.__init__(self, *args)
         self.account  = Account()
         self.bwl = {}
+        self.summary = Summary()
         self.brkConnection = BrkConnection()
 
     def initData(self, c):
@@ -89,6 +103,8 @@ class CMTModel(QAbstractTableModel):
             tickerId = tickerId + 2
 
         self.brkConnection.setData(self.bwl, self.account)
+        self.ccdict = {}
+        self.startModelTimer()
 
     def changeBrokerPort(self,newport):
         self.brkConnection.changeBrokerPort(newport)
@@ -108,7 +124,6 @@ class CMTModel(QAbstractTableModel):
         self.timer = QtCore.QTimer()
         self.timer.timeout.connect(self.updateModel)
         self.timer.start(1000)
-        self.ccdict = {}
 
     def setCCList(self, ccd):
         self.ccdict = ccd
@@ -135,6 +150,31 @@ class CMTModel(QAbstractTableModel):
         a = []
         for s in sum:
             a.append("{:.2f}".format(s))
+
+        self.summary.total    = 0
+        self.summary.totalctv = 0
+        self.summary.totalitv = 0
+
+        for pos in self.bwl.keys():
+            if int(pos) % 2 == 0:
+                self.summary.total = self.summary.total + self.bwl[pos].total
+                c = self.bwl[pos].ctv()
+                i = self.bwl[pos].statData.itv()
+                p = self.bwl[pos].statData.position
+                self.summary.totalctv = self.summary.totalctv + c * p * 100
+                self.summary.totalitv = self.summary.totalitv + i * p * 100
+
+
+        globvars.total = self.summary.total
+        globvars.totalCtv = self.summary.totalctv
+        globvars.totalItv = self.summary.totalitv
+
+        # for bw in ccdict["coveredCalls"]["bw"]:
+        #     if "closed" in bw:
+        #         continue
+        #     self.bwl[str(tickerId)] = covered_call(bw, tickerId)
+        #     self.bwl[str(tickerId+1)] = self.bwl[str(tickerId)]
+        #     tickerId = tickerId + 2
 
         self.layoutAboutToBeChanged.emit()
         self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))

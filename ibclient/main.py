@@ -27,4 +27,5 @@ if __name__ == '__main__':
 
     cmw.initUI()
     cmw.show()
+    controller.resetAllColumns()
     capp.exec_()

@@ -11,9 +11,21 @@ class StatusBar(QStatusBar):
         self.controller = ctrl
         self.nlqInfo = QLabel("NLQINFORMATION")
         self.mrgInfo = QLabel("NLQINFORMATION")
+        self.totalInfo = QLabel("--PROFIT--")
+        self.totalCtv = QLabel("--TCTV--")
+        self.totalItv = QLabel("--TITV--")
+        self.tvdiff   = QLabel("--TDIFF--")
         self.apiUpdateCounterLabel = QLabel("ApiUpdate")
         self.dtlbl = QLabel("")
 
+        self.addPermanentWidget(QLabel("ITV-CTV:"))
+        self.addPermanentWidget(self.tvdiff)
+        self.addPermanentWidget(QLabel("CTV:"))
+        self.addPermanentWidget(self.totalCtv)
+        self.addPermanentWidget(QLabel("ITV:"))
+        self.addPermanentWidget(self.totalItv)
+        self.addPermanentWidget(QLabel("PNL:"))
+        self.addPermanentWidget(self.totalInfo)
         self.addPermanentWidget(QLabel("NLQ:"))
         self.addPermanentWidget(self.nlqInfo)
         self.addPermanentWidget(QLabel("MRG:"))
@@ -24,7 +36,7 @@ class StatusBar(QStatusBar):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.update)
-        self.timer.start(20000)
+        #self.timer.start(10000)
 
     def update(self):
         if globvars.connectionState == "CONNECTED":
@@ -34,6 +46,10 @@ class StatusBar(QStatusBar):
                 self.showMessage("last acctupdate: "+act.accountData["lastUpdate"])
                 self.nlqInfo.setText(str(act.accountData["NetLiquidation"]))
                 self.mrgInfo.setText(str(act.accountData["FullInitMarginReq"]))
+                self.totalCtv.setText("{:.2f}".format((globvars.totalCtv)))
+                self.totalItv.setText("{:.2f}".format((globvars.totalItv)))
+                self.totalInfo.setText("{:.2f}".format((globvars.total)))
+                self.tvdiff.setText("{:.2f}".format((globvars.totalItv - globvars.totalCtv)))
                 self.apiUpdateCounterLabel.setText(str(act.updateCounter))
 
 

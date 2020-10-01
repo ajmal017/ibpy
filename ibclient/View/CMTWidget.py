@@ -159,7 +159,7 @@ class CMTWidget(QWidget):
         cols = ['Date', 'Open', 'High', 'Low', 'Close']
         self.daily = daily[cols]
 
-        candlestick_ohlc(self.sc_ax, self.daily.values, colorup="g", colordown="r", width=0.8)
+        candlestick_ohlc(self.sc_ax, self.daily.values, colorup="g", colordown="r", width=0.2)
         for label in self.sc_ax.xaxis.get_ticklabels():
             label.set_rotation(45)
 
@@ -201,7 +201,7 @@ class CMTWidget(QWidget):
         cols = ['Date', 'Open', 'High', 'Low', 'Close']
         self.dailys = df[cols]
         #self.dailys = df
-        candlestick_ohlc(self.sc_ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.4)
+        candlestick_ohlc(self.sc_ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.2)
         for label in self.sc_ax.xaxis.get_ticklabels():
             label.set_rotation(45)
 

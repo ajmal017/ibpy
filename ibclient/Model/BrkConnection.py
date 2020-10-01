@@ -29,6 +29,13 @@ class BrkConnection:
     def run_loop(self):
         self.brkApi.run()
 
+    def convert_timedelta(self, duration):
+        days, seconds = duration.days, duration.seconds
+        hours = days * 24 + seconds // 3600
+        minutes = (seconds % 3600) // 60
+        seconds = (seconds % 60)
+        return hours, minutes, seconds
+
     def getStockData(self, cc):
 
         ul = cc.underlyer()
@@ -38,12 +45,11 @@ class BrkConnection:
         ifdtnyse = dtnyse.strftime("%Y%m%d %H:%M:%S")
 
         icc = cc.tickData.tickerId
-
         self.brkApi.resetHistData(icc)
-
         self.brkApi.endflag[icc] = False
+
         if icc % 2 == 0:
-            self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, "30 D", "4 hours", "MIDPOINT",
+            self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, cc.statData.duration, "1 hour", "MIDPOINT",
                                           const.HISTDATA_INSIDERTH, 1, False, [])
 
         while self.brkApi.endflag[icc] == False:

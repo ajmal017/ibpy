@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 
 from ibapi.contract import Contract
 
@@ -127,11 +127,11 @@ class covered_call():
             False, #             globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
             True,  #             globvars.header1['Industry'   ] = "Industry of Underlyer"
             False,  #             globvars.header1['Rolled'     ] = "How often this position was rolled"
-            True,  #             globvars.header1['Pos'        ] = "How many legs"
+            False,  #             globvars.header1['Pos'        ] = "How many legs"
             False, #             globvars.header1['Strike'     ] = "Strike"
             False, #             globvars.header1['Expiry'     ] = "Expiry"
             False, #             globvars.header1['Expiry'     ] = "Erngs.Call"
-            False,  #             globvars.header1['Status'     ] = "In/Out/At the money at initiation and now ?"
+            True,  #             globvars.header1['Status'     ] = "In/Out/At the money at initiation and now ?"
             False, #             globvars.header1['UL-Init'    ] = "Price of underlyer when position was initiated"
             False, #             globvars.header1['OPT-Init'    ] = "Price of option when position was initiated"
             False, #             globvars.header1['BW-Price'   ] = "Initial buywrite price = UL-Price - Opt-premium"
@@ -151,13 +151,13 @@ class covered_call():
             False, #           globvars.header1['OP-Bid'     ] = "last known bid for option"
             False, #           globvars.header1['OP-Ask'     ] = "last known ask for option"
                    #
-            False,  #          globvars.header1['IIV'        ] = "initial intrinsic value for this option"
+            True,  #          globvars.header1['IIV'        ] = "initial intrinsic value for this option"
             False,  #          globvars.header1['IIV/$'      ] = "initial intrinsic value in dollar for this option"
-            False,  #          globvars.header1['ITV'        ] = "initial Timevalue for this position"
+            True,  #          globvars.header1['ITV'        ] = "initial Timevalue for this position"
             False, #          globvars.header1['ITV/$'      ] = "initial Timevalue in dollar for this position"
-            False,  #         globvars.header1['CIV'        ] = "Current Intrinsic Value for this position"
+            True,  #         globvars.header1['CIV'        ] = "Current Intrinsic Value for this position"
             False,  #          globvars.header1['CIV/$'      ] = "Current Intrinsic Value in dollar for this position"
-            False,  # globvars.header1['CTV'        ] = "Current TimeValue for this position"
+            True,  # globvars.header1['CTV'        ] = "Current TimeValue for this position"
             False, # globvars.header1['CTV/$'      ] = "Current TimeValue in dollar for this position"
             False, # globvars.header1['TV-Chg/%'   ] = "Change of Timevalue in %"
             False, # globvars.header1['TV-Prof'    ] = "Accumulated timevalue profit of this position"
@@ -229,15 +229,23 @@ class covered_call():
 
 
         if float(self.tickData.ullst) > 0.1:
-            self.total = (float(self.tickData.ullst) - float(self.statData.inistkprice)) * self.statData.position * 100 + \
+            self.total = (float(self.tickData.ullst) - float(self.statData.buyWrite["underlyer"]["@price"])) * self.statData.position * 100 + \
                          self.realized + self.statData.itv() * self.statData.position * 100 - \
                          self.ctv() * self.statData.position * 100 - \
                          self.civ() * self.statData.position * 100 + \
                          self.statData.iiv() * self.statData.position * 100
-            ulurpnl = (float(self.tickData.ullst) - float(self.statData.inistkprice)) * self.statData.position * 100
+            ulurpnl = (float(self.tickData.ullst) - float(self.statData.buyWrite["underlyer"]["@price"])) * self.statData.position * 100
         else:
             self.total = 0
             ulurpnl = 0
+
+        beg1 = self.statData.buyWrite["@enteringTime"]
+        try:
+            beg = datetime.strptime(beg1, "%Y %b %d %H:%M:%S")
+            timePassed = datetime.now()-beg
+            self.statData.duration = str(timePassed.days)+" D"
+        except:
+            self.statData.duration = "0 D"
 
         return (
             self.statData.buyWrite["@id"],
@@ -245,6 +253,7 @@ class covered_call():
             self.statData.industry,
             len(self.statData.rollingActivity),
             self.statData.position,
+            self.statData.duration,
             "{:.2f}".format(self.statData.strike),
             self.statData.expiry,
             self.statData.earningscall,
