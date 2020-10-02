@@ -1,17 +1,18 @@
 # ibpy - Covered Call Position Manager 
 
-Task was to visualize and track closely the status, timevalue and volatility of all positions of a covered-callportfolio. 
+Visualize and track status, timevalue and volatility of all positions of a covered-callportfolio. 
 
 ## Intro
 This tool serves already now - in a quite early stage - as a helper for this implementing a covered-call-strategy designed and promoted by the "Blue Collar Investor" [BCI], promoted by Alan Ellman (https://www.thebluecollarinvestor.com/) and his group.
 This "strategy" tries to help managing Entries, Exits, Rollovers, Stock- and Option Selection by giving a set of rules described on the Homepage and in numerous videos you can find everywhere. Furthermore there are special addon services for paying premium members.
+
+![screenshot](screenshots/Capture.PNG)
 
 IBPY helps in calculating your profit and loss for the covered call portfolio. It logs each and every activity (logbook functionality).So lateron you are able to reproduce each and every step to verify/measure and improve your successful trading activities in this context. Besides doing calculations: it does NOT automate any trading activities ! At least not at the moment.
 
 So the main pupose of having this tool is to get and track how much timevalue is left. This is not provided by the broker but it is the core main information for trading along this BCI strategy if you bring it down to one single item: realizing profits at the right time an in the right position.
 Having a basis like this one gets the opportunityfor optimization of almost all aspects of the covered call position management.
 
-![screenshot](screenshots/Capture.PNG)
 
 ## Technology
 This small tool consists of a table with the most important column "TV Change/%" to track how much timevalue has been lost until now (tracked  in realtime if connected to IBKR). 
