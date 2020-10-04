@@ -194,4 +194,10 @@
         <option expiry="20201120" strike="140" multiplier="100" price = "22.80"/>
    </bw>
 
+   <bw id="26" name="AMZN" enteringTime="2020 SEP 2 19:35:18" enteringPrice="3023.85" commission="1.49" quantity="1" exchange="SMART">
+    <underlyer type="STK" tickerSymbol="AMZN" price = "3390" earningscall = "0"/>
+    <option expiry="20200918" strike="3000" multiplier="100" price = "14.27"/>
+       <rolling_activities>
+       </rolling_activities>
+   </bw>
 </coveredCalls>

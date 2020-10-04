@@ -6,14 +6,16 @@ from PyQt5.QtCore import QTimer, QSettings
 
 from .StatusBar import StatusBar
 import Misc.const
+from View.PositionViewer import PositionViewer
 
 class CMainWindow(QMainWindow):
-    def __init__(self, w, c ):
+    def __init__(self, w, c, l):
         super().__init__()
         self.settings = QSettings(Misc.const.COMPANY_NAME, Misc.const.APPLICATION_NAME)
         self.cwidget = w
         self.controller = c
-
+        self.logger = l
+        self.positionViewer = PositionViewer(l)
         self.statusBar = StatusBar(c)
 
     def initUI(self):
@@ -56,7 +58,10 @@ class CMainWindow(QMainWindow):
         actionUpdateStatusBar.setToolTip("Update Statusbar")
         actionUpdateStatusBar.triggered.connect(self.updateStatusBar)
 
-        self.actionVisualize0 = QAction(QIcon('View/icons/Torch.png'), '', self)
+        actionVisualize0 = QAction(QIcon('View/icons/Torch.png'), '', self)
+        actionVisualize0.setToolTip("View Position Details")
+        actionVisualize0.triggered.connect(self.showPositionViewer)
+
         self.actionVisualize1 = QAction(QIcon("View/icons/I don't know.png"), '', self)
         self.actionVisualize2 = QAction(QIcon('View/icons/Palm-Tree.png'), '', self)
         self.actionVisualize3 = QAction(QIcon('View/icons/Wand - 01.png'), '', self)
@@ -67,8 +72,6 @@ class CMainWindow(QMainWindow):
         self.actionVisualize8 = QAction(QIcon('View/icons/Sword-03.png'), '', self)
         self.actionVisualize9 = QAction(QIcon('View/icons/Wine Glass - 01.png'), '', self)
 
-        self.actionVisualize0.setToolTip("")
-        self.actionVisualize0.triggered.connect(self.doActionVisualize0)
         self.actionVisualize1.setToolTip("")
         self.actionVisualize1.triggered.connect(self.doActionVisualize1)
         self.actionVisualize2.setToolTip("")
@@ -113,7 +116,7 @@ class CMainWindow(QMainWindow):
         toolbar.addAction(actionOpenSettings)
         toolbar.addAction((actionClearLiveData))
         toolbar.addAction((actionUpdateStatusBar))
-        toolbar.addAction(self.actionVisualize0)
+        toolbar.addAction(actionVisualize0)
         toolbar.addAction(self.actionVisualize1)
         toolbar.addAction(self.actionVisualize2)
         toolbar.addAction(self.actionVisualize3)
@@ -124,7 +127,6 @@ class CMainWindow(QMainWindow):
         toolbar.addAction(self.actionVisualize8)
         toolbar.addAction(self.actionVisualize9)
 
-
         self.setStatusBar(self.statusBar)
 
         self.setGeometry(100, 200, 1500, 500)
@@ -132,6 +134,7 @@ class CMainWindow(QMainWindow):
 
     def doActionVisualize1(self):
         pass
+
     def doActionVisualize0(self):
         pass
 
@@ -139,7 +142,7 @@ class CMainWindow(QMainWindow):
         cc = self.cwidget.getSelectedRow()
         if cc != None:
             self.controller.getStockData(cc)
-        self.cwidget.updateMplChart(cc)
+        self.positionViewer.updateMplChart(cc)
 
     def doActionVisualize3(self):
         pass
@@ -168,6 +171,9 @@ class CMainWindow(QMainWindow):
             port= 4002
 
         self.controller.changeBrokerPort(port)
+
+    def showPositionViewer(self):
+        self.positionViewer.show()
 
     def updateStatusBar(self):
             self.statusBar.update()

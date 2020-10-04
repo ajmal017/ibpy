@@ -5,14 +5,10 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 import pandas as pd
-import matplotlib.dates as mdates
 from scipy.integrate import quad
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, FigureCanvas, NavigationToolbar2QT as NavigationToolbar
+import matplotlib.dates as mdates
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from mplfinance.original_flavor import candlestick_ohlc
-
-
-# from mpl_finance import candlestick_ohlc
-import matplotlib.dates as mpl_dates
 
 from matplotlib.figure import Figure
 
@@ -88,14 +84,6 @@ def BSM_put_value(St, K, t, T, r, sigma):
     put_value = BSM_call_value(St, K, t, T, r, sigma) - St + math.exp(-r * (T - t)) * K
     return put_value
 
-class MplCanvas(FigureCanvasQTAgg):
-
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
-        super(MplCanvas, self).__init__(fig)
-
-
 class CMTWidget(QWidget):
     def __init__(self, model, *args):
         QWidget.__init__(self, *args)
@@ -111,9 +99,7 @@ class CMTWidget(QWidget):
         self.table_model = model
         self.proxy_model.setSourceModel(self.table_model)
         self.table_view.setModel(self.proxy_model)
-
         self.table_view.setPalette(pal)
-
         self.table_view.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
 
@@ -122,96 +108,28 @@ class CMTWidget(QWidget):
 
         # enable sorting
         self.table_view.setSortingEnabled(True)
-
         self.table_view.horizontalHeader().sectionDoubleClicked.connect(self.onSectionDoubleClicked)
 
-        tw = QTabWidget()
-        twt1 = QWidget()
-        twt2 = QWidget()
-        tw.resize(200,50)
+        # twt1 = QWidget()
+        #
+        # twt1.layout = QVBoxLayout(self)
+        # twt1.layout.addStretch(1)
+        # twt1.setLayout((twt1.layout))
 
-        tw.addTab(twt1,"Tab 1")
-        tw.addTab(twt2,"Tab 2")
-
-        twt1.layout = QVBoxLayout(self)
-        pb = QPushButton("pushbutton")
-        twt1.layout.addStretch(1)
-        twt1.layout.addWidget(pb)
-        twt1.setLayout((twt1.layout))
-
-        K = 8000  # Strike price
-        T = 1.0  # time-to-maturity
-        r = 0.025  # constant, risk-free rate
-        vol = 0.2  # constant volatility
-
-        S = np.linspace(4000, 12000, 150)
-        h = np.maximum(S - K, 0)  # payoff of the option
-        C = [BSM_call_value(Szero, K, 0, T, r, vol) for Szero in S]  # BS call option values
-
-        self.sc = FigureCanvasQTAgg(Figure(figsize=(1, 1)))
-        self.sc_ax = self.sc.figure.subplots()
-
-        daily = pd.read_csv("Misc/Demo/yahoofinance-INTC-19950101-20040412.csv", index_col=0, parse_dates=True)
-        daily.drop('Adj Close', axis = 1, inplace = True)
-        daily.reset_index(inplace=True)
-        daily.index.name = 'Date'
-        daily["Date"] = mdates.date2num(daily["Date"].values)
-        cols = ['Date', 'Open', 'High', 'Low', 'Close']
-        self.daily = daily[cols]
-
-        candlestick_ohlc(self.sc_ax, self.daily.values, colorup="g", colordown="r", width=0.2)
-        for label in self.sc_ax.xaxis.get_ticklabels():
-            label.set_rotation(45)
-
-        self.sc_ax.xaxis_date()
-        self.sc_ax.grid(True)
-        self.sc_ax.legend(loc=0)
-        self.sc.update()
-
-        vs = QSplitter(Qt.Vertical)
-        self.hs = QSplitter(Qt.Horizontal)
+        # vs = QSplitter(Qt.Vertical)
+        # self.hs = QSplitter(Qt.Horizontal)
         vlayout = QVBoxLayout(self)
-        upperPart = QHBoxLayout(self)
-        self.hs.addWidget(self.table_view)
-        self.hs.addWidget(self.sc)
-        upperPart.addWidget(self.hs)
+        # upperPart = QHBoxLayout(self)
+        # self.hs.addWidget(self.table_view)
+        vlayout.addWidget(self.table_view)
 
-        vs.addWidget(self.hs)
-        vs.addWidget(tw)
-        vlayout.addWidget(vs)
-        ft = QFont("Courier New", 7, QFont.Bold)
+        # vs.addWidget(self.hs)
+        # vlayout.addWidget(vs)
+        ft = QFont("MS Shell Dlg 2", 8, QFont.Bold)
+
         self.table_view.setFont(ft);
         self.setLayout(vlayout)
         self.table_view.resizeColumnsToContents();
-
-    def updateMplChart(self, cc):
-        self.sc_ax.clear()
-        data = cc.histData
-
-        d = {'Date': [x.date for x in data[2:]],
-             'Open': [x.open for x in data[2:]],
-             'High': [x.high for x in data[2:]],
-             'Low': [x.low for x in data[2:]],
-             'Close': [x.close for x in data[2:]],
-             }
-
-        df = pd.DataFrame(data=d)
-        df.reset_index(inplace=True)
-        df.index.name = 'Date'
-        cols = ['Date', 'Open', 'High', 'Low', 'Close']
-        self.dailys = df[cols]
-        #self.dailys = df
-        candlestick_ohlc(self.sc_ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.2)
-        for label in self.sc_ax.xaxis.get_ticklabels():
-            label.set_rotation(45)
-
-        self.sc_ax.xaxis_date()
-        self.sc_ax.grid(True)
-        self.sc_ax.legend(loc=0)
-        self.sc.draw()
-
-        # self.hs.hide()
-        # self.hs.show()
 
     def getSelectedRow(self):
         indexes = self.table_view.selectionModel().selectedRows()

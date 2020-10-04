@@ -51,6 +51,7 @@ class globvars:
     testprevstate               = None
     teststate                   = None
     logfilename                 = None
+    apilogfilename              = None
 
     opc_status_display_tooltip  = None
     tst_status_display_tooltip  = None
@@ -95,6 +96,7 @@ class globvars:
         globvars.imagecounter                = 0
         globvars.sleepmodcntr                         = 0
         globvars.logfilename                         = "mainLog.log"
+        globvars.apilogfilename             = "apiLog.log"
         globvars.tickerData                 = {}
         globvars.logger                     = None
         globvars.tvprofit                   = 0
@@ -115,7 +117,7 @@ class globvars:
         globvars.header1['Ind'   ] = "Industry of Underlyer"
         globvars.header1['Rld'     ] = "How often this position was rolled"
         globvars.header1['Pos'        ] = "How many legs"
-        globvars.header1['Dur'        ] = "Held since how many days"
+        globvars.header1['Dur/D'        ] = "Held since how many days"
         globvars.header1['Strike'     ] = "Strike"
         globvars.header1['Expiry'     ] = "Expiry"
         globvars.header1['Earngs Call'     ] = "Next Earningscall Date"

@@ -22,7 +22,7 @@ if __name__ == '__main__':
     model.initData(controller)
 
     view = CMTWidget(model)
-    cmw = CMainWindow(view, controller)
+    cmw = CMainWindow(view, controller, mainLogger)
     controller.initData(view)
 
     cmw.initUI()

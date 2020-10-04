@@ -1,17 +1,21 @@
+import datetime
+
+import matplotlib.dates as mdates
+
 from ibapi.client import EClient
 from ibapi.wrapper import EWrapper
 from ibapi.contract import ContractDetails
 
-import matplotlib.dates as mdates
-
 from Misc.globals import globvars
 from Misc import const
 from Model.Account import Account
-import datetime
+
+from Logs import logger as logger
 
 class BrkApi(EWrapper, EClient):
     def __init__(self):
         EClient.__init__(self, self)
+        self.apiLogger = logger.initApiLogger()
         self.endflag = {}
         self.histdata = {}
         self.statusbar =  None
@@ -42,7 +46,7 @@ class BrkApi(EWrapper, EClient):
     def historicalData(self, reqId, bar):
         tickerId = str(reqId)
         bw = self.buyWrites[tickerId]
-        # globvars.logger.info("ticker: %s/%s: %s", tickerId, bw.statData.buyWrite["underlyer"]["@tickerSymbol"], str(bar.close))
+        self.apiLogger.info("ticker: %s/%s: %s", tickerId, bw.statData.buyWrite["underlyer"]["@tickerSymbol"], str(bar.close))
         if reqId not in self.histdata:
             self.histdata[reqId] = []
 
@@ -61,7 +65,7 @@ class BrkApi(EWrapper, EClient):
             bw.set_opt_price(bar.close)
 
 
-        self.histdata[reqId].append(bar)
+        self.histdata[reqId].append([bar.date, bar.open, bar.high, bar.low, bar.close])
 
     def historicalDataEnd(self, reqId: int, start: str, end: str):
         if reqId not in self.endflag:
@@ -80,8 +84,8 @@ class BrkApi(EWrapper, EClient):
 
         super().contractDetails(reqId, contractDetails)
         industry = contractDetails.industry
-        if industry == '':
-            industry = contractDetails.stockType
+        # if industry == '':
+        #     industry = contractDetails.stockType
         bw.set_industry(industry)
 
     def contractDetailsEnd(self, reqId: int):

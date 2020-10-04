@@ -3,11 +3,14 @@ import time
 #from datetime import datetime, time,
 import threading
 
+import pandas as pd
+
 from Misc.globals import globvars
 from Misc import const
 from Misc.Support import Support
 
 from .BrkApi import BrkApi
+from collections import OrderedDict
 
 class BrkConnection:
     def __init__(self):
@@ -48,19 +51,57 @@ class BrkConnection:
         self.brkApi.resetHistData(icc)
         self.brkApi.endflag[icc] = False
 
+        # we must have arount 200-400 candles:
+        # 1) duration in days => seconds
+        candlewidthinsec = int(cc.statData.duration) * 24*3600
+        widthstr = str(candlewidthinsec)+" S"
+
+        vhbss = OrderedDict({
+            "1 secs": 1,
+            "5 secs": 5,
+            "10 secs": 10,
+            "15 secs": 15,
+            "30 secs": 30,
+            "1 min": 60,
+            "2 mins": 120,
+            "3 mins": 180,
+            "5 mins": 300,
+            "10 mins": 600,
+            "15 mins": 900,
+            "20 mins": 1200,
+            "30 mins": 1800,
+            "1 hour": 3600,
+            "2 hours": 7200,
+            "3 hours": 10800,
+            "4 hours": 14400,
+            "8 hours": 28800,
+            "1 day": 3*28800,
+            "1 W": 7*3*28800,
+            "1 M": 4*7*3*28800})
+
+        nbrOfBars = 1000
+        i = 0
+        while nbrOfBars > 400:
+            barsizeinsecs = vhbss[list(vhbss.keys())[i]]
+            nbrOfBars = candlewidthinsec/barsizeinsecs
+            i = i + 1
+
+        widthstr = list(vhbss.keys())[i-1]
+        durstr = cc.statData.duration + " D"
+
         if icc % 2 == 0:
-            self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, cc.statData.duration, "1 hour", "MIDPOINT",
+            # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
+            # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
+            self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, durstr, widthstr, "MIDPOINT",
                                           const.HISTDATA_INSIDERTH, 1, False, [])
 
         while self.brkApi.endflag[icc] == False:
             time.sleep(1)
 
         cc.histData =  self.brkApi.getHistData(icc)
-
-        # else:
-        #     # globvars.logger.info("querying no. %s => %s", str(icco), cc.bw["underlyer"]["@tickerSymbol"])
-        #     self.brkApi.reqHistoricalData(icc, op, ifdtcboe, "120 S", "1 min", "MIDPOINT", 1,
-        #                                   1, False, [])
+        datatable = pd.DataFrame(self.brkApi.getHistData(icc))
+        cc.histData = datatable
+        cc.histData.columns = ['Date', 'Open', 'High', 'Low', 'Close']
 
     def connectToIBKR(self):
         self.brkApi.connect('127.0.0.1', self.brokerPort, const.IBCLIENTID)

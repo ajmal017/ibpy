@@ -243,7 +243,7 @@ class covered_call():
         try:
             beg = datetime.strptime(beg1, "%Y %b %d %H:%M:%S")
             timePassed = datetime.now()-beg
-            self.statData.duration = str(timePassed.days)+" D"
+            self.statData.duration = str(timePassed.days)
         except:
             self.statData.duration = "0 D"
 
