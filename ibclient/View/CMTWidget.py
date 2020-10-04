@@ -5,9 +5,9 @@ from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
 import pandas as pd
-import matplotlib.dates as mdates
 from scipy.integrate import quad
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, FigureCanvas, NavigationToolbar2QT as NavigationToolbar
+import matplotlib.dates as mdates
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from mplfinance.original_flavor import candlestick_ohlc
 
 
@@ -88,14 +88,6 @@ def BSM_put_value(St, K, t, T, r, sigma):
     put_value = BSM_call_value(St, K, t, T, r, sigma) - St + math.exp(-r * (T - t)) * K
     return put_value
 
-class MplCanvas(FigureCanvasQTAgg):
-
-    def __init__(self, parent=None, width=5, height=4, dpi=100):
-        fig = Figure(figsize=(width, height), dpi=dpi)
-        self.axes = fig.add_subplot(111)
-        super(MplCanvas, self).__init__(fig)
-
-
 class CMTWidget(QWidget):
     def __init__(self, model, *args):
         QWidget.__init__(self, *args)
@@ -125,28 +117,12 @@ class CMTWidget(QWidget):
 
         self.table_view.horizontalHeader().sectionDoubleClicked.connect(self.onSectionDoubleClicked)
 
-        tw = QTabWidget()
         twt1 = QWidget()
         twt2 = QWidget()
-        tw.resize(200,50)
-
-        tw.addTab(twt1,"Tab 1")
-        tw.addTab(twt2,"Tab 2")
 
         twt1.layout = QVBoxLayout(self)
-        pb = QPushButton("pushbutton")
         twt1.layout.addStretch(1)
-        twt1.layout.addWidget(pb)
         twt1.setLayout((twt1.layout))
-
-        K = 8000  # Strike price
-        T = 1.0  # time-to-maturity
-        r = 0.025  # constant, risk-free rate
-        vol = 0.2  # constant volatility
-
-        S = np.linspace(4000, 12000, 150)
-        h = np.maximum(S - K, 0)  # payoff of the option
-        C = [BSM_call_value(Szero, K, 0, T, r, vol) for Szero in S]  # BS call option values
 
         self.sc = FigureCanvasQTAgg(Figure(figsize=(1, 1)))
         self.sc_ax = self.sc.figure.subplots()
@@ -160,13 +136,13 @@ class CMTWidget(QWidget):
         self.daily = daily[cols]
 
         candlestick_ohlc(self.sc_ax, self.daily.values, colorup="g", colordown="r", width=0.2)
+
         for label in self.sc_ax.xaxis.get_ticklabels():
             label.set_rotation(45)
-
+        self.sc_ax.axhline()
         self.sc_ax.xaxis_date()
         self.sc_ax.grid(True)
         self.sc_ax.legend(loc=0)
-        self.sc.update()
 
         vs = QSplitter(Qt.Vertical)
         self.hs = QSplitter(Qt.Horizontal)
@@ -177,9 +153,8 @@ class CMTWidget(QWidget):
         upperPart.addWidget(self.hs)
 
         vs.addWidget(self.hs)
-        vs.addWidget(tw)
         vlayout.addWidget(vs)
-        ft = QFont("Courier New", 7, QFont.Bold)
+        ft = QFont("MS Shell Dlg 2", 8, QFont.Bold)
         self.table_view.setFont(ft);
         self.setLayout(vlayout)
         self.table_view.resizeColumnsToContents();
@@ -209,9 +184,6 @@ class CMTWidget(QWidget):
         self.sc_ax.grid(True)
         self.sc_ax.legend(loc=0)
         self.sc.draw()
-
-        # self.hs.hide()
-        # self.hs.show()
 
     def getSelectedRow(self):
         indexes = self.table_view.selectionModel().selectedRows()

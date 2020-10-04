@@ -80,8 +80,8 @@ class BrkApi(EWrapper, EClient):
 
         super().contractDetails(reqId, contractDetails)
         industry = contractDetails.industry
-        if industry == '':
-            industry = contractDetails.stockType
+        # if industry == '':
+        #     industry = contractDetails.stockType
         bw.set_industry(industry)
 
     def contractDetailsEnd(self, reqId: int):
