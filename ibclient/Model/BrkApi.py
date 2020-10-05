@@ -46,7 +46,7 @@ class BrkApi(EWrapper, EClient):
     def historicalData(self, reqId, bar):
         tickerId = str(reqId)
         bw = self.buyWrites[tickerId]
-        self.apiLogger.info("ticker: %s/%s: %s", tickerId, bw.statData.buyWrite["underlyer"]["@tickerSymbol"], str(bar.close))
+        # self.apiLogger.info("ticker: %s/%s: %s", tickerId, bw.statData.buyWrite["underlyer"]["@tickerSymbol"], str(bar.close))
         if reqId not in self.histdata:
             self.histdata[reqId] = []
 

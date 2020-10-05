@@ -61,6 +61,8 @@ class PrxyModel(QSortFilterProxyModel):
                 const.COL_CURRINTRNSCVALDOLL     ,
                 const.COL_CURRTIMEVAL            ,
                 const.COL_CURRTIMEVALDOLL        ,
+                const.COL_DOWNSIDEPROTECTPCT     ,
+                const.COL_UPSIDEPOTENTIALPCT     ,
                 const.COL_TIMEVALCHANGEPCT       ,
                 const.COL_TIMEVALPROFIT          ,
                 const.COL_REALIZED               ,
@@ -169,13 +171,6 @@ class CMTModel(QAbstractTableModel):
         globvars.totalCtv = self.summary.totalctv
         globvars.totalItv = self.summary.totalitv
 
-        # for bw in ccdict["coveredCalls"]["bw"]:
-        #     if "closed" in bw:
-        #         continue
-        #     self.bwl[str(tickerId)] = covered_call(bw, tickerId)
-        #     self.bwl[str(tickerId+1)] = self.bwl[str(tickerId)]
-        #     tickerId = tickerId + 2
-
         self.layoutAboutToBeChanged.emit()
         self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
         self.layoutChanged.emit()
@@ -251,17 +246,6 @@ class CMTModel(QAbstractTableModel):
 
                 return s
 
-            # if c == const.COL_EARNGSCALL:
-            #     return cc.symbol + cc.expiry + " " + "time of this price was "+cc.ul_ts
-            # elif c == 1:
-            #     if cc.uncertaintyFlag:
-            #         return cc.statData.buyWrite["underlyer"]["@tickerSymbol"] + cc.expiry + " " + "Grosse Unsicherheit wegen unscharfem Optionspreis"
-            #     else:
-            #         return cc.symbol + cc.expiry + " " + "Kleine Unsicherheit wegen relativ genauem Optionspreis"
-            #
-            # return cc.symbol + " " + cc.expiry + " " + str(index.column())+" "+str(index.row())
-
-
     def headerData(self, col, orientation, role):
         headerlist = list(globvars.header1.keys())
         if orientation == Qt.Horizontal and role == Qt.DisplayRole:
@@ -308,24 +292,3 @@ class CMTModel(QAbstractTableModel):
         print(">>> setData() index.column = ", index.column())
         self.dataChanged.emit(index, index)
         return True
-
-        # dataList = []
-        #
-        # for bw in ccdict["coveredCalls"]["bw"]:
-        #     globvars.cc[str(tickerId)] = self.controller.covered_call(bw, tickerId)
-        #     globvars.bwl.append(globvars.cc[str(tickerId)])
-        #     globvars.cc[str(tickerId + 1)] = globvars.cc[str(tickerId)]
-        #     tickerId += 2
-        #
-        # for cc in globvars.bwl:
-        #     dataList.append(cc.table_data())
-        #
-        # self.buywrites = []
-        # self.broker = BrkConnection()
-        # self.account = Account()
-        #
-        # for numr, dlrow in enumerate(dataList):
-        #     self.buywrites.append([])
-        #     for numc,c in enumerate(dlrow):
-        #         el = dataList[numr][numc]
-        #         self.buywrites[-1].append(el)

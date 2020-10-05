@@ -146,6 +146,8 @@ class globvars:
         globvars.header1['CIV/$'      ] = "Current Intrinsic Value in dollar for this position"
         globvars.header1['CTV'        ] = "Current TimeValue for this position"
         globvars.header1['CTV/$'      ] = "Current TimeValue in dollar for this position"
+        globvars.header1['DWNSDPT/%'  ] = "Downside Protection in percent"
+        globvars.header1['UPSDPT/%'   ] = "Upside Potential in percent"
         globvars.header1['TV-Chg/%'   ] = "Change of Timevalue in %"
         globvars.header1['TV-Prof'    ] = "Accumulated timevalue profit of this position"
         globvars.header1['RLZD'       ] = "Realized from option buy back when rolling"

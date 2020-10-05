@@ -127,7 +127,8 @@ class covered_call():
             False, #             globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
             True,  #             globvars.header1['Industry'   ] = "Industry of Underlyer"
             False,  #             globvars.header1['Rolled'     ] = "How often this position was rolled"
-            False,  #             globvars.header1['Pos'        ] = "How many legs"
+            True,  #             globvars.header1['Pos'        ] = "How many legs"
+            False, #             globvars.header1['Strike'     ] = "Duration"
             False, #             globvars.header1['Strike'     ] = "Strike"
             False, #             globvars.header1['Expiry'     ] = "Expiry"
             False, #             globvars.header1['Expiry'     ] = "Erngs.Call"
@@ -136,7 +137,7 @@ class covered_call():
             False, #             globvars.header1['OPT-Init'    ] = "Price of option when position was initiated"
             False, #             globvars.header1['BW-Price'   ] = "Initial buywrite price = UL-Price - Opt-premium"
             False, #             globvars.header1['BWP-Now'    ] = "Current price of this Buywrite"
-            True,  #             globvars.header1['BWP-Prof'   ] = "Profit of the Buywrite"
+            False,  #             globvars.header1['BWP-Prof'   ] = "Profit of the Buywrite"
             True,  #             globvars.header1['BWP-PL'     ] = ""
                    #
             False, #            globvars.header1['UL-Last'    ] = "underlyedr - last known price traded"
@@ -247,6 +248,9 @@ class covered_call():
         except:
             self.statData.duration = "0 D"
 
+        self.downSideProtPct = self.calcDownSideProtection()
+        self.upSidePotentPct = self.calcUpSidePotential()
+
         return (
             self.statData.buyWrite["@id"],
             self.statData.buyWrite["underlyer"]["@tickerSymbol"],
@@ -282,6 +286,8 @@ class covered_call():
             "{:.2f}".format(self.civ()*self.statData.position*100),
             "{:.2f}".format(self.ctv()),
             "{:.2f}".format(self.ctv()*self.statData.position*100),
+            "{:.2f}".format(self.downSideProtPct),
+            "{:.2f}".format(self.upSidePotentPct),
             "{:.2f}".format(100*pcttvloss),
             "{:.2f}".format(self.statData.itv() * self.statData.position * 100 - self.ctv()*self.statData.position*100),
             "{:.2f}".format(self.realized),
@@ -351,6 +357,20 @@ class covered_call():
             return float(0)
         else:
             return float(self.tickData.ullst) - float(self.statData.strike)
+
+    def calcDownSideProtection(self):
+        if self.tickData.ullst == 0 or self.tickData.ullst <= float(self.statData.strike):
+            #OTM
+            return float(0)
+        else:
+            return 100*((self.tickData.ullst - float(self.statData.strike)) / self.tickData.ullst)
+
+    def calcUpSidePotential(self):
+        if self.tickData.ullst == 0 or self.tickData.ullst > float(self.statData.strike):
+            #OTM
+            return float(0)
+        else:
+            return 100*((float(self.statData.strike) - self.tickData.ullst ) / self.tickData.ullst)
 
     def underlyer(self):
         underlyer = Contract()

@@ -125,9 +125,11 @@ class CMTWidget(QWidget):
 
         # vs.addWidget(self.hs)
         # vlayout.addWidget(vs)
-        ft = QFont("MS Shell Dlg 2", 8, QFont.Bold)
+        # ft = QFont("MS Shell Dlg 2", 8, QFont.Bold)
+        self.current_font = QFont("Arial Black", 10)
 
-        self.table_view.setFont(ft);
+
+        self.table_view.setFont(self.current_font);
         self.setLayout(vlayout)
         self.table_view.resizeColumnsToContents();
 
@@ -143,6 +145,7 @@ class CMTWidget(QWidget):
         return None
 
     def changeFont(self, font):
+        self.current_font = font
          #ft = QFont("Times", 12, QFont.Bold)
         self.table_view.setFont(font)
         self.table_view.resizeColumnsToContents()

@@ -59,7 +59,7 @@ class CMainWindow(QMainWindow):
         actionUpdateStatusBar.triggered.connect(self.updateStatusBar)
 
         actionVisualize0 = QAction(QIcon('View/icons/Torch.png'), '', self)
-        actionVisualize0.setToolTip("View Position Details")
+        actionVisualize0.setToolTip("Open a separate chartwindow and view Position Details in it")
         actionVisualize0.triggered.connect(self.showPositionViewer)
 
         self.actionVisualize1 = QAction(QIcon("View/icons/I don't know.png"), '', self)
@@ -72,9 +72,9 @@ class CMainWindow(QMainWindow):
         self.actionVisualize8 = QAction(QIcon('View/icons/Sword-03.png'), '', self)
         self.actionVisualize9 = QAction(QIcon('View/icons/Wine Glass - 01.png'), '', self)
 
-        self.actionVisualize1.setToolTip("")
+        self.actionVisualize1.setToolTip("resize columnwidth in table")
         self.actionVisualize1.triggered.connect(self.doActionVisualize1)
-        self.actionVisualize2.setToolTip("")
+        self.actionVisualize2.setToolTip("Fill data in Positionchart with the positiondata of rowselection- after  you have opened it")
         self.actionVisualize2.triggered.connect(self.doActionVisualize2)
         self.actionVisualize3.setToolTip("")
         self.actionVisualize3.triggered.connect(self.doActionVisualize3)
@@ -133,7 +133,7 @@ class CMainWindow(QMainWindow):
         self.setWindowTitle('Covered Call Analyzer Application')
 
     def doActionVisualize1(self):
-        pass
+        self.cwidget.table_view.resizeColumnsToContents();
 
     def doActionVisualize0(self):
         pass
@@ -173,7 +173,12 @@ class CMainWindow(QMainWindow):
         self.controller.changeBrokerPort(port)
 
     def showPositionViewer(self):
+        cc = self.cwidget.getSelectedRow()
+        if cc != None:
+            self.controller.getStockData(cc)
+        self.positionViewer.updateMplChart(cc)
         self.positionViewer.show()
+
 
     def updateStatusBar(self):
             self.statusBar.update()
@@ -202,7 +207,7 @@ class CMainWindow(QMainWindow):
         return c
 
     def openFontDialog(self):
-        (font,ok) = QFontDialog.getFont()
+        font, ok = QFontDialog.getFont(self.cwidget.current_font)
         print(str(font))
         if ok:
             self.cwidget.changeFont(font)
