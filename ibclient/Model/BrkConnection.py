@@ -94,14 +94,24 @@ class BrkConnection:
             # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
             self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, durstr, widthstr, "MIDPOINT",
                                           const.HISTDATA_INSIDERTH, 1, False, [])
+        else:
+            self.brkApi.reqHistoricalData(icc+1, op, ifdtcboe, durstr, widthstr, "MIDPOINT",
+                                          const.HISTDATA_INSIDERTH, 1, False, [])
 
-        while self.brkApi.endflag[icc] == False:
+        while self.brkApi.endflag[icc] == False or self.brkApi.endflag[icc+1] == False:
             time.sleep(1)
 
         cc.histData =  self.brkApi.getHistData(icc)
-        datatable = pd.DataFrame(self.brkApi.getHistData(icc))
-        cc.histData = datatable
-        cc.histData.columns = ['Date', 'Open', 'High', 'Low', 'Close']
+        # cc.histData = pd.DataFrame(cc.histData)
+        cc.histData.to_csv("Model/Cache/"+ul.symbol+".csv")
+
+        cc.ophistData =  self.brkApi.getHistData(icc+1)
+        # cc.ophistData = pd.DataFrame(cc.ophistData)
+        cc.ophistData.to_csv("Model/Cache/"+op.symbol+op.lastTradeDateOrContractMonth+".csv")
+
+        # datatable = pd.DataFrame(self.brkApi.getHistData(icc))
+        # cc.histData = datatable
+        # cc.histData.columns = ['Date', 'Open', 'High', 'Low', 'Close']
 
     def connectToIBKR(self):
         self.brkApi.connect('127.0.0.1', self.brokerPort, const.IBCLIENTID)

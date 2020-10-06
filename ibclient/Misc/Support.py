@@ -42,7 +42,7 @@ class Support:
 
         if weekday >= 1 and weekday <= 4:
             if tod < opening_hour:  # tuesday to friday morning
-                return datetime.combine(today, closing_hour)
+                return datetime.combine(today-timedelta(1), closing_hour)
             if tod > closing_hour:  # tuesday to friday night
                 return datetime.combine(today, tod)
 

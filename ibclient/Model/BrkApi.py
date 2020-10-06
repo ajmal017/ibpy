@@ -1,6 +1,7 @@
 import datetime
 
 import matplotlib.dates as mdates
+import pandas as pd
 
 from ibapi.client import EClient
 from ibapi.wrapper import EWrapper
@@ -37,7 +38,9 @@ class BrkApi(EWrapper, EClient):
         print("Error. Id:", reqId, "Code:", errorCode, "Msg:", errorString)
 
     def getHistData(self, ti: int):
-        return self.histdata[ti]
+        df = pd.DataFrame(self.histdata[ti])
+        df.columns = ['Date', 'Open', 'High', 'Low', 'Close']
+        return df
 
     def resetHistData(self, reqId: int):
         if reqId not in self.histdata:
