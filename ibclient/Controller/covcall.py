@@ -29,6 +29,7 @@ class StatData():
         self.buyWrite = bw
         self.industry = ""
         self.inibwprice      = float(bw["@enteringPrice"])
+        self.enteringTime    = bw["@enteringTime"]
         self.position        = float(bw["@quantity"])
         self.strike          = float(bw["option"]["@strike"])
         self.inistkprice     = float(bw["underlyer"]["@price"])

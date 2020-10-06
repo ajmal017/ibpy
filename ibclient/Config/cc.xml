@@ -22,6 +22,7 @@
         <rolling_activities>
             <rolled when="20200918 20:29:58" from="20200918" to="20201016" strike="95" buyprice = "0.00" sellprice="0.90" ulprice="89.80" commission = "0.24"/>
         </rolling_activities>
+        <closed exitingTime="20201006 21:30:58" exitingPrice="89.37" ulprice="89.57" optprice="0.20" commission = "0.33"/>
     </bw>
 
     <bw id="4" name="DHI" enteringTime="2020 AUG 06 20:15:00" enteringPrice="62.421" commission="" quantity="1">
@@ -140,6 +141,7 @@
         <rolling_activities>
             <rolled when="20200911 20:39:08" from="20200918" to="20201016" strike="130"  buyprice = "0.17" sellprice="1.69" ulprice="114.90" commission = "1.37"/>
         </rolling_activities>
+      <closed exitingTime="20201006 21:36:08" exitingPrice="114.84" ulprice="119.24" optprice="4.40" commission = "1.73"/>
     </bw>
 
    <bw id="18" name="EBAY" enteringTime="2020 AUG 26 18:51:40" enteringPrice="55.095" commission="2.34" quantity="2" exchange="SMART">
@@ -148,6 +150,7 @@
         <rolling_activities>
             <rolled when="20200911 18:51:01" from="20200918" to="20201023" strike="56"  buyprice = "0.12" sellprice="1.4" ulprice="52.55" commission = "1.45"/>
         </rolling_activities>
+    <closed exitingTime="20201006 21:12:30" exitingPrice="49.81" ulprice="50.10" optprice="0.29" commission = "1.58"/>
    </bw>
 
    <bw id="19" name="TMO" enteringTime="2020 SEP 2 19:35:18" enteringPrice="423.85" commission="1.49" quantity="1" exchange="SMART">
@@ -163,6 +166,7 @@
     <underlyer type="STK" tickerSymbol="CORT" price = "18.45" earningscall = "20201103"/>
     <option expiry="20201016" strike="17" multiplier="100" price = "2.65"/>
         <rolling_activities>
+            <rolled when="20201006 18:39:50" from="20201023" to="20201120" strike="17"  buyprice = "1.06" sellprice="2.39" ulprice="17.87" commission = "5.98"/>
         </rolling_activities>
    </bw>
 
@@ -188,6 +192,9 @@
    <bw id="24" enteringTime="2020 SEP 28 20:42:33" enteringPrice="41.70" commission="1.47" quantity="1">
         <underlyer type="STK" tickerSymbol="BIG" price = "47.77" earningscall = "20201127"/>
         <option expiry="20201016" strike="42.5" multiplier="100" price = "6.07"/>
+        <rolling_activities>
+            <rolled when="20201006 19:11:46" from="20201016" to="20201120" strike="50"  buyprice = "6.75" sellprice="3.85" ulprice="48.95" commission = "1.38"/>
+        </rolling_activities>
    </bw>
 
    <bw id="25" enteringTime="2020 OCT 01 21:07:11" enteringPrice="125.08" commission="1.51" quantity="1">

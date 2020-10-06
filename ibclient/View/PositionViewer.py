@@ -5,6 +5,7 @@ from PyQt5.QtWidgets import *
 import pandas as pd
 from scipy.integrate import quad
 import numpy as np
+from datetime import datetime
 
 import matplotlib.dates as mdates
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
@@ -32,7 +33,7 @@ class PositionViewer(QWidget):
         cols = ['Date', 'Open', 'High', 'Low', 'Close']
         self.daily = daily[cols]
 
-        candlestick_ohlc(self.sc_ax, self.daily.values, colorup="g", colordown="r", width=0.2)
+        # candlestick_ohlc(self.sc_ax, self.daily.values, colorup="g", colordown="r", width=0.2)
 
         for label in self.sc_ax.xaxis.get_ticklabels():
             label.set_rotation(45)
@@ -57,21 +58,29 @@ class PositionViewer(QWidget):
         self.dailys = df[cols]
 
         self.tvdailys = df[tvcols]
-
-        # self.tvdailys['Date'] =self.dailys['Date']
-
-
         self.tvdailys = self.tvdailys -cc.statData.strike
-
 
         candlestick_ohlc(self.sc_ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.001)
         self.sc_ax.axhline(y=cc.statData.strike)
+
 
         for label in self.sc_ax.xaxis.get_ticklabels():
             label.set_rotation(45)
 
         self.sc_ax.xaxis_date()
         self.sc_ax.set_xlabel('time')
+
+        enttime = datetime.strptime(cc.statData.enteringTime, "%Y %b %d %H:%M:%S")
+        enttime = mdates.date2num(enttime)
+        self.sc_ax.axvline(x=enttime)
+        for ra in cc.statData.rollingActivity:
+            rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
+            ratime = mdates.date2num(rastrptime)
+            self.sc_ax.axvline(x=ratime, color='r')
+
+        # timePassed = datetime.now() - beg
+        # self.statData.duration = str(timePassed.days)
+
         self.sc_ax.set_ylabel(cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
 
         # self.sc_ax2 = self.sc_ax.twinx()

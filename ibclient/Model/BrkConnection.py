@@ -46,6 +46,8 @@ class BrkConnection:
 
         dtnyse = Support.find_last_sx_opening_time(const.STOCKEXCHANGE_NYSE)
         ifdtnyse = dtnyse.strftime("%Y%m%d %H:%M:%S")
+        ifdtcboe = Support.find_last_sx_opening_time(const.STOCKEXCHANGE_CBOE)
+        ifdtcboe = ifdtcboe.strftime("%Y%m%d %H:%M:%S")
 
         icc = cc.tickData.tickerId
         self.brkApi.resetHistData(icc)
@@ -89,17 +91,18 @@ class BrkConnection:
         widthstr = list(vhbss.keys())[i-1]
         durstr = cc.statData.duration + " D"
 
-        if icc % 2 == 0:
-            # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
-            # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
-            self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, durstr, widthstr, "MIDPOINT",
-                                          const.HISTDATA_INSIDERTH, 1, False, [])
-        else:
-            self.brkApi.reqHistoricalData(icc+1, op, ifdtcboe, durstr, widthstr, "MIDPOINT",
-                                          const.HISTDATA_INSIDERTH, 1, False, [])
+        # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
+        # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
+        self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, durstr, widthstr, "MIDPOINT",
+                                      const.HISTDATA_INSIDERTH, 1, False, [])
 
-        while self.brkApi.endflag[icc] == False or self.brkApi.endflag[icc+1] == False:
+        self.brkApi.reqHistoricalData(icc+1, op, ifdtcboe, durstr, widthstr, "MIDPOINT",
+                                      const.HISTDATA_INSIDERTH, 1, False, [])
+
+        counter = 0
+        while counter < 60 and (self.brkApi.endflag[icc] == False or self.brkApi.endflag[icc+1] == False):
             time.sleep(1)
+            counter = counter + 1
 
         cc.histData =  self.brkApi.getHistData(icc)
         # cc.histData = pd.DataFrame(cc.histData)
