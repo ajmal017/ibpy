@@ -74,6 +74,7 @@
         <rolling_activities>
             <rolled when="20200915 19:37:36" from="20200918" to="20201016" strike="190"  buyprice = "10.79" sellprice="19.65" ulprice="198.35" commission = "1.41"/>
             <rolled when="20200929 19:37:48" from="20201016" to="20201120" strike="210"  buyprice = "42.65" sellprice="38.95" ulprice="229.91" commission = "1.46"/>
+            <rolled when="20201007 15:51:38" from="20201120" to="20201120" strike="250"  buyprice = "81.70" sellprice="51.85" ulprice="283.90" commission = "1.48"/>
         </rolling_activities>
     </bw>
 

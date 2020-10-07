@@ -72,6 +72,7 @@ class globvars:
     total                       = None
     totalItv                    = None
     totalCtv                    = None
+    lock                        = None
 
     def init_globvars():
         globvars.testscriptcounter           = 0

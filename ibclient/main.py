@@ -1,3 +1,5 @@
+import threading
+
 from PyQt5.QtWidgets import *
 
 from View.CMainWindow import CMainWindow
@@ -8,6 +10,8 @@ from Logs import logger as logger
 from Misc.globals import globvars
 
 if __name__ == '__main__':
+    globvars.lock = threading.Lock()
+
     globvars.init_globvars()
     capp = QApplication([])
 

@@ -95,6 +95,7 @@ class BrkApi(EWrapper, EClient):
         super().contractDetailsEnd(reqId)
 
     def tickPrice(self, reqId, tickType, value, attrib):
+        globvars.lock.acquire()
         tickerId = str(reqId)
         bw = self.buyWrites[tickerId]
         tt = str(tickType)
@@ -113,9 +114,13 @@ class BrkApi(EWrapper, EClient):
                 bw.tickData.opbid = float(value)
             elif tt == const.ASKPRICE:
                 bw.tickData.opask = float(value)
+        globvars.lock.release()
+
 
     def updateAccountValue(self, key:str, val:str, currency:str, accountName:str):
-        self.account.update(key,val)
+        globvars.lock.acquire()
+        self.account.update(key, val)
+        globvars.lock.release()
 
     def nextValidId(self, orderId: int):
         super().nextValidId(orderId)

@@ -74,7 +74,7 @@ class CMainWindow(QMainWindow):
 
         self.actionVisualize1.setToolTip("resize columnwidth in table")
         self.actionVisualize1.triggered.connect(self.doActionVisualize1)
-        self.actionVisualize2.setToolTip("Fill data in Positionchart with the positiondata of rowselection- after  you have opened it")
+        self.actionVisualize2.setToolTip("")
         self.actionVisualize2.triggered.connect(self.doActionVisualize2)
         self.actionVisualize3.setToolTip("")
         self.actionVisualize3.triggered.connect(self.doActionVisualize3)

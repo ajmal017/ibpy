@@ -36,9 +36,10 @@ class StatusBar(QStatusBar):
 
         self.timer = QTimer()
         self.timer.timeout.connect(self.update)
-        #self.timer.start(10000)
+        self.timer.start(10000)
 
     def update(self):
+        globvars.lock.acquire()
         if globvars.connectionState == "CONNECTED":
             self.dtlbl.setText(datetime.now().strftime("%H:%M:%S"))
             act = self.controller.model.account
@@ -51,5 +52,7 @@ class StatusBar(QStatusBar):
                 self.totalInfo.setText("{:.2f}".format((globvars.total)))
                 self.tvdiff.setText("{:.2f}".format((globvars.totalItv - globvars.totalCtv)))
                 self.apiUpdateCounterLabel.setText(str(act.updateCounter))
+        globvars.lock.release()
+
 
 

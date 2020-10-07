@@ -92,6 +92,14 @@ S = np.linspace(4000, 12000, 150)
 h = np.maximum(S - K, 0) # payoff of the option
 C = [BSM_call_value(Szero, K, 0, T, r, vol) for Szero in S] #BS call option values
 
+sdatadf = pd.read_csv("../../Model/Cache/RGEN.csv", index_col=0)
+odtaadf = pd.read_csv("../../Model/Cache/RGEN20201016.csv", index_col=0)
+
+#sdatadf = sdatadf.drop(sdatadf.columns[1], axis=1)
+
+comb = sdatadf.merge(odtaadf, on=['Date'])
+comb.columns=['Date','SOpen','SHigh','SLow', 'SClose','OOpen','OHigh','OLow','OClose']
+
 plt.figure()
 plt.plot(S, h, 'b-.', lw=2.5, label='payoff') # plot inner value at maturity
 plt.plot(S, C, 'r', lw=2.5, label='present value') # plot option present value
@@ -99,11 +107,6 @@ plt.grid(True)
 plt.legend(loc=0)
 plt.xlabel('index level $S_0$')
 plt.ylabel('present value $C(t=0)$')
-
-# input("Press Enter to continue...")
-
-time.sleep(10)
-
 
 # model parameters
 S0 = 100.0 # initial index level
