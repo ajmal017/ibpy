@@ -114,7 +114,7 @@ class globvars:
         globvars.total                           = 0
         globvars.totalItv                   = 0
         globvars.totalCtv                   = 0
-        globvars.colors                     = PALETTES_NAMED['pastel']
+        globvars.colors                     = PALETTES_NAMED['colorblind']
 
         globvars.header1['Id'         ] = "Unique Identifier"
         globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"

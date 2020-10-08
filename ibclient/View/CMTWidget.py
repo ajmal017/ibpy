@@ -90,8 +90,8 @@ class CMTWidget(QWidget):
         pal = QPalette()
 
         self.autoUpdate = True
-        self.setGeometry(70, 150, 1326, 582)
-        self.setWindowTitle("Click on the header to sort table")
+        # self.setGeometry(70, 150, 1326, 582)
+        self.setWindowTitle("Click on header to sort table")
 
         self.table_view = QTableView()
         self.proxy_model = PrxyModel()

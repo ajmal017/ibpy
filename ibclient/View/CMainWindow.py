@@ -1,8 +1,12 @@
 from datetime import datetime
 
-from PyQt5.QtWidgets import QMainWindow, QAction, QMenu, QLabel, QColorDialog, QFontDialog, QComboBox
-from PyQt5.QtGui import QIcon
-from PyQt5.QtCore import QTimer, QSettings
+from PyQt5.QtCore import *
+from PyQt5.QtGui import *
+from PyQt5.QtWidgets import *
+
+# from PyQt5.QtWidgets import QMainWindow, QAction, QMenu, QLabel, QColorDialog, QFontDialog, QComboBox
+# from PyQt5.QtGui import QIcon
+# from PyQt5.QtCore import QTimer, QSettings
 
 from Misc.globals import globvars
 from .StatusBar import StatusBar
@@ -14,15 +18,18 @@ class CMainWindow(QMainWindow):
     def __init__(self, w, c, l):
         super().__init__()
         self.settings = QSettings(Misc.const.COMPANY_NAME, Misc.const.APPLICATION_NAME)
+        self.centerLayout = QVBoxLayout()
+
         self.cwidget = w
         self.controller = c
         self.logger = l
         self.positionViewer = PositionViewer(l)
         self.statusBar = StatusBar(c)
 
-    def initUI(self):
-        self.setCentralWidget(self.cwidget)
+        self.centerLayout.addWidget(self.cwidget)
+        self.centerLayout.addWidget(self.positionViewer)
 
+    def createMenu(self):
         exitAct = QAction(QIcon('exit24.png'), 'Exit', self)
         exitAct.setShortcut('Ctrl+Q')
         exitAct.setStatusTip('Exit application')
@@ -31,6 +38,18 @@ class CMainWindow(QMainWindow):
         menubar = self.menuBar()
         fileMenu = menubar.addMenu('&File')
         fileMenu.addAction(exitAct)
+        return menubar
+
+    def initUI(self):
+        self.vspltr = QSplitter(Qt.Vertical)
+        self.vspltr.addWidget(self.cwidget)
+        self.vspltr.addWidget(self.positionViewer)
+
+        # self.centerWidget = QWidget()
+        # self.centerWidget.setLayout(self.centerLayout)
+        self.setCentralWidget(self.vspltr)
+
+        menubar = self.createMenu()
 
         actionSelectFont = QAction(QIcon('View/icons/Digital - Zero.png'), 'Flee the Scene', self)
         actionSelectFont.setToolTip("Select Font")
@@ -96,6 +115,7 @@ class CMainWindow(QMainWindow):
         self.colorSelectorCombo = QComboBox()
         for k in PALETTES_NAMED:
             self.colorSelectorCombo.addItem(k)
+        self.colorSelectorCombo.setCurrentIndex(1)
         self.colorSelectorCombo.currentIndexChanged.connect(self.changeColorPalette)
 
         self.watchlistSelectorCombo = QComboBox()
@@ -196,6 +216,7 @@ class CMainWindow(QMainWindow):
         cc = self.cwidget.getSelectedRow()
         if cc != None:
             self.controller.getStockData(cc)
+            # self.positionViewer.updateMplChart(cc)
             if self.positionViewer.updateMplChart(cc) == True:
                 self.positionViewer.show()
 
