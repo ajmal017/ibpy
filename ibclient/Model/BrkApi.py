@@ -39,7 +39,7 @@ class BrkApi(EWrapper, EClient):
 
     def getHistData(self, ti: int):
         df = pd.DataFrame(self.histdata[ti])
-        # df.columns = ['Date', 'Open', 'High', 'Low', 'Close']
+        df.columns = ['Date', 'Open', 'High', 'Low', 'Close']
         return df
 
     def resetHistData(self, reqId: int):

@@ -191,6 +191,9 @@
    <bw id="23" enteringTime="2020 SEP 28 20:15:16" enteringPrice="12.04" commission="4.96" quantity="5">
         <underlyer type="STK" tickerSymbol="MITK" price = "12.74" earningscall = "20201029"/>
         <option expiry="20201016" strike="12.5" multiplier="100" price = "0.70"/>
+        <rolling_activities>
+            <rolled when="20201008 18:19:22" from="20201016" to="20201120" strike="12.5"  buyprice = "1.125" sellprice="1.745" ulprice="13.51" commission = "1.48"/>
+        </rolling_activities>
    </bw>
 
    <bw id="24" enteringTime="2020 SEP 28 20:42:33" enteringPrice="41.70" commission="1.47" quantity="1">

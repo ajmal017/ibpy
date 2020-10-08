@@ -2,9 +2,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-# import pandas as pd
-# from scipy.integrate import quad
-# import numpy as np
+import pandas as pd
+from scipy.integrate import quad
+import numpy as np
 from datetime import datetime
 
 import matplotlib.dates as mdates
@@ -19,9 +19,28 @@ class PositionViewer(QWidget):
         super().__init__()
         self.logger = logger
         self.setGeometry(70, 150, 1326, 582)
-
         self.sc = FigureCanvasQTAgg(Figure(figsize=(1, 1)))
+        #self.sc = mpf.figure(style='charles', figsize=(1, 1))
+        #self.sc_ax = self.sc.add_subplot(111)
+
         self.sc_ax = self.sc.figure.subplots()
+
+        daily = pd.read_csv("Misc/Demo/yahoofinance-INTC-19950101-20040412_weekend.csv", index_col=0, parse_dates=True)
+        daily.drop('Adj Close', axis=1, inplace=True)
+        daily.reset_index(inplace=True)
+        daily.index.name = 'Date'
+        daily["Date"] = mdates.date2num(daily["Date"].values)
+        cols = ['Date', 'Open', 'High', 'Low', 'Close']
+        self.daily = daily[cols]
+
+        # candlestick_ohlc(self.sc_ax, self.daily.values, colorup="g", colordown="r", width=0.2)
+
+        for label in self.sc_ax.xaxis.get_ticklabels():
+            label.set_rotation(45)
+        self.sc_ax.axhline()
+        self.sc_ax.xaxis_date()
+        self.sc_ax.grid(True)
+        self.sc_ax.legend(loc=0)
 
         qvb = QVBoxLayout()
         qvb.addWidget(self.sc)
@@ -39,7 +58,6 @@ class PositionViewer(QWidget):
         return tv
 
     def updateMplChart(self, cc):
-
         self.sc_ax.clear()
 
         dfsk = cc.histData
@@ -47,12 +65,6 @@ class PositionViewer(QWidget):
 
         dfsk.columns = ['Date', 'Open', 'High', 'Low', 'Close']
         dfop.columns = ['Date', 'Open', 'High', 'Low', 'Close']
-
-        # dfsk.reset_index(inplace=True)
-        # dfsk.index.name = 'Dates'
-
-        # dfop.reset_index(inplace=True)
-        # dfop.index.name = 'Dateo'
 
         dfsk = dfsk.sort_index()
         dfop = dfop.sort_index()
@@ -64,8 +76,9 @@ class PositionViewer(QWidget):
         comb.columns = ['Date', 'SOpen', 'SHigh', 'SLow', 'SClose', 'OOpen', 'OHigh', 'OLow', 'OClose']
         comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(row, cc.statData.strike), axis=1)
 
+        dfsk.reset_index(inplace=True)
+        dfsk.index.name = 'Date'
         cols = ['Date', 'Open', 'High', 'Low', 'Close']
-
         tvcols = ['Date', 'Open']
         self.dailys = dfsk[cols]
 
@@ -73,12 +86,10 @@ class PositionViewer(QWidget):
         self.tvdailys = self.tvdailys -cc.statData.strike
 
         candlestick_ohlc(self.sc_ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.001)
-#        candlestick_ohlc(self.sc_ax, dfsk[cols].values, colorup='#77d879', colordown='#db3f3f', width=0.001)
-
-        # ax = self.sc_ax.twinx()
-        # ax.plot(comb['Date'], comb['timevalue'])
-
         self.sc_ax.axhline(y=cc.statData.strike)
+
+        self.ax2 = self.sc_ax.twinx()
+        self.ax2.plot(comb['Date'], comb['timevalue'])
 
         for label in self.sc_ax.xaxis.get_ticklabels():
             label.set_rotation(45)
@@ -107,6 +118,8 @@ class PositionViewer(QWidget):
         self.sc_ax.legend(loc=0)
 
         self.sc.draw()
+
+        return True
 
 
 
