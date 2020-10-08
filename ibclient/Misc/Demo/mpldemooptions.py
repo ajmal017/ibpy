@@ -1,73 +1,8 @@
-import time
-import os
-import sys
-
-import numpy as np
 import pandas as pd
-import math
-
-import matplotlib.dates as mdates
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from mplfinance.original_flavor import candlestick_ohlc
-import mplfinance as mpf
-from matplotlib.figure import Figure
-import matplotlib as mpl
 import matplotlib.pyplot as plt
-
-from scipy.integrate import quad
-from scipy.optimize import brentq
-from scipy.interpolate import interp2d
-
-from mpl_toolkits.mplot3d import Axes3D
-from matplotlib import cm
-from PyQt5.QtCore import *
-from PyQt5.QtGui import *
-from PyQt5.QtWidgets import *
-
 from Logs import logger as logger
 from Misc.globals import globvars
-
-
-
-# class MainWindow(QMainWindow):
-#
-#     def __init__(self, pv, *args, **kwargs):
-#         super(MainWindow, self).__init__(*args, **kwargs)
-#
-#         self.setWindowTitle("My Awesome App")
-#         layout = QVBoxLayout()
-#         self.setCentralWidget(pv)
-#
-# class PositionViewer(QWidget):
-#
-#     def __init__(self, logger, dataframe):
-#         super().__init__()
-#         self.logger = logger
-#         self.setGeometry(70, 150, 1326, 582)
-#
-#         self.sc = FigureCanvasQTAgg(Figure(figsize=(1, 1)))
-#         self.ax = self.sc.figure.subplots()
-#
-#         df = dataframe
-#         df.reset_index(inplace=True)
-#         df.index.name = 'Date'
-#         cols = ['Date', 'Open', 'High', 'Low', 'Close']
-#         tvcols = ['Date', 'Open']
-#         self.dailys = df[cols]
-#
-#         self.tvdailys = df[tvcols]
-#         self.tvdailys = self.tvdailys - 165
-#
-#         qvb = QVBoxLayout()
-#         qvb.addWidget(self.sc)
-#         self.setLayout(qvb)
-#
-#     def drawChart(self):
-#         #candlestick_ohlc(self.ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.001)
-#
-#         self.ax.plot(self.dailys.values)
-#         self.ax.axhline(y=165)
-# app = QApplication(sys.argv)
 
 def calc_timevalue(row, strike):
     sval = (row['SHigh'] + row['SLow'])/2
@@ -85,6 +20,9 @@ logger = logger.initMainLogger()
 
 sdatadf = pd.read_csv("../../Model/Cache/RGEN.csv", index_col=0)
 odtaadf = pd.read_csv("../../Model/Cache/RGEN20201016.csv", index_col=0)
+cols = ['Date', 'Open', 'High', 'Low', 'Close']
+sdatadf.columns = cols
+odtaadf.columns = cols
 
 comb = sdatadf.merge(odtaadf, on=['Date'])
 comb.columns=['Date','SOpen','SHigh','SLow', 'SClose','OOpen','OHigh','OLow','OClose']
@@ -101,15 +39,7 @@ ax2.plot(comb['Date'],(comb['OLow']+comb['OHigh'])/2, color='b')
 
 ax3 = ax2.twinx()
 ax3.plot(comb['Date'], comb['timevalue'])
-
-pv = PositionViewer(logger, sdatadf)
-
-mw = MainWindow(pv)
-pv.drawChart()
-
-mw.show()
-
-app.exec_()
+input("KEY")
 
 # plt.figure()
 # plt.plot(S, h, 'b-.', lw=2.5, label='payoff') # plot inner value at maturity

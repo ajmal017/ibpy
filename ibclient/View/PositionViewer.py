@@ -75,8 +75,8 @@ class PositionViewer(QWidget):
         candlestick_ohlc(self.sc_ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.001)
 #        candlestick_ohlc(self.sc_ax, dfsk[cols].values, colorup='#77d879', colordown='#db3f3f', width=0.001)
 
-        ax = self.sc_ax.twinx()
-        ax.plot(comb['Date'], comb['timevalue'])
+        # ax = self.sc_ax.twinx()
+        # ax.plot(comb['Date'], comb['timevalue'])
 
         self.sc_ax.axhline(y=cc.statData.strike)
 
