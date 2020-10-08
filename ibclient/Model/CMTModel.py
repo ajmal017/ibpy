@@ -9,6 +9,7 @@ from Misc import const
 from Controller.covcall import covered_call
 from .BrkConnection import BrkConnection
 from .Account import Account
+from Color import PALETTES_NAMED, hex2rgb, rgb2hex
 
 class Summary():
     def __init__(self):
@@ -137,9 +138,8 @@ class CMTModel(QAbstractTableModel):
             self.timer.stop()
 
     def updateModel(self):
+#        globvars.lock.acquire()
         globvars.tvprofit = 0
-
-
         k = list(self.bwl.keys())[0]
 
         sum = []
@@ -166,7 +166,6 @@ class CMTModel(QAbstractTableModel):
                 self.summary.totalctv = self.summary.totalctv + c * p * 100
                 self.summary.totalitv = self.summary.totalitv + i * p * 100
 
-
         globvars.total = self.summary.total
         globvars.totalCtv = self.summary.totalctv
         globvars.totalItv = self.summary.totalitv
@@ -174,6 +173,7 @@ class CMTModel(QAbstractTableModel):
         self.layoutAboutToBeChanged.emit()
         self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
         self.layoutChanged.emit()
+#        globvars.lock.release()
 
     def rowCount(self, parent):
         return int(len(self.bwl.keys())/2)
@@ -184,6 +184,7 @@ class CMTModel(QAbstractTableModel):
 
 
     def data(self, index, role):
+#        globvars.lock.acquire()
         if not index.isValid():
             globvars.logger.info("data: index not valid")
             return None
@@ -200,27 +201,39 @@ class CMTModel(QAbstractTableModel):
 
             if c == const.COL_ULLAST or c == const.COL_OPLAST:
                 pat = Qt.DiagCrossPattern
-                return QBrush(QtCore.Qt.gray, pat)
+                coltup = hex2rgb(globvars.colors['grau'])
+                return QBrush(QColor.fromRgb(coltup[0],coltup[1],coltup[2]), pat)
+                #return QBrush(QtCore.Qt.gray, pat)
             elif (c == const.COL_OPLAST and cc.oplastcalculated) or (c == const.COL_SYMBOL and cc.uncertaintyFlag):
                 pat = Qt.CrossPattern
 
             if cc.is_valid():
                 if cc.tickData.ullst < cc.statData.inibwprice:
                     #below breakeven
-                    return QBrush(QtCore.Qt.red, pat)
+                    coltup = hex2rgb(globvars.colors['red'])
+                    return QBrush(QColor.fromRgb(coltup[0], coltup[1], coltup[2]), pat)
+                    #return QBrush(QtCore.Qt.red, pat)
                 elif cc.tickData.ullst < cc.statData.strike:
                     #below strike
-                    return QBrush(QColor(255, 100, 100, 200), pat)
+                    coltup = hex2rgb(globvars.colors['orange'])
+                    return QBrush(QColor.fromRgb(coltup[0], coltup[1], coltup[2]), pat)
+                    #return QBrush(QColor(255, 100, 100, 200), pat)
                 else:
                     #otherwise we are green...
-                    return QBrush(QtCore.Qt.green, pat)
+                    coltup = hex2rgb(globvars.colors['green'])
+                    return QBrush(QColor.fromRgb(coltup[0], coltup[1], coltup[2]), pat)
+#                    return QBrush(QtCore.Qt.green, pat)
             else:
                 #data not valid for whatever reasons
                 if cc.uncertaintyFlag == True:
                     pat = Qt.Dense6Pattern
                 return QBrush(QtCore.Qt.gray, pat)
 
-            return QBrush(QtCore.Qt.gray, pat)
+            coltup = hex2rgb(globvars.colors['braun'])
+            return QBrush(QColor.fromRgb(coltup[0], coltup[1], coltup[2]), pat)
+            #return QBrush(globvars.colors['braun'], pat)
+
+            #return QBrush(QtCore.Qt.gray, pat)
 
         elif role == QtCore.Qt.DisplayRole:
             value = self.bwl[str(((index.row()*2)+const.INITIALTTICKERID))].dispData[index.column()]
@@ -245,6 +258,7 @@ class CMTModel(QAbstractTableModel):
                     s += " OTM: Upside Potential of " + "{:.2f}".format(100*float((cc.statData.strike - cc.statData.inistkprice) / cc.statData.inistkprice)) + " % "
 
                 return s
+ #       globvars.lock.release()
 
     def headerData(self, col, orientation, role):
         headerlist = list(globvars.header1.keys())

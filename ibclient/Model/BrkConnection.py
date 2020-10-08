@@ -12,6 +12,7 @@ from Misc.Support import Support
 from .BrkApi import BrkApi
 from collections import OrderedDict
 
+
 class BrkConnection:
     def __init__(self):
         self.initConnection()
@@ -51,7 +52,9 @@ class BrkConnection:
 
         icc = cc.tickData.tickerId
         self.brkApi.resetHistData(icc)
+        self.brkApi.resetHistData(icc+1)
         self.brkApi.endflag[icc] = False
+        self.brkApi.endflag[icc+1] = False
 
         # we must have arount 200-400 candles:
         # 1) duration in days => seconds
@@ -105,16 +108,10 @@ class BrkConnection:
             counter = counter + 1
 
         cc.histData =  self.brkApi.getHistData(icc)
-        # cc.histData = pd.DataFrame(cc.histData)
         cc.histData.to_csv("Model/Cache/"+ul.symbol+".csv")
 
         cc.ophistData =  self.brkApi.getHistData(icc+1)
-        # cc.ophistData = pd.DataFrame(cc.ophistData)
         cc.ophistData.to_csv("Model/Cache/"+op.symbol+op.lastTradeDateOrContractMonth+".csv")
-
-        # datatable = pd.DataFrame(self.brkApi.getHistData(icc))
-        # cc.histData = datatable
-        # cc.histData.columns = ['Date', 'Open', 'High', 'Low', 'Close']
 
     def connectToIBKR(self):
         self.brkApi.connect('127.0.0.1', self.brokerPort, const.IBCLIENTID)

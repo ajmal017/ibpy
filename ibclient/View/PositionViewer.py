@@ -2,9 +2,9 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-import pandas as pd
-from scipy.integrate import quad
-import numpy as np
+# import pandas as pd
+# from scipy.integrate import quad
+# import numpy as np
 from datetime import datetime
 
 import matplotlib.dates as mdates
@@ -28,20 +28,56 @@ class PositionViewer(QWidget):
 
         self.setLayout(qvb)
 
+    def calc_timevalue(self, row, strike):
+        sval = (row['SHigh'] + row['SLow']) / 2
+        oval = (row['OHigh'] + row['OLow']) / 2
+
+        if sval < strike:
+            tv = oval
+        else:
+            tv = oval - (sval - strike)
+        return tv
+
     def updateMplChart(self, cc):
+
         self.sc_ax.clear()
-        df = cc.histData
 
-        df.reset_index(inplace=True)
-        df.index.name = 'Date'
+        dfsk = cc.histData
+        dfop = cc.ophistData
+
+        dfsk.columns = ['Date', 'Open', 'High', 'Low', 'Close']
+        dfop.columns = ['Date', 'Open', 'High', 'Low', 'Close']
+
+        # dfsk.reset_index(inplace=True)
+        # dfsk.index.name = 'Dates'
+
+        # dfop.reset_index(inplace=True)
+        # dfop.index.name = 'Dateo'
+
+        dfsk = dfsk.sort_index()
+        dfop = dfop.sort_index()
+
+        rsk, csk = dfsk.shape
+        rop, cop = dfop.shape
+
+        comb = dfsk.merge(dfop, on=['Date'])
+        comb.columns = ['Date', 'SOpen', 'SHigh', 'SLow', 'SClose', 'OOpen', 'OHigh', 'OLow', 'OClose']
+        comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(row, cc.statData.strike), axis=1)
+
         cols = ['Date', 'Open', 'High', 'Low', 'Close']
-        tvcols = ['Date', 'Open']
-        self.dailys = df[cols]
 
-        self.tvdailys = df[tvcols]
+        tvcols = ['Date', 'Open']
+        self.dailys = dfsk[cols]
+
+        self.tvdailys = dfsk[tvcols]
         self.tvdailys = self.tvdailys -cc.statData.strike
 
         candlestick_ohlc(self.sc_ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.001)
+#        candlestick_ohlc(self.sc_ax, dfsk[cols].values, colorup='#77d879', colordown='#db3f3f', width=0.001)
+
+        ax = self.sc_ax.twinx()
+        ax.plot(comb['Date'], comb['timevalue'])
+
         self.sc_ax.axhline(y=cc.statData.strike)
 
         for label in self.sc_ax.xaxis.get_ticklabels():

@@ -4,9 +4,11 @@ from PyQt5.QtWidgets import QMainWindow, QAction, QMenu, QLabel, QColorDialog, Q
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import QTimer, QSettings
 
+from Misc.globals import globvars
 from .StatusBar import StatusBar
 import Misc.const
 from View.PositionViewer import PositionViewer
+from Color import PALETTES_NAMED
 
 class CMainWindow(QMainWindow):
     def __init__(self, w, c, l):
@@ -91,6 +93,16 @@ class CMainWindow(QMainWindow):
         self.actionVisualize9.setToolTip("")
         self.actionVisualize9.triggered.connect(self.doActionVisualize9)
 
+        self.colorSelectorCombo = QComboBox()
+        for k in PALETTES_NAMED:
+            self.colorSelectorCombo.addItem(k)
+        self.colorSelectorCombo.currentIndexChanged.connect(self.changeColorPalette)
+
+        self.watchlistSelectorCombo = QComboBox()
+        self.watchlistSelectorCombo.addItem("Current Portfolio")
+        self.watchlistSelectorCombo.addItem("BCI Candidates")
+        self.watchlistSelectorCombo.addItem("Closed Positions")
+
         self.portSelectorCombo = QComboBox()
         self.portSelectorCombo.addItem("TWS REAL  7495")
         self.portSelectorCombo.addItem("TWS PAPER 7497")
@@ -110,22 +122,27 @@ class CMainWindow(QMainWindow):
         toolbar = self.addToolBar('Exit')
         toolbar.addAction(actionSelectFont)
         toolbar.addAction(actionSelectColor)
-        toolbar.addWidget(self.portSelectorCombo)
+
         toolbar.addAction(self.actionConnectToBrkApi)
         toolbar.addAction(self.actionDisconnectFromBrkApi)
-        toolbar.addAction(actionOpenSettings)
-        toolbar.addAction((actionClearLiveData))
-        toolbar.addAction((actionUpdateStatusBar))
+        # toolbar.addAction(actionOpenSettings)
+        # toolbar.addAction((actionClearLiveData))
+        # toolbar.addAction((actionUpdateStatusBar))
         toolbar.addAction(actionVisualize0)
         toolbar.addAction(self.actionVisualize1)
         toolbar.addAction(self.actionVisualize2)
         toolbar.addAction(self.actionVisualize3)
         toolbar.addAction(self.actionVisualize4)
-        toolbar.addAction(self.actionVisualize5)
-        toolbar.addAction(self.actionVisualize6)
-        toolbar.addAction(self.actionVisualize7)
-        toolbar.addAction(self.actionVisualize8)
-        toolbar.addAction(self.actionVisualize9)
+
+        toolbar.addSeparator()
+        toolbar.addWidget(self.colorSelectorCombo)
+
+        toolbar.addSeparator()
+        toolbar.addWidget(self.watchlistSelectorCombo)
+
+        toolbar.addSeparator()
+        toolbar.addWidget(self.portSelectorCombo)
+
 
         self.setStatusBar(self.statusBar)
 
@@ -159,6 +176,9 @@ class CMainWindow(QMainWindow):
     def doActionVisualize9(self):
         pass
 
+    def changeColorPalette(self):
+        globvars.colors = PALETTES_NAMED[self.colorSelectorCombo.currentText()]
+
     def changeBrokerPort(self):
         port = 4002
         if self.portSelectorCombo.currentText() == "TWS REAL  7495":
@@ -176,8 +196,9 @@ class CMainWindow(QMainWindow):
         cc = self.cwidget.getSelectedRow()
         if cc != None:
             self.controller.getStockData(cc)
-        self.positionViewer.updateMplChart(cc)
-        self.positionViewer.show()
+            if self.positionViewer.updateMplChart(cc) == True:
+                self.positionViewer.show()
+
 
 
     def updateStatusBar(self):

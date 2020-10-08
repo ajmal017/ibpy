@@ -1,6 +1,7 @@
 import datetime
 import time
 from collections import OrderedDict
+from Color import PALETTES_NAMED
 
 class Sleep:
 
@@ -73,6 +74,7 @@ class globvars:
     totalItv                    = None
     totalCtv                    = None
     lock                        = None
+    colors                      = None
 
     def init_globvars():
         globvars.testscriptcounter           = 0
@@ -112,6 +114,7 @@ class globvars:
         globvars.total                           = 0
         globvars.totalItv                   = 0
         globvars.totalCtv                   = 0
+        globvars.colors                     = PALETTES_NAMED['pastel']
 
         globvars.header1['Id'         ] = "Unique Identifier"
         globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
