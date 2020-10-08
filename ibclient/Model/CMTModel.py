@@ -137,9 +137,8 @@ class CMTModel(QAbstractTableModel):
             self.timer.stop()
 
     def updateModel(self):
+#        globvars.lock.acquire()
         globvars.tvprofit = 0
-
-
         k = list(self.bwl.keys())[0]
 
         sum = []
@@ -166,7 +165,6 @@ class CMTModel(QAbstractTableModel):
                 self.summary.totalctv = self.summary.totalctv + c * p * 100
                 self.summary.totalitv = self.summary.totalitv + i * p * 100
 
-
         globvars.total = self.summary.total
         globvars.totalCtv = self.summary.totalctv
         globvars.totalItv = self.summary.totalitv
@@ -174,6 +172,7 @@ class CMTModel(QAbstractTableModel):
         self.layoutAboutToBeChanged.emit()
         self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
         self.layoutChanged.emit()
+#        globvars.lock.release()
 
     def rowCount(self, parent):
         return int(len(self.bwl.keys())/2)
@@ -184,6 +183,7 @@ class CMTModel(QAbstractTableModel):
 
 
     def data(self, index, role):
+#        globvars.lock.acquire()
         if not index.isValid():
             globvars.logger.info("data: index not valid")
             return None
@@ -245,6 +245,7 @@ class CMTModel(QAbstractTableModel):
                     s += " OTM: Upside Potential of " + "{:.2f}".format(100*float((cc.statData.strike - cc.statData.inistkprice) / cc.statData.inistkprice)) + " % "
 
                 return s
+ #       globvars.lock.release()
 
     def headerData(self, col, orientation, role):
         headerlist = list(globvars.header1.keys())

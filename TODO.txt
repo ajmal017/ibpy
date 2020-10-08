@@ -1,0 +1,8 @@
+- Import of BCI/SSR sheets and auto anaylysis
+- display of timevalue (TV) andIV over time in stockchart
+- display of various strkes/expirydated of rollovers in chart
+- vary display of TV so that you candirectly see the "real" realizes profit of this position - with reolution of minutes 
+  Background: visualization of "time is money" in realtime
+- stabilizing, crash investigation
+
+

@@ -31,6 +31,11 @@ class PositionViewer(QWidget):
     def updateMplChart(self, cc):
         self.sc_ax.clear()
         df = cc.histData
+        dfop = cc.ophistData
+
+        comb = df.merge(dfop, on=['Date'])
+        comb.columns = ['Date', 'SOpen', 'SHigh', 'SLow', 'SClose', 'OOpen', 'OHigh', 'OLow', 'OClose']
+
 
         df.reset_index(inplace=True)
         df.index.name = 'Date'
