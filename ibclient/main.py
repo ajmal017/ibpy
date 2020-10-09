@@ -1,4 +1,6 @@
 import threading
+import signal, os
+import faulthandler; faulthandler.enable()
 
 from PyQt5.QtWidgets import *
 
@@ -8,6 +10,12 @@ from Controller.CMTController import  Controller
 from Model.CMTModel import CMTModel
 from Logs import logger as logger
 from Misc.globals import globvars
+
+def handler(signum, frame):
+    print('Signal handler called with signal', signum)
+    raise OSError("Couldn't open device!")
+
+signal.signal(signal.SIGSEGV, handler)
 
 if __name__ == '__main__':
     globvars.lock = threading.Lock()
