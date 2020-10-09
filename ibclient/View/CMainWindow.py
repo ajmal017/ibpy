@@ -40,81 +40,29 @@ class CMainWindow(QMainWindow):
         fileMenu.addAction(exitAct)
         return menubar
 
+    def addAction(self, icon, tttext, callback):
+        action = QAction(QIcon(icon), 'Flee the Scene', self)
+        action.setToolTip(tttext)
+        action.triggered.connect(callback)
+        return action
+
     def initUI(self):
         self.vspltr = QSplitter(Qt.Vertical)
         self.vspltr.addWidget(self.cwidget)
         self.vspltr.addWidget(self.positionViewer)
-
-        # self.centerWidget = QWidget()
-        # self.centerWidget.setLayout(self.centerLayout)
         self.setCentralWidget(self.vspltr)
+        self.createMenu()
 
-        menubar = self.createMenu()
-
-        actionSelectFont = QAction(QIcon('View/icons/Digital - Zero.png'), 'Flee the Scene', self)
-        actionSelectFont.setToolTip("Select Font")
-        actionSelectFont.triggered.connect(self.openFontDialog)
-
-        actionSelectColor = QAction(QIcon('View/icons/Digital - One.png'), 'Flee the Scene', self)
-        actionSelectColor.setToolTip("Select Color")
-        actionSelectColor.triggered.connect(self.openColorDialog)
-
-        self.actionConnectToBrkApi = QAction(QIcon('View/icons/Link - 01.png'), 'Connect', self)
-        self.actionConnectToBrkApi.setToolTip("Connect toIBKR")
-        self.actionConnectToBrkApi.triggered.connect(self.cmw_actionConnectToBrkApi)
-
-        self.actionDisconnectFromBrkApi = QAction(QIcon('View/icons/Link - 02.png'), 'Disconnect', self)
-        self.actionDisconnectFromBrkApi.setToolTip("Disconnect from IBKR")
-        self.actionDisconnectFromBrkApi.triggered.connect(self.cmw_actionDisconnectFromBrkApi)
-
-        actionOpenSettings = QAction(QIcon('View/icons/Gear.png'), 'Disconnect', self)
-        actionOpenSettings.setToolTip("Open Settings")
-        actionOpenSettings.triggered.connect(self.openSettingsDialog)
-
-        actionClearLiveData = QAction(QIcon('View/icons/Alpha-Blending.png'), 'ClearLiveData', self)
-        actionClearLiveData.setToolTip("Clear Live Data")
-        # actionClearLiveData.triggered.connect(self.broker.clearLiveData)
-
-        actionUpdateStatusBar = QAction(QIcon('View/icons/LOL.png'), 'UpdateStatusBar', self)
-        actionUpdateStatusBar.setToolTip("Update Statusbar")
-        actionUpdateStatusBar.triggered.connect(self.updateStatusBar)
-
-        actionVisualize0 = QAction(QIcon('View/icons/Torch.png'), '', self)
-        actionVisualize0.setToolTip("Open a separate chartwindow and view Position Details in it")
-        actionVisualize0.triggered.connect(self.showPositionViewer)
-
-        self.actionVisualize1 = QAction(QIcon("View/icons/I don't know.png"), '', self)
-        self.actionVisualize2 = QAction(QIcon('View/icons/Palm-Tree.png'), '', self)
-        self.actionVisualize3 = QAction(QIcon('View/icons/Wand - 01.png'), '', self)
-        self.actionVisualize4 = QAction(QIcon('View/icons/Wand - 02.png'), '', self)
-        self.actionVisualize5 = QAction(QIcon('View/icons/Tool - Hammer.png'), '', self)
-        self.actionVisualize6 = QAction(QIcon('View/icons/Television.png'), '', self)
-        self.actionVisualize7 = QAction(QIcon('View/icons/Table-Fan.png'), '', self)
-        self.actionVisualize8 = QAction(QIcon('View/icons/Sword-03.png'), '', self)
-        self.actionVisualize9 = QAction(QIcon('View/icons/Wine Glass - 01.png'), '', self)
-
-        self.actionVisualize1.setToolTip("resize columnwidth in table")
-        self.actionVisualize1.triggered.connect(self.doActionVisualize1)
-        self.actionVisualize2.setToolTip("")
-        self.actionVisualize2.triggered.connect(self.doActionVisualize2)
-        self.actionVisualize3.setToolTip("")
-        self.actionVisualize3.triggered.connect(self.doActionVisualize3)
-        self.actionVisualize4.setToolTip("")
-        self.actionVisualize4.triggered.connect(self.doActionVisualize4)
-        self.actionVisualize5.setToolTip("")
-        self.actionVisualize5.triggered.connect(self.doActionVisualize5)
-        self.actionVisualize6.setToolTip("")
-        self.actionVisualize6.triggered.connect(self.doActionVisualize6)
-        self.actionVisualize7.setToolTip("")
-        self.actionVisualize7.triggered.connect(self.doActionVisualize7)
-        self.actionVisualize8.setToolTip("")
-        self.actionVisualize8.triggered.connect(self.doActionVisualize8)
-        self.actionVisualize9.setToolTip("")
-        self.actionVisualize9.triggered.connect(self.doActionVisualize9)
+        actionSelectFont                    = self.addAction('View/icons/Digital - Zero.png', "Select Font", self.openFontDialog)
+        self.actionConnectToBrkApi          = self.addAction('View/icons/Link - 01.png', "Connect toIBKR", self.cmw_actionConnectToBrkApi)
+        self.actionDisconnectFromBrkApi     = self.addAction('View/icons/Link - 02.png', "Disconnect from IBKR", self.cmw_actionDisconnectFromBrkApi)
+        actionShowPositionViewer            = self.addAction('View/icons/Torch.png', "Show Position", self.showPositionViewer)
+        self.actionResizeColumnWidth = self.addAction("View/icons/I don't know.png", "resize columnwidth in table", self.doActionResizeColumns)
 
         self.colorSelectorCombo = QComboBox()
         for k in PALETTES_NAMED:
             self.colorSelectorCombo.addItem(k)
+
         self.colorSelectorCombo.setCurrentIndex(1)
         self.colorSelectorCombo.currentIndexChanged.connect(self.changeColorPalette)
 
@@ -140,61 +88,32 @@ class CMainWindow(QMainWindow):
             self.portSelectorCombo.setCurrentIndex(3)
 
         toolbar = self.addToolBar('Exit')
-        toolbar.addAction(actionSelectFont)
-        toolbar.addAction(actionSelectColor)
 
+        toolbar.addAction(actionSelectFont)
         toolbar.addAction(self.actionConnectToBrkApi)
         toolbar.addAction(self.actionDisconnectFromBrkApi)
-        # toolbar.addAction(actionOpenSettings)
-        # toolbar.addAction((actionClearLiveData))
-        # toolbar.addAction((actionUpdateStatusBar))
-        toolbar.addAction(actionVisualize0)
-        toolbar.addAction(self.actionVisualize1)
-        toolbar.addAction(self.actionVisualize2)
-        toolbar.addAction(self.actionVisualize3)
-        toolbar.addAction(self.actionVisualize4)
-
+        toolbar.addAction(actionShowPositionViewer)
+        toolbar.addAction(self.actionResizeColumnWidth)
         toolbar.addSeparator()
         toolbar.addWidget(self.colorSelectorCombo)
-
         toolbar.addSeparator()
         toolbar.addWidget(self.watchlistSelectorCombo)
-
         toolbar.addSeparator()
         toolbar.addWidget(self.portSelectorCombo)
-
 
         self.setStatusBar(self.statusBar)
 
         self.setGeometry(100, 200, 1500, 500)
         self.setWindowTitle('Covered Call Analyzer Application')
 
-    def doActionVisualize1(self):
+    def doActionResizeColumns(self):
         self.cwidget.table_view.resizeColumnsToContents();
 
-    def doActionVisualize0(self):
-        pass
-
-    def doActionVisualize2(self):
+    def showPositionViewer(self):
         cc = self.cwidget.getSelectedRow()
         if cc != None:
             self.controller.getStockData(cc)
-        self.positionViewer.updateMplChart(cc)
-
-    def doActionVisualize3(self):
-        pass
-    def doActionVisualize4(self):
-        pass
-    def doActionVisualize5(self):
-        pass
-    def doActionVisualize6(self):
-        pass
-    def doActionVisualize7(self):
-        pass
-    def doActionVisualize8(self):
-        pass
-    def doActionVisualize9(self):
-        pass
+            self.positionViewer.updateMplChart(cc)
 
     def changeColorPalette(self):
         globvars.colors = PALETTES_NAMED[self.colorSelectorCombo.currentText()]
@@ -209,18 +128,7 @@ class CMainWindow(QMainWindow):
             port= 4001
         if self.portSelectorCombo.currentText() == "GTW PAPER 4002":
             port= 4002
-
         self.controller.changeBrokerPort(port)
-
-    def showPositionViewer(self):
-        cc = self.cwidget.getSelectedRow()
-        if cc != None:
-            self.controller.getStockData(cc)
-            # self.positionViewer.updateMplChart(cc)
-            if self.positionViewer.updateMplChart(cc) == True:
-                self.positionViewer.show()
-
-
 
     def updateStatusBar(self):
             self.statusBar.update()
@@ -244,20 +152,12 @@ class CMainWindow(QMainWindow):
         elif action == clearSelection:
             self.controller.clearSelection()
 
-    def openColorDialog(self):
-        c = QColorDialog.getColor()
-        return c
-
     def openFontDialog(self):
         font, ok = QFontDialog.getFont(self.cwidget.current_font)
         print(str(font))
         if ok:
             self.cwidget.changeFont(font)
         return font
-
-    def openSettingsDialog(self):
-
-        pass
 
     def cmw_actionConnectToBrkApi(self):
         self.actionConnectToBrkApi.setEnabled(False)

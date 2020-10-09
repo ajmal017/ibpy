@@ -18,9 +18,11 @@ class PositionViewer(QWidget):
     def __init__(self, logger):
         super().__init__()
         self.logger = logger
-        self.sc = FigureCanvasQTAgg(Figure(figsize=(1, 1)))
-        self.sc_ax = self.sc.figure.subplots()
-        self.ax2 = self.sc_ax.twinx()
+        self.sc = FigureCanvasQTAgg(Figure(figsize=(1, 1),tight_layout=True, facecolor='olive', edgecolor='blue'))
+#        self.sc = FigureCanvasQTAgg(Figure(figsize=(1, 1)))
+        self.ax = self.sc.figure.subplots()
+        self.ax.set_facecolor('moccasin')
+        self.ax2 = self.ax.twinx()
 
         daily = pd.read_csv("Misc/Demo/yahoofinance-INTC-19950101-20040412_weekend.csv", index_col=0, parse_dates=True)
         daily.drop('Adj Close', axis=1, inplace=True)
@@ -30,15 +32,16 @@ class PositionViewer(QWidget):
         cols = ['Date', 'Open', 'High', 'Low', 'Close']
         self.daily = daily[cols]
 
-        candlestick_ohlc(self.sc_ax, self.daily.values, colorup="g", colordown="r", width=0.2)
+        candlestick_ohlc(self.ax, self.daily.values, colorup="g", colordown="r", width=0.2)
 
-        for label in self.sc_ax.xaxis.get_ticklabels():
+        for label in self.ax.xaxis.get_ticklabels():
             label.set_rotation(45)
-        self.sc_ax.axhline()
-        self.sc_ax.xaxis_date()
-        self.sc_ax.grid(True)
-        self.sc_ax.legend(loc=0)
-
+        self.ax.axhline()
+        self.ax.xaxis_date()
+        self.ax.grid(True)
+        self.ax.legend(loc=0)
+        self.ax.set_ylabel("DEMO")
+        self.ax2.set_ylabel("TIMEVALUE")
         qvb = QVBoxLayout()
         qvb.addWidget(self.sc)
 
@@ -55,7 +58,7 @@ class PositionViewer(QWidget):
         return tv
 
     def updateMplChart(self, cc):
-        self.sc_ax.clear()
+        self.ax.clear()
         self.ax2.clear()
 
         dfsk = cc.histData
@@ -84,36 +87,29 @@ class PositionViewer(QWidget):
         self.tvdailys = dfsk[tvcols]
         self.tvdailys = self.tvdailys -cc.statData.strike
 
-        candlestick_ohlc(self.sc_ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.001)
-        self.sc_ax.axhline(y=cc.statData.strike)
+        candlestick_ohlc(self.ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.001)
+        self.ax.axhline(y=cc.statData.strike)
 
         self.ax2.plot(comb['Date'], comb['timevalue'])
 
-        for label in self.sc_ax.xaxis.get_ticklabels():
+        for label in self.ax.xaxis.get_ticklabels():
             label.set_rotation(45)
 
-        self.sc_ax.xaxis_date()
-        self.sc_ax.set_xlabel('time')
+        self.ax.xaxis_date()
+        self.ax.set_xlabel('time')
 
         enttime = datetime.strptime(cc.statData.enteringTime, "%Y %b %d %H:%M:%S")
         enttime = mdates.date2num(enttime)
-        self.sc_ax.axvline(x=enttime)
+        self.ax.axvline(x=enttime)
         for ra in cc.statData.rollingActivity:
             rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
             ratime = mdates.date2num(rastrptime)
-            self.sc_ax.axvline(x=ratime, color='r')
+            self.ax.axvline(x=ratime, color='r')
 
-        # timePassed = datetime.now() - beg
-        # self.statData.duration = str(timePassed.days)
+        self.ax.set_ylabel(cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
 
-        self.sc_ax.set_ylabel(cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
-
-        # self.sc_ax2 = self.sc_ax.twinx()
-        # self.sc_ax2.set_ylabel('timevalue', color='r')
-        # self.sc_ax2.plot(self.tvdailys.values, color='r')
-
-        self.sc_ax.grid(True)
-        self.sc_ax.legend(loc=0)
+        self.ax.grid(True)
+        self.ax.legend(loc=0)
 
         self.sc.draw()
 
