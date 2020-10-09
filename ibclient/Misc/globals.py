@@ -3,6 +3,9 @@ import time
 from collections import OrderedDict
 from Color import PALETTES_NAMED
 
+from pandas.plotting import register_matplotlib_converters
+register_matplotlib_converters()
+
 class Sleep:
 
     def __init__(self, wait):
