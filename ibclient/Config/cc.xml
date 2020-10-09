@@ -209,6 +209,11 @@
         <option expiry="20201120" strike="140" multiplier="100" price = "22.80"/>
    </bw>
 
+   <bw id="26" enteringTime="2020 OCT 08 21:52:41" enteringPrice="37.18" commission="2.32" quantity="2">
+        <underlyer type="STK" tickerSymbol="KBH" price = "39.99" earningscall = "20201222"/>
+        <option expiry="20201120" strike="40" multiplier="100" price = "2.81"/>
+   </bw>
+
 <!--   <bw id="26" name="AMZN" enteringTime="2020 SEP 2 19:35:18" enteringPrice="3023.85" commission="1.49" quantity="1" exchange="SMART">-->
 <!--    <underlyer type="STK" tickerSymbol="AMZN" price = "3390" earningscall = "0"/>-->
 <!--    <option expiry="20200918" strike="3000" multiplier="100" price = "14.27"/>-->
