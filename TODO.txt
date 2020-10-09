@@ -1,0 +1,11 @@
+- Import of BCI/SSR sheets and auto anaylysis
+- Retrieve and filter - e.g. for OI, IV and/or best LEAP Covcall, Spread - option chains for specific underlyers
+  => find the best deal in terms of monthyl overall return
+>>>>>>> c142f56c373103407622238301519fbe4b7dcc45
+- display of timevalue (TV) andIV over time in stockchart
+- display of various strkes/expirydated of rollovers in chart
+- vary display of TV so that you candirectly see the "real" realizes profit of this position - with reolution of minutes 
+  Background: visualization of "time is money" in realtime
+- stabilizing, crash investigation
+
+
