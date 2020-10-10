@@ -50,19 +50,30 @@ class PositionViewer(QWidget):
         return datetime.utcfromtimestamp(ts)
 
     def calc_strike(self, cc, row):
-        radatetime = datetime.strptime(cc.statData.rollingActivity[0]["when"], "%Y%m%d %H:%M:%S")
-        if self.numpy2Datetime(row.name) < radatetime:
-            # this is cc.statData.buyWrite["option"]["@strike"]
-            return 150
+        if len(cc.statData.rollingActivity) == 0:
+            return cc.statData.buyWrite["option"]["@strike"]
         else:
-            for i, ra in enumerate(cc.statData.rollingActivity):
-                radatetime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
-                if self.numpy2Datetime(row.name) < radatetime:
-                    return ra["strike"]
+            entrydatetime = datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y %b %d %H:%M:%S")
+            radatetime = datetime.strptime(cc.statData.rollingActivity[0]["when"], "%Y%m%d %H:%M:%S")
 
-        return ra["strike"]
+            if self.numpy2Datetime(row.name) < entrydatetime:
+                return np.nan
+            elif self.numpy2Datetime(row.name) < radatetime:
+                return cc.statData.buyWrite["option"]["@strike"]
+            else:
+                for i, ra in enumerate(cc.statData.rollingActivity):
+                    radatetime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
+                    if self.numpy2Datetime(row.name) < radatetime:
+                        return ra["strike"]
 
-    def calc_timevalue(self, row):
+            return ra["strike"]
+
+    def calc_timevalue(self, cc, row):
+        entrydatetime = datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y %b %d %H:%M:%S")
+
+        if self.numpy2Datetime(row.name) < entrydatetime:
+            return np.nan
+
         sval = (row['High'] + row['Low']) / 2
         oval = (row['OHigh'] + row['OLow']) / 2
 
@@ -100,7 +111,7 @@ class PositionViewer(QWidget):
         comb.columns = ['Open', 'High', 'Low', 'Close', 'OOpen', 'OHigh', 'OLow', 'OClose']
 
         comb['strike']    = comb.apply(lambda row: self.calc_strike(cc,row), axis=1)
-        comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(row), axis=1)
+        comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(cc,row), axis=1)
 
         vlinedictlst = [datetime.strftime(datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y %b %d %H:%M:%S"), "%Y%m%d %H:%M:%S")]
         hlinelst = []
@@ -112,9 +123,9 @@ class PositionViewer(QWidget):
             collst.append('r')
 
         apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax2, color='black')
+        strkdict = mpf.make_addplot(comb['strike'], ax=self.ax2, color='green')
 
-        mpf.plot(comb,addplot=apdict, returnfig = True,type='candle', ax=self.ax,
-                 hlines=dict(hlines=hlinelst, linewidths=1,colors=collst,linestyle='-.'),
+        mpf.plot(comb,addplot=[apdict,strkdict], returnfig = True,type='candle', ax=self.ax, axisoff=True,
                  vlines=dict(vlines=vlinedictlst, linewidths=1),
                  tight_layout=True,figscale=0.75,show_nontrading=False,style='yahoo')
 

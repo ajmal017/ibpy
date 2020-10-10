@@ -140,8 +140,9 @@ class DemoWindow(QWidget):
             hlinelst.append(float(ra["strike"]))
 
         apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax2, color='black')
-        mpf.plot(comb,addplot=apdict, returnfig = True,type='candle', ax=self.ax,
-                 hlines=dict(hlines=hlinelst, linewidths=1),
+        strkdict = mpf.make_addplot(comb['strike'], ax=self.ax2, color='black')
+        mpf.plot(comb,addplot=[apdict, strkdict], returnfig = True,type='candle', ax=self.ax,
+                 #hlines=dict(hlines=hlinelst, linewidths=1),
                  vlines=dict(vlines=vlinedictlst, linewidths=1),
                  tight_layout=True,figscale=0.75,show_nontrading=False,style='yahoo')
 

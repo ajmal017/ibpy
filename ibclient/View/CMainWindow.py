@@ -90,8 +90,6 @@ class CMainWindow(QMainWindow):
         toolbar = self.addToolBar('Exit')
 
         toolbar.addAction(actionSelectFont)
-        toolbar.addAction(self.actionConnectToBrkApi)
-        toolbar.addAction(self.actionDisconnectFromBrkApi)
         toolbar.addAction(actionShowPositionViewer)
         toolbar.addAction(self.actionResizeColumnWidth)
         toolbar.addSeparator()
@@ -100,6 +98,8 @@ class CMainWindow(QMainWindow):
         toolbar.addWidget(self.watchlistSelectorCombo)
         toolbar.addSeparator()
         toolbar.addWidget(self.portSelectorCombo)
+        toolbar.addAction(self.actionConnectToBrkApi)
+        toolbar.addAction(self.actionDisconnectFromBrkApi)
 
         self.setStatusBar(self.statusBar)
 
