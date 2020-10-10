@@ -169,9 +169,9 @@ class CMTModel(QAbstractTableModel):
         globvars.totalCtv = self.summary.totalctv
         globvars.totalItv = self.summary.totalitv
 
-        self.layoutAboutToBeChanged.emit()
-        self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
-        self.layoutChanged.emit()
+        # self.layoutAboutToBeChanged.emit()
+        # self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
+        # self.layoutChanged.emit()
 
     def rowCount(self, parent):
         return int(len(self.bwl.keys())/2)

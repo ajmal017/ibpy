@@ -9,7 +9,6 @@ from datetime import datetime
 
 import matplotlib.dates as mdates
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from mplfinance.original_flavor import candlestick_ohlc
 import mplfinance as mpf
 from matplotlib.figure import Figure
 
@@ -24,15 +23,10 @@ class PositionViewer(QWidget):
         self.ax.set_facecolor('moccasin')
         self.ax2 = self.ax.twinx()
 
-        daily = pd.read_csv("Misc/Demo/yahoofinance-INTC-19950101-20040412_weekend.csv", index_col=0, parse_dates=True)
+        daily = pd.read_csv("Misc/Demo/SPY_20110701_20120630_Bollinger.csv", index_col=0, parse_dates=True)
         daily.drop('Adj Close', axis=1, inplace=True)
-        daily.reset_index(inplace=True)
-        daily.index.name = 'Date'
-        daily["Date"] = mdates.date2num(daily["Date"].values)
-        cols = ['Date', 'Open', 'High', 'Low', 'Close']
-        self.daily = daily[cols]
 
-        candlestick_ohlc(self.ax, self.daily.values, colorup="g", colordown="r", width=0.2)
+        mpf.plot(daily,type='candle', ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=True)
 
         for label in self.ax.xaxis.get_ticklabels():
             label.set_rotation(0)
@@ -40,8 +34,8 @@ class PositionViewer(QWidget):
         self.ax.xaxis_date()
         self.ax.grid(True)
         self.ax.legend(loc=0)
-        self.ax.set_ylabel("DEMO")
-        self.ax2.set_ylabel("TIMEVALUE")
+        self.ax.set_ylabel("STOCK - SPY")
+        self.ax2.set_ylabel("OPTION - TIMEVALUE")
         qvb = QVBoxLayout()
         qvb.addWidget(self.sc)
 
@@ -64,8 +58,20 @@ class PositionViewer(QWidget):
         dfsk = cc.histData
         dfop = cc.ophistData
 
-        dfsk.columns = ['Date', 'Open', 'High', 'Low', 'Close']
-        dfop.columns = ['Date', 'Open', 'High', 'Low', 'Close']
+        dfskorg = dfsk
+        dfoporg = dfop
+
+        idf = pd.read_csv('Misc/Demo/SPY_20110701_20120630_Bollinger.csv', index_col=0, parse_dates=True)
+
+        # dfsk.reset_index(inplace=True)
+        # dfsk.index.name = 'Date'
+
+        format = "%Y%m%d  %H:%M:%S"
+        dfop['Datetime'] = pd.to_datetime(dfop['Datetime'], format=format)
+        dfsk['Datetime'] = pd.to_datetime(dfop['Datetime'], format=format)
+
+        dfsk = dfsk.set_index('Datetime')
+        dfop = dfop.set_index('Datetime')
 
         dfsk = dfsk.sort_index()
         dfop = dfop.sort_index()
@@ -73,24 +79,24 @@ class PositionViewer(QWidget):
         rsk, csk = dfsk.shape
         rop, cop = dfop.shape
 
-        comb = dfsk.merge(dfop, on=['Date'])
-        comb.sort_values(by='Date', inplace=True)
-        comb.columns = ['Date', 'SOpen', 'SHigh', 'SLow', 'SClose', 'OOpen', 'OHigh', 'OLow', 'OClose']
-        comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(row, cc.statData.strike), axis=1)
+        # comb = dfskorg.merge(dfoporg, on=['Date'])
+        # comb.sort_values(by='Date', inplace=True)
+        # comb.columns = ['Date', 'SOpen', 'SHigh', 'SLow', 'SClose', 'OOpen', 'OHigh', 'OLow', 'OClose']
+        # comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(row, cc.statData.strike), axis=1)
 
-        dfsk.reset_index(inplace=True)
-        dfsk.index.name = 'Date'
-        cols = ['Date', 'Open', 'High', 'Low', 'Close']
-        tvcols = ['Date', 'Open']
-        self.dailys = dfsk[cols]
+        # cols = ['Date', 'Open', 'High', 'Low', 'Close']
+        # tvcols = ['Date', 'Open']
+        # self.dailys = dfsk[cols]
+        #
+        # self.tvdailys = dfsk[tvcols]
+        # self.tvdailys = self.tvdailys -cc.statData.strike
 
-        self.tvdailys = dfsk[tvcols]
-        self.tvdailys = self.tvdailys -cc.statData.strike
+        # candlestick_ohlc(self.ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.001)
+        mpf.plot(dfsk,type='candle', ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=False)
 
-        candlestick_ohlc(self.ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.001)
         self.ax.axhline(y=cc.statData.strike)
 
-        self.ax2.plot(comb['Date'], comb['timevalue'])
+        # self.ax2.plot(comb['Date'], comb['timevalue'])
 
         for label in self.ax.xaxis.get_ticklabels():
             label.set_rotation(0)

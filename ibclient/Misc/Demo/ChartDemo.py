@@ -10,7 +10,7 @@ from PyQt5.QtWidgets import *
 
 import matplotlib.dates as mdates
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
-from mplfinance.original_flavor import candlestick_ohlc
+#from mplfinance.original_flavor import candlestick_ohlc
 import mplfinance as mpf
 from matplotlib.figure import Figure
 
@@ -28,11 +28,11 @@ def prepareYahooDemo():
     ret = pd.read_csv("../../Misc/Demo/yahoofinance-INTC-19950101-20040412.csv", index_col=0,
                           parse_dates=True)
     ret.drop('Adj Close', axis=1, inplace=True)
-    ret.reset_index(inplace=True)
+    # ret.reset_index(inplace=True)
     ret.index.name = 'Date'
-    ret["Date"] = mdates.date2num(ret["Date"].values)
-    cols = ['Date', 'Open', 'High', 'Low', 'Close']
-    ret = ret[cols]
+    #ret["Date"] = mdates.date2num(ret["Date"].values)
+#    cols = ['Date', 'Open', 'High', 'Low', 'Close']
+#    ret = ret[cols]
     return ret
 
 
@@ -65,7 +65,22 @@ class DemoWindow(QWidget):
         self.ax.legend(loc=0)
         cols = ['Date', 'Open', 'High', 'Low', 'Close']
 
-        candlestick_ohlc(self.ax, sdatadf[cols].values, colorup='#77d879', colordown='#db3f3f', width=0.001)
+        idf = pd.read_csv('SPY_20110701_20120630_Bollinger.csv', index_col=0, parse_dates=True)
+        idf.shape
+        idf.head(3)
+        idf.tail(3)
+        # df = idf.loc['2011-07-01':'2011-12-30', :]
+        # df = idf.loc['2011-07-01':'2011-07-30', :]
+
+        #df = sdatadf.loc['1995-01-03':'1996-08-20', :]
+
+        mpf.plot(sdatadf,type='candle', ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=False)
+
+        #candlestick_ohlc(self.ax, sdatadf[cols].values, colorup='#77d879', colordown='#db3f3f', width=0.001)
+        # x = sdatadf['Date']
+        # y = sdatadf['Close']
+        # self.ax.plot(self.ax, x, y)
+
 
         qvb = QVBoxLayout()
         qvb.addWidget(self.sc)

@@ -110,10 +110,10 @@ class BrkConnection:
             counter = counter + 1
 
         cc.histData =  self.brkApi.getHistData(icc)
-        cc.histData.to_csv("Model/Cache/"+ul.symbol+".csv")
-
         cc.ophistData =  self.brkApi.getHistData(icc+1)
-        cc.ophistData.to_csv("Model/Cache/"+op.symbol+op.lastTradeDateOrContractMonth+".csv")
+
+        # cc.histData.to_csv("Model/Cache/"+ul.symbol+".csv")
+        # cc.ophistData.to_csv("Model/Cache/"+op.symbol+op.lastTradeDateOrContractMonth+".csv")
 
     def connectToIBKR(self):
         self.brkApi.connect('127.0.0.1', self.brokerPort, const.IBCLIENTID)

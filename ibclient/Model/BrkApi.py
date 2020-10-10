@@ -41,7 +41,8 @@ class BrkApi(EWrapper, EClient):
 
     def getHistData(self, ti: int):
         df = pd.DataFrame(self.histdata[ti])
-        df.columns = ['Date', 'Open', 'High', 'Low', 'Close']
+        df.columns = ['Datetime', 'Open', 'High', 'Low', 'Close']
+        df.set_index('Datetime')
         return df
 
     def resetHistData(self, reqId: int):
@@ -56,17 +57,17 @@ class BrkApi(EWrapper, EClient):
             self.histdata[reqId] = []
 
         if reqId % 2 == 0:
-            if len(bar.date) == 8:
-                bar.date = mdates.date2num(datetime.datetime.strptime(bar.date + " 00:00:00", "%Y%m%d %H:%M:%S"))
-            else:
-                bar.date = mdates.date2num(datetime.datetime.strptime(bar.date, "%Y%m%d %H:%M:%S"))
+            # if len(bar.date) == 8:
+            #     bar.date = mdates.date2num(datetime.datetime.strptime(bar.date + " 00:00:00", "%Y%m%d %H:%M:%S"))
+            # else:
+            #     bar.date = mdates.date2num(datetime.datetime.strptime(bar.date, "%Y%m%d %H:%M:%S"))
 
             bw.set_stk_price(bar.close)
         else:
-            if len(bar.date) == 8:
-                bar.date = mdates.date2num(datetime.datetime.strptime(bar.date + " 00:00:00", "%Y%m%d %H:%M:%S"))
-            else:
-                bar.date = mdates.date2num(datetime.datetime.strptime(bar.date, "%Y%m%d %H:%M:%S"))
+            # if len(bar.date) == 8:
+            #     bar.date = mdates.date2num(datetime.datetime.strptime(bar.date + " 00:00:00", "%Y%m%d %H:%M:%S"))
+            # else:
+            #     bar.date = mdates.date2num(datetime.datetime.strptime(bar.date, "%Y%m%d %H:%M:%S"))
             bw.set_opt_price(bar.close)
 
 
