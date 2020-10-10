@@ -23,10 +23,13 @@ class PositionViewer(QWidget):
         self.ax.set_facecolor('moccasin')
         self.ax2 = self.ax.twinx()
 
-        daily = pd.read_csv("Misc/Demo/SPY_20110701_20120630_Bollinger.csv", index_col=0, parse_dates=True)
+        # daily = pd.read_csv("Misc/Demo/SPY_20110701_20120630_Bollinger.csv", index_col=0, parse_dates=True)
+        daily = pd.read_csv("Misc/Demo/Demo.csv", index_col=0, parse_dates=True)
+
         daily.drop('Adj Close', axis=1, inplace=True)
 
-        mpf.plot(daily,type='candle', ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=True)
+#        mpf.plot(daily,type='candle', mav=4, ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=False, style="yahoo")
+        mpf.plot(daily,type='candle', mav=4, ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=False)
 
         for label in self.ax.xaxis.get_ticklabels():
             label.set_rotation(0)
@@ -61,14 +64,9 @@ class PositionViewer(QWidget):
         dfskorg = dfsk
         dfoporg = dfop
 
-        idf = pd.read_csv('Misc/Demo/SPY_20110701_20120630_Bollinger.csv', index_col=0, parse_dates=True)
-
-        # dfsk.reset_index(inplace=True)
-        # dfsk.index.name = 'Date'
-
         format = "%Y%m%d  %H:%M:%S"
         dfop['Datetime'] = pd.to_datetime(dfop['Datetime'], format=format)
-        dfsk['Datetime'] = pd.to_datetime(dfop['Datetime'], format=format)
+        dfsk['Datetime'] = pd.to_datetime(dfsk['Datetime'], format=format)
 
         dfsk = dfsk.set_index('Datetime')
         dfop = dfop.set_index('Datetime')
@@ -92,6 +90,7 @@ class PositionViewer(QWidget):
         # self.tvdailys = self.tvdailys -cc.statData.strike
 
         # candlestick_ohlc(self.ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.001)
+        #mpf.plot(dfsk,type='candle', mav=4, ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=False, style="yahoo")
         mpf.plot(dfsk,type='candle', ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=False)
 
         self.ax.axhline(y=cc.statData.strike)
