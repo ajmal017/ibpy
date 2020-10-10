@@ -159,6 +159,7 @@ class BrkConnection:
                                                             00)) and datetime.datetime.today().weekday() >= 0 and datetime.datetime.today().weekday() < 5
             cboeIsOpen = Support.is_time_between(datetime.time(15, 30), datetime.time(22,
                                                             00)) and datetime.datetime.today().weekday() >= 0 and datetime.datetime.today().weekday() < 5
+
             if icc %2 == 0:
                 if nyseIsOpen:
                     self.brkApi.reqMktData(icc, self.bw[cc].underlyer(), "", False, False, [])
