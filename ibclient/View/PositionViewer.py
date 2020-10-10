@@ -1,11 +1,10 @@
+from datetime import datetime
+import pandas as pd
+import numpy as np
+
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
-
-import pandas as pd
-from scipy.integrate import quad
-import numpy as np
-from datetime import datetime
 
 import matplotlib.dates as mdates
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
@@ -44,14 +43,33 @@ class PositionViewer(QWidget):
 
         self.setLayout(qvb)
 
-    def calc_timevalue(self, row, strike):
-        sval = (row['SHigh'] + row['SLow']) / 2
+    def numpy2Datetime(self, input):
+        #input is of type numpy.datetime64, e.g. "numpy.datetime64('2020-08-07T15:30:00.000000000')"
+        dt64 = input
+        ts = (dt64 - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+        return datetime.utcfromtimestamp(ts)
+
+    def calc_strike(self, cc, row):
+        radatetime = datetime.strptime(cc.statData.rollingActivity[0]["when"], "%Y%m%d %H:%M:%S")
+        if self.numpy2Datetime(row.name) < radatetime:
+            # this is cc.statData.buyWrite["option"]["@strike"]
+            return 150
+        else:
+            for i, ra in enumerate(cc.statData.rollingActivity):
+                radatetime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
+                if self.numpy2Datetime(row.name) < radatetime:
+                    return ra["strike"]
+
+        return ra["strike"]
+
+    def calc_timevalue(self, row):
+        sval = (row['High'] + row['Low']) / 2
         oval = (row['OHigh'] + row['OLow']) / 2
 
-        if sval < strike:
+        if sval < float(row["strike"]):
             tv = oval
         else:
-            tv = oval - (sval - strike)
+            tv = oval - (sval - float(row["strike"]))
         return tv
 
     def updateMplChart(self, cc):
@@ -77,6 +95,29 @@ class PositionViewer(QWidget):
         rsk, csk = dfsk.shape
         rop, cop = dfop.shape
 
+        comb = dfsk.merge(dfsk, on=['Datetime'])
+        comb.sort_values(by='Datetime', inplace=True)
+        comb.columns = ['Open', 'High', 'Low', 'Close', 'OOpen', 'OHigh', 'OLow', 'OClose']
+
+        comb['strike']    = comb.apply(lambda row: self.calc_strike(cc,row), axis=1)
+        comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(row), axis=1)
+
+        vlinedictlst = [datetime.strftime(datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y %b %d %H:%M:%S"), "%Y%m%d %H:%M:%S")]
+        hlinelst = []
+        collst=[]
+        for ra in cc.statData.rollingActivity:
+            rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
+            vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
+            hlinelst.append(float(ra["strike"]))
+            collst.append('r')
+
+        apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax2, color='black')
+
+        mpf.plot(comb,addplot=apdict, returnfig = True,type='candle', ax=self.ax,
+                 hlines=dict(hlines=hlinelst, linewidths=1,colors=collst,linestyle='-.'),
+                 vlines=dict(vlines=vlinedictlst, linewidths=1),
+                 tight_layout=True,figscale=0.75,show_nontrading=False,style='yahoo')
+
         # comb = dfskorg.merge(dfoporg, on=['Date'])
         # comb.sort_values(by='Date', inplace=True)
         # comb.columns = ['Date', 'SOpen', 'SHigh', 'SLow', 'SClose', 'OOpen', 'OHigh', 'OLow', 'OClose']
@@ -91,25 +132,25 @@ class PositionViewer(QWidget):
 
         # candlestick_ohlc(self.ax, self.dailys.values, colorup='#77d879', colordown='#db3f3f', width=0.001)
         #mpf.plot(dfsk,type='candle', mav=4, ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=False, style="yahoo")
-        mpf.plot(dfsk,type='candle', ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=False)
+#        mpf.plot(dfsk,type='candle', ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=False)
 
-        self.ax.axhline(y=cc.statData.strike)
+#        self.ax.axhline(y=cc.statData.strike)
 
         # self.ax2.plot(comb['Date'], comb['timevalue'])
 
-        for label in self.ax.xaxis.get_ticklabels():
-            label.set_rotation(0)
-
-        self.ax.xaxis_date()
-        self.ax.set_xlabel('time')
-
-        enttime = datetime.strptime(cc.statData.enteringTime, "%Y %b %d %H:%M:%S")
-        enttime = mdates.date2num(enttime)
-        self.ax.axvline(x=enttime)
-        for ra in cc.statData.rollingActivity:
-            rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
-            ratime = mdates.date2num(rastrptime)
-            self.ax.axvline(x=ratime, color='r')
+        # for label in self.ax.xaxis.get_ticklabels():
+        #     label.set_rotation(0)
+        #
+        # self.ax.xaxis_date()
+        # self.ax.set_xlabel('time')
+        #
+        # enttime = datetime.strptime(cc.statData.enteringTime, "%Y %b %d %H:%M:%S")
+        # enttime = mdates.date2num(enttime)
+        # self.ax.axvline(x=enttime)
+        # for ra in cc.statData.rollingActivity:
+        #     rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
+        #     ratime = mdates.date2num(rastrptime)
+        #     self.ax.axvline(x=ratime, color='r')
 
         self.ax.set_ylabel(cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
 

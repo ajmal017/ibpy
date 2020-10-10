@@ -1,5 +1,6 @@
 from datetime import datetime
 import pandas as pd
+import numpy as np
 
 from mplfinance.original_flavor import candlestick_ohlc
 import matplotlib.pyplot as plt
@@ -83,6 +84,28 @@ class DemoWindow(QWidget):
         rgensdatadf.sort_index(inplace=True)
         rgenodtaadf.sort_index(inplace=True)
 
+        a = {'import': 'trade', 1: 7.8}
+
+        self.rollingActivity = [
+            {
+                "when" : "20200917 16:15:19",
+                "from" : "20200918",
+                "to"   : "20201016",
+                "strike": "150"
+            },
+            {
+                "when"  : "20201006 20:52:55",
+                "from"  : "20201016",
+                "to"    : "20201120",
+                "strike": "155"
+            },
+            {
+                "when"  : "20201007 20:32:32",
+                "from"  : "20201120",
+                "to"    : "20201120",
+                "strike": "160"
+            },
+        ]
         # cols = ['Date', 'Open', 'High', 'Low', 'Close']
         # sdatadf.columns = cols
         # odtaadf.columns = cols
@@ -94,26 +117,47 @@ class DemoWindow(QWidget):
         self.ax.grid(True)
         self.ax.legend(loc=0)
         self.ax2 = self.ax.twinx()
-        #self.ax2.set_ylabel("OPTION - TIMEVALUE")
-        cols = ['Date', 'Open', 'High', 'Low', 'Close']
-
-        #df = sdatadf.loc['1995-01-03':'1996-08-20', :]
-
-        dates_df = pd.DataFrame(sdatadf.index)
-        where_values = pd.notnull(dates_df[(dates_df >= '1996-08-20') & (dates_df <= '1996-08-21')])['Date'].values
 
         comb = rgensdatadf.merge(rgenodtaadf, on=['Date'])
         comb.sort_values(by='Date', inplace=True)
         comb.columns = ['Open', 'High', 'Low', 'Close', 'OOpen', 'OHigh', 'OLow', 'OClose']
-        comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(row, 160), axis=1)
 
+        # for ra in rollingActivity:
+        #     rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
+        #     #ratime = mdates.date2num(rastrptime)
+        #     vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
+
+
+        comb['strike']    = comb.apply(lambda row: self.calc_strike(row), axis=1)
+        comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(row), axis=1)
+
+        vlinedictlst = []
+        hlinelst = []
+        for ra in self.rollingActivity:
+            rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
+            # ratime = mdates.date2num(rastrptime)
+            vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
+            hlinelst.append(float(ra["strike"]))
 
         apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax2, color='black')
-
-        fig = mpf.plot(comb,addplot=apdict, returnfig = True,type='candle', ax=self.ax,
-                 hlines=[150,160],
-                       vlines=dict(vlines='2020-09-11', linewidths=100, alpha=0.4),
+        mpf.plot(comb,addplot=apdict, returnfig = True,type='candle', ax=self.ax,
+                 hlines=dict(hlines=hlinelst, linewidths=1),
+                 vlines=dict(vlines=vlinedictlst, linewidths=1),
                  tight_layout=True,figscale=0.75,show_nontrading=False,style='yahoo')
+
+        qvb = QVBoxLayout()
+        qvb.addWidget(self.sc)
+
+        self.setLayout(qvb)
+
+
+        #self.ax2.set_ylabel("OPTION - TIMEVALUE")
+        #cols = ['Date', 'Open', 'High', 'Low', 'Close']
+
+        #df = sdatadf.loc['1995-01-03':'1996-08-20', :]
+
+        #dates_df = pd.DataFrame(sdatadf.index)
+        #where_values = pd.notnull(dates_df[(dates_df >= '1996-08-20') & (dates_df <= '1996-08-21')])['Date'].values
 
 
         # fig = mpf.plot(rgensdatadf, returnfig = True,type='candle', ax=self.ax,
@@ -132,20 +176,33 @@ class DemoWindow(QWidget):
         # y = sdatadf['Close']
         # self.ax.plot(self.ax, x, y)
 
+    def numpy2Datetime(self, input):
+        #input is of type numpy.datetime64, e.g. "numpy.datetime64('2020-08-07T15:30:00.000000000')"
+        dt64 = input
+        ts = (dt64 - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
+        return datetime.utcfromtimestamp(ts)
 
-        qvb = QVBoxLayout()
-        qvb.addWidget(self.sc)
+    def calc_strike(self, row):
+        radatetime = datetime.strptime(self.rollingActivity[0]["when"], "%Y%m%d %H:%M:%S")
+        if self.numpy2Datetime(row.name) < radatetime:
+            #this is cc.statData.buyWrite["option"]["@strike"]
+            return 150
+        else:
+            for i,ra in enumerate(self.rollingActivity):
+                radatetime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
+                if self.numpy2Datetime(row.name) < radatetime:
+                    return ra["strike"]
 
-        self.setLayout(qvb)
+        return ra["strike"]
 
-    def calc_timevalue(self, row, strike):
+    def calc_timevalue(self, row):
         sval = (row['High'] + row['Low']) / 2
         oval = (row['OHigh'] + row['OLow']) / 2
 
-        if sval < strike:
+        if sval < float(row["strike"]):
             tv = oval
         else:
-            tv = oval - (sval - strike)
+            tv = oval - (sval - float(row["strike"]))
         return tv
 
 if __name__ == '__main__':
