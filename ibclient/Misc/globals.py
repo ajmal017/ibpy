@@ -78,6 +78,8 @@ class globvars:
     totalCtv                    = None
     lock                        = None
     colors                      = None
+    exchgRates                  = None
+    eurchfrate                  = None
 
     def init_globvars():
         globvars.testscriptcounter           = 0
@@ -118,9 +120,11 @@ class globvars:
         globvars.totalItv                   = 0
         globvars.totalCtv                   = 0
         globvars.colors                     = PALETTES_NAMED['colorblind']
+        globvars.exchgRates                 = []
+        globvars.eurchfrate                 = 0.0
 
-        globvars.header1['Id'         ] = "Unique Identifier"
-        globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
+        globvars.header1['TV-Cg/%'   ] = "Change of Timevalue in %"
+        globvars.header1['Symbl'     ] = "Tickersymbol of underlyer"
         globvars.header1['Ind'   ] = "Industry of Underlyer"
         globvars.header1['Rld'     ] = "How often this position was rolled"
         globvars.header1['Pos'        ] = "How many legs"
@@ -136,8 +140,8 @@ class globvars:
         globvars.header1['BWP-Prof'   ] = "Profit of the Buywrite"
         globvars.header1['BWP-PL'     ] = ""
         globvars.header1['UL-Last'    ] = "underlyedr - last known price traded"
-        globvars.header1['ULL-BWP'    ] = "UL-Last minus bwprice (for detecting when breakeven will is reached)"
-        globvars.header1['ULL-STRKE'  ] = "UL-Last - Strike"
+        globvars.header1['UL-BWP'    ] = "UL-Last minus bwprice (for detecting when breakeven will is reached)"
+        globvars.header1['UL-STK'  ] = "UL-Last - Strike"
         globvars.header1['UL-Chge'    ] = "Change of UL-Price since initiation of position"
         globvars.header1['UL-Chge pct'] = ".. in pct"
         globvars.header1['UL-Bid'     ] = "last known bid for underlyer"
@@ -155,8 +159,8 @@ class globvars:
         globvars.header1['CTV/$'      ] = "Current TimeValue in dollar for this position"
         globvars.header1['DWNSDPT/%'  ] = "Downside Protection in percent"
         globvars.header1['UPSDPT/%'   ] = "Upside Potential in percent"
-        globvars.header1['TV-Chg/%'   ] = "Change of Timevalue in %"
-        globvars.header1['TV-Prof'    ] = "Accumulated timevalue profit of this position"
+        globvars.header1['Id'         ] = "Unique Identifier"
+        globvars.header1['TV-Prof'] = "Accumulated timevalue profit of this position"
         globvars.header1['RLZD'       ] = "Realized from option buy back when rolling"
         globvars.header1['UL-URPNL'   ] = "Unrealizerd PNL for Unterlyer"
         globvars.header1['TOTAL'      ] = "Unrealizerd PNL for Unterlyer PLUS Realized from option buy back when rolling PLUS Accumulated timevalue profit of this position"

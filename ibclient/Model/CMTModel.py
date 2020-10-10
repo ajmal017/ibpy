@@ -94,7 +94,7 @@ class CMTModel(QAbstractTableModel):
     def initData(self, c):
         self.controller = c
 
-        with open('Config/cc.xml') as fd:
+        with open('C:/git/ibpy/ibclient/Config/cc.xml') as fd:
             ccdict = xmltodict.parse(fd.read())
 
         tickerId = const.INITIALTTICKERID
@@ -138,7 +138,6 @@ class CMTModel(QAbstractTableModel):
             self.timer.stop()
 
     def updateModel(self):
-#        globvars.lock.acquire()
         globvars.tvprofit = 0
         k = list(self.bwl.keys())[0]
 
@@ -173,7 +172,6 @@ class CMTModel(QAbstractTableModel):
         self.layoutAboutToBeChanged.emit()
         self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
         self.layoutChanged.emit()
-#        globvars.lock.release()
 
     def rowCount(self, parent):
         return int(len(self.bwl.keys())/2)

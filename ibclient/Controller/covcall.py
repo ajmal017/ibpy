@@ -253,14 +253,14 @@ class covered_call():
         self.upSidePotentPct = self.calcUpSidePotential()
 
         return (
-            self.statData.buyWrite["@id"],
+            "{:.2f}".format(100 * pcttvloss),
             self.statData.buyWrite["underlyer"]["@tickerSymbol"],
             self.statData.industry,
             len(self.statData.rollingActivity),
             self.statData.position,
             self.statData.duration,
             "{:.2f}".format(self.statData.strike),
-            self.statData.expiry,
+            datetime.strptime(self.statData.expiry, "%Y%m%d").strftime("%d.%m"),
             self.statData.earningscall,
             self.statData.get_ioa_initial() + "=>" + self.get_ioa_now(),
             "{:.2f}".format(self.statData.inistkprice),          #UL-Init
@@ -289,7 +289,7 @@ class covered_call():
             "{:.2f}".format(self.ctv()*self.statData.position*100),
             "{:.2f}".format(self.downSideProtPct),
             "{:.2f}".format(self.upSidePotentPct),
-            "{:.2f}".format(100*pcttvloss),
+            self.statData.buyWrite["@id"],
             "{:.2f}".format(self.statData.itv() * self.statData.position * 100 - self.ctv()*self.statData.position*100),
             "{:.2f}".format(self.realized),
             "{:.2f}".format(ulurpnl),

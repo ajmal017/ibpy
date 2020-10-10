@@ -35,7 +35,7 @@ class PositionViewer(QWidget):
         candlestick_ohlc(self.ax, self.daily.values, colorup="g", colordown="r", width=0.2)
 
         for label in self.ax.xaxis.get_ticklabels():
-            label.set_rotation(45)
+            label.set_rotation(0)
         self.ax.axhline()
         self.ax.xaxis_date()
         self.ax.grid(True)
@@ -93,7 +93,7 @@ class PositionViewer(QWidget):
         self.ax2.plot(comb['Date'], comb['timevalue'])
 
         for label in self.ax.xaxis.get_ticklabels():
-            label.set_rotation(45)
+            label.set_rotation(0)
 
         self.ax.xaxis_date()
         self.ax.set_xlabel('time')

@@ -20,6 +20,8 @@ class BrkApi(EWrapper, EClient):
         self.endflag = {}
         self.histdata = {}
         self.statusbar =  None
+        self.exchgRates = []
+        self.eurchf = 0
 
     def setAccount(self, act):
         self.account = act
@@ -95,30 +97,37 @@ class BrkApi(EWrapper, EClient):
         super().contractDetailsEnd(reqId)
 
     def tickPrice(self, reqId, tickType, value, attrib):
-        globvars.lock.acquire()
-        tickerId = str(reqId)
-        bw = self.buyWrites[tickerId]
         tt = str(tickType)
+        tickerId = str(reqId)
+        if tickerId in self.buyWrites:
+            bw = self.buyWrites[tickerId]
 
-        if reqId % 2 == 0:
-            if tt == const.LASTPRICE:
-                bw.tickData.ullst  = float(value)
-            elif tt == const.BIDPRICE:
-                bw.tickData.ulbid = float(value)
-            elif tt == const.ASKPRICE:
-                bw.tickData.ulask = float(value)
-        else:
-            if tt == const.LASTPRICE:
-                bw.tickData.oplst  = float(value)
-            elif tt == const.BIDPRICE:
-                bw.tickData.opbid = float(value)
-            elif tt == const.ASKPRICE:
-                bw.tickData.opask = float(value)
-        globvars.lock.release()
+            if reqId % 2 == 0:
+                if tt == const.LASTPRICE:
+                    bw.tickData.ullst  = float(value)
+                elif tt == const.BIDPRICE:
+                    bw.tickData.ulbid = float(value)
+                elif tt == const.ASKPRICE:
+                    bw.tickData.ulask = float(value)
+            else:
+                if tt == const.LASTPRICE:
+                    bw.tickData.oplst  = float(value)
+                elif tt == const.BIDPRICE:
+                    bw.tickData.opbid = float(value)
+                elif tt == const.ASKPRICE:
+                    bw.tickData.opask = float(value)
 
 
     def updateAccountValue(self, key:str, val:str, currency:str, accountName:str):
         globvars.lock.acquire()
+        self.apiLogger.info("%s: %s", key,  val)
+        if key == "ExchangeRate":
+            if len(globvars.exchgRates) < 4:
+                globvars.exchgRates.append(val)
+            else:
+                globvars.exchgRates.clear()
+                globvars.exchgRates.append(val)
+
         self.account.update(key, val)
         globvars.lock.release()
 

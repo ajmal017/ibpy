@@ -3,6 +3,8 @@ import time
 #from datetime import datetime, time,
 import threading
 
+from ibapi.contract import Contract
+
 import pandas as pd
 
 from Misc.globals import globvars

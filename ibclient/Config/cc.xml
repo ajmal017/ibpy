@@ -13,6 +13,7 @@
         <option expiry="20200918" strike="105" multiplier="100" price = "6.216"/>
         <rolling_activities>
             <rolled when="20200918 20:16:11" from="20200918" to="20201016" strike="105" buyprice = "0.00" sellprice="1.95" ulprice="99.50" commission = "0.24"/>
+            <rolled when="20201009 15:39:26" from="20201016" to="20201120" strike="110" buyprice = "6.43" sellprice="6.48" ulprice="110.85" commission = "0.24"/>
         </rolling_activities>
     </bw>
 
@@ -56,6 +57,7 @@
         <option expiry="20200918" strike="195" multiplier="100" price = "20.298"/>
         <rolling_activities>
             <rolled when="20200910 19:49:53" from="20200918" to="20201016" strike="200"  buyprice = "2.1" sellprice="4.5" ulprice="175.75" commission = "0.67"/>
+            <rolled when="20201009 15:54:02" from="20201016" to="20201030" strike="210"  buyprice = "10.95" sellprice="8.75" ulprice="209.50" commission = "1.39"/>
         </rolling_activities>
     </bw>
 
@@ -126,6 +128,7 @@
         <option expiry="20200918" strike="106" multiplier="100" price = "3.043"/>
         <rolling_activities>
             <rolled when="20200911 21:19:05" from="20200918" to="20201016" strike="106" buyprice = "0.57" sellprice="1.75" ulprice="104.65" commission = "1.27"/>
+            <rolled when="20201009 17:08:51" from="20201016" to="20201030" strike="109" buyprice = "2.53" sellprice="1.45" ulprice="108.15" commission = "1.27"/>
         </rolling_activities>
     </bw>
 
@@ -185,6 +188,7 @@
     <underlyer type="STK" tickerSymbol="MNST" price = "80.00" earningscall = "20201103"/>
     <option expiry="20201016" strike="80" multiplier="100" price = "2.82"/>
         <rolling_activities>
+            <rolled when="20201009 21:52:09" from="20201016" to="20201030" strike="80"  buyprice = "1.68" sellprice="2.63" ulprice="81.07" commission = "1.38"/>
         </rolling_activities>
    </bw>
 
@@ -212,6 +216,11 @@
    <bw id="26" enteringTime="2020 OCT 08 21:52:41" enteringPrice="37.18" commission="2.32" quantity="2">
         <underlyer type="STK" tickerSymbol="KBH" price = "39.99" earningscall = "20201222"/>
         <option expiry="20201120" strike="40" multiplier="100" price = "2.81"/>
+   </bw>
+
+   <bw id="27" enteringTime="2020 OCT 09 17:20:09" enteringPrice="14.41" commission="4.08" quantity="5">
+        <underlyer type="STK" tickerSymbol="QNST" price = "17.09" earningscall = "20201104"/>
+        <option expiry="20201120" strike="15" multiplier="100" price = "2.68"/>
    </bw>
 
 <!--   <bw id="26" name="AMZN" enteringTime="2020 SEP 2 19:35:18" enteringPrice="3023.85" commission="1.49" quantity="1" exchange="SMART">-->

@@ -8,9 +8,11 @@ from Misc.globals import globvars
 class StatusBar(QStatusBar):
     def __init__(self, ctrl, parent = None):
         super(StatusBar, self).__init__(parent)
+        self.exchgRatesLbl = []
         self.controller = ctrl
         self.nlqInfo = QLabel("NLQINFORMATION")
         self.mrgInfo = QLabel("NLQINFORMATION")
+        self.exchgRatesLbl = QLabel("")
         self.totalInfo = QLabel("--PROFIT--")
         self.totalCtv = QLabel("--TCTV--")
         self.totalItv = QLabel("--TITV--")
@@ -18,6 +20,7 @@ class StatusBar(QStatusBar):
         self.apiUpdateCounterLabel = QLabel("ApiUpdate")
         self.dtlbl = QLabel("")
 
+        self.addPermanentWidget(self.exchgRatesLbl)
         self.addPermanentWidget(QLabel("ITV-CTV:"))
         self.addPermanentWidget(self.tvdiff)
         self.addPermanentWidget(QLabel("CTV:"))
@@ -43,8 +46,11 @@ class StatusBar(QStatusBar):
         if globvars.connectionState == "CONNECTED":
             self.dtlbl.setText(datetime.now().strftime("%H:%M:%S"))
             act = self.controller.model.account
+            # print(str(globvars.eurchfrate))
+            # self.exchgRatesLbl.setText(str(globvars.eurchfrate))
             if "NetLiquidation" in act.accountData:
                 self.showMessage("last acctupdate: "+act.accountData["lastUpdate"])
+                # self.exchgRatesLbl.setText(str(globvars.eurchfrate))
                 self.nlqInfo.setText(str(act.accountData["NetLiquidation"]))
                 self.mrgInfo.setText(str(act.accountData["FullInitMarginReq"]))
                 self.totalCtv.setText("{:.2f}".format((globvars.totalCtv)))
