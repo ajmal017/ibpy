@@ -13,18 +13,14 @@ class CMainWindow(QMainWindow):
     def __init__(self, w, c, l):
         super().__init__()
         self.settings = QSettings(Misc.const.COMPANY_NAME, Misc.const.APPLICATION_NAME)
-        self.centerLayout = QVBoxLayout()
 
-        self.cwidget = w
+        self.cwidget    = w
         self.controller = c
-        self.logger = l
+        self.logger     = l
         self.positionViewer = PositionViewer(l)
 
         self.setStatusBar(StatusBar(c))
         self.addToolBar(ToolBar(w,c,self.positionViewer))
-
-        self.centerLayout.addWidget(self.cwidget)
-        self.centerLayout.addWidget(self.positionViewer)
 
     def createMenu(self):
         exitAct = QAction(QIcon('exit24.png'), 'Exit', self)
@@ -38,12 +34,23 @@ class CMainWindow(QMainWindow):
         return menubar
 
     def initUI(self):
-        self.vspltr = QSplitter(Qt.Vertical)
-        self.vspltr.addWidget(self.cwidget)
-        self.vspltr.addWidget(self.positionViewer)
-        self.setCentralWidget(self.vspltr)
-        self.createMenu()
+        self.centerLayout = QVBoxLayout()
 
+        self.dock2 = QDockWidget()
+        self.dock2.setAllowedAreas(Qt.TopDockWidgetArea)
+        self.dock2.setWidget(self.cwidget)
+
+        self.dock1 = QDockWidget()
+        self.dock1.setAllowedAreas(Qt.BottomDockWidgetArea)
+        self.dock1.setWidget(self.positionViewer)
+
+        self.centerLayout.addWidget(self.dock2)
+        self.centerLayout.addWidget(self.dock1)
+
+        centralWidget = QWidget()
+        centralWidget.setLayout(self.centerLayout)
+        self.setCentralWidget(centralWidget)
+        self.createMenu()
 
         self.setGeometry(100, 200, 1500, 800)
         self.setWindowTitle('Covered Call Analyzer Application')
