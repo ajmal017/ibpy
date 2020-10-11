@@ -103,8 +103,8 @@ class globvars:
         globvars.finish                      = False
         globvars.imagecounter                = 0
         globvars.sleepmodcntr                         = 0
-        globvars.logfilename                         = "mainLog.log"
-        globvars.apilogfilename             = "apiLog.log"
+        globvars.logfilename                         = "Logs/mainLog.log"
+        globvars.apilogfilename             = "Logs/apiLog.log"
         globvars.tickerData                 = {}
         globvars.logger                     = None
         globvars.tvprofit                   = 0

@@ -46,6 +46,37 @@ class CMainWindow(QMainWindow):
         action.triggered.connect(callback)
         return action
 
+    def getColorCbx(self):
+        ret = QComboBox()
+        for k in PALETTES_NAMED:
+            ret.addItem(k)
+        ret.setCurrentIndex(1)
+        ret.currentIndexChanged.connect(self.changeColorPalette)
+        return ret
+
+    def getWatchlistCbx(self):
+        ret = QComboBox()
+        ret.addItem("Current Portfolio")
+        ret.addItem("BCI Candidates")
+        ret.addItem("Closed Positions")
+        return ret
+
+    def getPortSelectlistCbx(self):
+        ret = QComboBox()
+        ret.addItem("TWS REAL  7495")
+        ret.addItem("TWS PAPER 7497")
+        ret.addItem("GTW REAL  4001")
+        ret.addItem("GTW PAPER 4002")
+        if (Misc.const.IBPORT == 7495):
+            ret.setCurrentIndex(0)
+        elif (Misc.const.IBPORT == 7497):
+            ret.setCurrentIndex(1)
+        elif (Misc.const.IBPORT == 4001):
+            ret.setCurrentIndex(2)
+        elif (Misc.const.IBPORT == 4002):
+            ret.setCurrentIndex(3)
+        return ret
+
     def initUI(self):
         self.vspltr = QSplitter(Qt.Vertical)
         self.vspltr.addWidget(self.cwidget)
@@ -59,33 +90,9 @@ class CMainWindow(QMainWindow):
         actionShowPositionViewer            = self.addAction('View/icons/Torch.png', "Show Position", self.showPositionViewer)
         self.actionResizeColumnWidth = self.addAction("View/icons/I don't know.png", "resize columnwidth in table", self.doActionResizeColumns)
 
-        self.colorSelectorCombo = QComboBox()
-        for k in PALETTES_NAMED:
-            self.colorSelectorCombo.addItem(k)
-
-        self.colorSelectorCombo.setCurrentIndex(1)
-        self.colorSelectorCombo.currentIndexChanged.connect(self.changeColorPalette)
-
-        self.watchlistSelectorCombo = QComboBox()
-        self.watchlistSelectorCombo.addItem("Current Portfolio")
-        self.watchlistSelectorCombo.addItem("BCI Candidates")
-        self.watchlistSelectorCombo.addItem("Closed Positions")
-
-        self.portSelectorCombo = QComboBox()
-        self.portSelectorCombo.addItem("TWS REAL  7495")
-        self.portSelectorCombo.addItem("TWS PAPER 7497")
-        self.portSelectorCombo.addItem("GTW REAL  4001")
-        self.portSelectorCombo.addItem("GTW PAPER 4002")
-        self.portSelectorCombo.currentIndexChanged.connect(self.changeBrokerPort)
-
-        if (Misc.const.IBPORT == 7495):
-            self.portSelectorCombo.setCurrentIndex(0)
-        elif (Misc.const.IBPORT == 7497):
-            self.portSelectorCombo.setCurrentIndex(1)
-        elif (Misc.const.IBPORT == 4001):
-            self.portSelectorCombo.setCurrentIndex(2)
-        elif (Misc.const.IBPORT == 4002):
-            self.portSelectorCombo.setCurrentIndex(3)
+        self.colorSelectorCombo         = self.getColorCbx()
+        self.watchlistSelectorCombo     = self.getWatchlistCbx()
+        self.portSelectorCombo          = self.getPortSelectlistCbx()
 
         toolbar = self.addToolBar('Exit')
 
@@ -101,9 +108,11 @@ class CMainWindow(QMainWindow):
         toolbar.addAction(self.actionConnectToBrkApi)
         toolbar.addAction(self.actionDisconnectFromBrkApi)
 
+        self.portSelectorCombo.currentIndexChanged.connect(self.changeBrokerPort)
+
         self.setStatusBar(self.statusBar)
 
-        self.setGeometry(100, 200, 1500, 500)
+        self.setGeometry(100, 200, 1500, 800)
         self.setWindowTitle('Covered Call Analyzer Application')
 
     def doActionResizeColumns(self):

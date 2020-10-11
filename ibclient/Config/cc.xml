@@ -223,15 +223,13 @@
         <option expiry="20201120" strike="15" multiplier="100" price = "2.68"/>
    </bw>
 
-   <bw id="99" enteringTime="2020 OCT 09 17:20:09" enteringPrice="14.41" commission="4.08" quantity="5">
-        <underlyer type="STK" tickerSymbol="DEMO" price = "" earningscall = "20201104"/>
-        <option expiry="20201120" strike="" multiplier="100" price = ""/>
-   </bw>
-
-<!--   <bw id="26" name="AMZN" enteringTime="2020 SEP 2 19:35:18" enteringPrice="3023.85" commission="1.49" quantity="1" exchange="SMART">-->
-<!--    <underlyer type="STK" tickerSymbol="AMZN" price = "3390" earningscall = "0"/>-->
-<!--    <option expiry="20200918" strike="3000" multiplier="100" price = "14.27"/>-->
-<!--       <rolling_activities>-->
-<!--       </rolling_activities>-->
-<!--   </bw>-->
+    <bw id="0" name="DEMO" enteringTime="2020 AUG 25 18:04:34" enteringPrice="143.12" commission="1.48" quantity="1">
+        <underlyer type="STK" tickerSymbol="DEMO" price = "147.474" earningscall = "20201029"/>
+        <option expiry="20200918" strike="150" multiplier="100" price = "4.338"/>
+        <rolling_activities>
+            <rolled when="20200917 16:15:19" from="20200918" to="20201016" strike="150" buyprice = "0.3" sellprice="4.82" ulprice="145.35" commission = "1.27"/>
+            <rolled when="20201006 20:52:55" from="20201016" to="20201120" strike="155" buyprice = "15.38" sellprice="17.50" ulprice="162.00" commission = "1.41"/>
+            <rolled when="20201007 20:32:32" from="20201120" to="20201120" strike="160" buyprice = "17.23" sellprice="14.03" ulprice="165.00" commission = "1.40"/>
+        </rolling_activities>
+    </bw>
 </coveredCalls>
