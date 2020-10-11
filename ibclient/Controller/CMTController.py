@@ -13,6 +13,9 @@ class Controller:
         self.model.getHistStockData(cc)
         pass
 
+    def getNumPositions(self):
+        return self.model.getNumPositions()
+
     def connect(self):
         self.model.connectBroker()
 

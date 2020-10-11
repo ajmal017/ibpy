@@ -1,3 +1,4 @@
+import sys
 from datetime import datetime
 import pandas as pd
 import numpy as np
@@ -54,7 +55,7 @@ class PositionViewer(QWidget):
         rsk, csk = dfsk.shape
         rop, cop = dfop.shape
 
-        comb = dfsk.merge(dfsk, on=['Datetime'])
+        comb = dfsk.merge(dfop, on=['Datetime'])
         comb.sort_values(by='Datetime', inplace=True)
         comb.columns = ['Open', 'High', 'Low', 'Close', 'OOpen', 'OHigh', 'OLow', 'OClose']
 
@@ -70,20 +71,21 @@ class PositionViewer(QWidget):
             hlinelst.append(float(ra["strike"]))
             collst.append('r')
 
-        apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax2, color='black')
+        apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax, color='black')
         strkdict = mpf.make_addplot(comb['strike'], ax=self.ax2, color='green')
 
-        mpf.plot(comb,addplot=[apdict,strkdict], returnfig = True,type='candle', ax=self.ax2,
+        mpf.plot(comb,addplot=[apdict,strkdict], mav=2, returnfig = True,type='candle', ax=self.ax2,
                  vlines=dict(vlines=vlinedictlst, linewidths=1),
-                 tight_layout=True,figscale=0.75,show_nontrading=False,style='yahoo')
+                 tight_layout=True,show_nontrading=False,style='yahoo')
 
         for label in self.ax.xaxis.get_ticklabels():
             label.set_rotation(0)
         # self.ax.xaxis_date()
         # self.ax.set_xlabel('time')
-        self.ax.set_ylabel(cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
+        self.ax2.set_ylabel(cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
+        self.ax.set_ylabel("TIMEVALUE")
         self.ax.grid(True)
-        self.ax.legend(loc=0)
+        # self.ax.legend(loc=0)
         self.sc.draw()
         return True
 
@@ -120,6 +122,7 @@ class PositionViewer(QWidget):
 
         sval = (row['High'] + row['Low']) / 2
         oval = (row['OHigh'] + row['OLow']) / 2
+        oval = row['OClose']
 
         if sval < float(row["strike"]):
             tv = oval

@@ -128,7 +128,7 @@ class covered_call():
             False, #             globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
             True,  #             globvars.header1['Industry'   ] = "Industry of Underlyer"
             False,  #             globvars.header1['Rolled'     ] = "How often this position was rolled"
-            True,  #             globvars.header1['Pos'        ] = "How many legs"
+            False,  #             globvars.header1['Pos'        ] = "How many legs"
             False, #             globvars.header1['Strike'     ] = "Duration"
             False, #             globvars.header1['Strike'     ] = "Strike"
             False, #             globvars.header1['Expiry'     ] = "Expiry"
@@ -217,8 +217,6 @@ class covered_call():
                     self.oplastcalculated = True
 
             self.uncertaintyFlag = False
-
-
         try:
             pcttvloss = self.ctv()/self.statData.itv()
         except ZeroDivisionError:
@@ -382,14 +380,19 @@ class covered_call():
         underlyer.currency = "USD"
         return underlyer
 
-    def option(self):
+    def option(self, expiry=None):
         option = Contract()
         option.symbol = self.statData.buyWrite["underlyer"]["@tickerSymbol"]
         option.avPrice = self.statData.inioptprice
         option.secType = "OPT"
         option.exchange = "SMART"
         option.currency = "USD"
-        option.lastTradeDateOrContractMonth = self.statData.expiry
+
+        if expiry == None:
+            option.lastTradeDateOrContractMonth = self.statData.expiry
+        else:
+            option.lastTradeDateOrContractMonth = expiry
+
         option.strike = self.statData.strike
         option.right = "Call"
         option.multiplier = "100"

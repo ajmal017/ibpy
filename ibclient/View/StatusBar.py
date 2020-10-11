@@ -20,6 +20,9 @@ class StatusBar(QStatusBar):
         self.apiUpdateCounterLabel = QLabel("ApiUpdate")
         self.dtlbl = QLabel("")
 
+        act = self.controller.model.account
+        self.showMessage("Accountupdate: " + act.accountData["lastUpdate"])
+
         self.addPermanentWidget(self.exchgRatesLbl)
         self.addPermanentWidget(QLabel("ITV-CTV:"))
         self.addPermanentWidget(self.tvdiff)
@@ -49,7 +52,7 @@ class StatusBar(QStatusBar):
             # print(str(globvars.eurchfrate))
             # self.exchgRatesLbl.setText(str(globvars.eurchfrate))
             if "NetLiquidation" in act.accountData:
-                self.showMessage("last acctupdate: "+act.accountData["lastUpdate"])
+                self.showMessage("Accountupdate: "+act.accountData["lastUpdate"])
                 # self.exchgRatesLbl.setText(str(globvars.eurchfrate))
                 self.nlqInfo.setText(str(act.accountData["NetLiquidation"]))
                 self.mrgInfo.setText(str(act.accountData["FullInitMarginReq"]))

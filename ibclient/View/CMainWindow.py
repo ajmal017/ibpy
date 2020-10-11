@@ -36,7 +36,7 @@ class CMainWindow(QMainWindow):
     def initUI(self):
         self.centerLayout = QVBoxLayout()
 
-        self.dock2 = QDockWidget("Portfolio Table")
+        self.dock2 = QDockWidget("Portfolio Table: "+str(self.controller.getNumPositions()) + " Positions")
         self.dock2.setAllowedAreas(Qt.TopDockWidgetArea)
         self.dock2.setAllowedAreas(Qt.BottomDockWidgetArea)
         self.dock2.setAllowedAreas(Qt.LeftDockWidgetArea)
@@ -61,7 +61,7 @@ class CMainWindow(QMainWindow):
         self.setCentralWidget(centralWidget)
         self.createMenu()
 
-        self.setGeometry(100, 200, 1500, 800)
+        self.setGeometry(50, 50, 1500, 800)
         self.setWindowTitle('Covered Call Analyzer Application')
 
     def contextMenuEvent(self, event):

@@ -333,3 +333,7 @@ class CMTModel(QAbstractTableModel):
         print(">>> setData() index.column = ", index.column())
         self.dataChanged.emit(index, index)
         return True
+
+    def getNumPositions(self):
+        #one less because of demo position
+        return int((len(self.bwl)/2) -1)
