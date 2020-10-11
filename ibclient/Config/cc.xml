@@ -1,4 +1,14 @@
 <coveredCalls>
+    <bw id="0" name="DEMO" enteringTime="2020 AUG 25 18:04:34" enteringPrice="143.12" commission="1.48" quantity="1">
+        <underlyer type="STK" tickerSymbol="DEMO" price = "147.474" earningscall = "20201029"/>
+        <option expiry="20200918" strike="150" multiplier="100" price = "4.338"/>
+        <rolling_activities>
+            <rolled when="20200917 16:15:19" from="20200918" to="20201016" strike="150" buyprice = "0.3" sellprice="4.82" ulprice="145.35" commission = "1.27"/>
+            <rolled when="20201006 20:52:55" from="20201016" to="20201120" strike="155" buyprice = "15.38" sellprice="17.50" ulprice="162.00" commission = "1.41"/>
+            <rolled when="20201007 20:32:32" from="20201120" to="20201120" strike="160" buyprice = "17.23" sellprice="14.03" ulprice="165.00" commission = "1.40"/>
+        </rolling_activities>
+    </bw>
+
     <bw id="1" name="AMD" enteringTime="2020 AUG 06 00:00:00" enteringPrice="77.522" commission="" quantity="2">
         <underlyer type="STK" tickerSymbol="AMD" price = "86.385" earningscall = "20201027"/>
         <option expiry="20200821" strike="78" multiplier="100" price = "9.25"/>
@@ -223,13 +233,4 @@
         <option expiry="20201120" strike="15" multiplier="100" price = "2.68"/>
    </bw>
 
-    <bw id="0" name="DEMO" enteringTime="2020 AUG 25 18:04:34" enteringPrice="143.12" commission="1.48" quantity="1">
-        <underlyer type="STK" tickerSymbol="DEMO" price = "147.474" earningscall = "20201029"/>
-        <option expiry="20200918" strike="150" multiplier="100" price = "4.338"/>
-        <rolling_activities>
-            <rolled when="20200917 16:15:19" from="20200918" to="20201016" strike="150" buyprice = "0.3" sellprice="4.82" ulprice="145.35" commission = "1.27"/>
-            <rolled when="20201006 20:52:55" from="20201016" to="20201120" strike="155" buyprice = "15.38" sellprice="17.50" ulprice="162.00" commission = "1.41"/>
-            <rolled when="20201007 20:32:32" from="20201120" to="20201120" strike="160" buyprice = "17.23" sellprice="14.03" ulprice="165.00" commission = "1.40"/>
-        </rolling_activities>
-    </bw>
 </coveredCalls>

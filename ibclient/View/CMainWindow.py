@@ -38,10 +38,16 @@ class CMainWindow(QMainWindow):
 
         self.dock2 = QDockWidget()
         self.dock2.setAllowedAreas(Qt.TopDockWidgetArea)
+        self.dock2.setAllowedAreas(Qt.BottomDockWidgetArea)
+        self.dock2.setAllowedAreas(Qt.LeftDockWidgetArea)
+        self.dock2.setAllowedAreas(Qt.RightDockWidgetArea)
         self.dock2.setWidget(self.cwidget)
 
         self.dock1 = QDockWidget()
         self.dock1.setAllowedAreas(Qt.BottomDockWidgetArea)
+        self.dock1.setAllowedAreas(Qt.TopDockWidgetArea)
+        self.dock1.setAllowedAreas(Qt.LeftDockWidgetArea)
+        self.dock1.setAllowedAreas(Qt.RightDockWidgetArea)
         self.dock1.setWidget(self.positionViewer)
 
         self.centerLayout.addWidget(self.dock2)

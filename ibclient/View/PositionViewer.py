@@ -32,8 +32,60 @@ class PositionViewer(QWidget):
         self.ax2.set_ylabel("OPTION - TIMEVALUE")
         qvb = QVBoxLayout()
         qvb.addWidget(self.sc)
-
         self.setLayout(qvb)
+
+    def updateMplChart(self, cc):
+        self.ax.clear()
+        self.ax2.clear()
+
+        dfsk = cc.histData
+        dfop = cc.ophistData
+
+        format = "%Y%m%d  %H:%M:%S"
+        dfop['Datetime'] = pd.to_datetime(dfop['Datetime'], format=format)
+        dfsk['Datetime'] = pd.to_datetime(dfsk['Datetime'], format=format)
+
+        dfsk = dfsk.set_index('Datetime')
+        dfop = dfop.set_index('Datetime')
+
+        dfsk = dfsk.sort_index()
+        dfop = dfop.sort_index()
+
+        rsk, csk = dfsk.shape
+        rop, cop = dfop.shape
+
+        comb = dfsk.merge(dfsk, on=['Datetime'])
+        comb.sort_values(by='Datetime', inplace=True)
+        comb.columns = ['Open', 'High', 'Low', 'Close', 'OOpen', 'OHigh', 'OLow', 'OClose']
+
+        comb['strike']    = comb.apply(lambda row: self.calc_strike(cc,row), axis=1)
+        comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(cc,row), axis=1)
+
+        vlinedictlst = [datetime.strftime(datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y %b %d %H:%M:%S"), "%Y%m%d %H:%M:%S")]
+        hlinelst = []
+        collst=[]
+        for ra in cc.statData.rollingActivity:
+            rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
+            vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
+            hlinelst.append(float(ra["strike"]))
+            collst.append('r')
+
+        apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax2, color='black')
+        strkdict = mpf.make_addplot(comb['strike'], ax=self.ax2, color='green')
+
+        mpf.plot(comb,addplot=[apdict,strkdict], returnfig = True,type='candle', ax=self.ax2,
+                 vlines=dict(vlines=vlinedictlst, linewidths=1),
+                 tight_layout=True,figscale=0.75,show_nontrading=False,style='yahoo')
+
+        for label in self.ax.xaxis.get_ticklabels():
+            label.set_rotation(0)
+        # self.ax.xaxis_date()
+        # self.ax.set_xlabel('time')
+        self.ax.set_ylabel(cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
+        self.ax.grid(True)
+        self.ax.legend(loc=0)
+        self.sc.draw()
+        return True
 
     def numpy2Datetime(self, input):
         #input is of type numpy.datetime64, e.g. "numpy.datetime64('2020-08-07T15:30:00.000000000')"
@@ -75,59 +127,6 @@ class PositionViewer(QWidget):
             tv = oval - (sval - float(row["strike"]))
         return tv
 
-    def updateMplChart(self, cc):
-        self.ax.clear()
-        self.ax2.clear()
-
-        dfsk = cc.histData
-        dfop = cc.ophistData
-
-        format = "%Y%m%d  %H:%M:%S"
-        dfop['Datetime'] = pd.to_datetime(dfop['Datetime'], format=format)
-        dfsk['Datetime'] = pd.to_datetime(dfsk['Datetime'], format=format)
-
-        dfsk = dfsk.set_index('Datetime')
-        dfop = dfop.set_index('Datetime')
-
-        dfsk = dfsk.sort_index()
-        dfop = dfop.sort_index()
-
-        rsk, csk = dfsk.shape
-        rop, cop = dfop.shape
-
-        comb = dfsk.merge(dfsk, on=['Datetime'])
-        comb.sort_values(by='Datetime', inplace=True)
-        comb.columns = ['Open', 'High', 'Low', 'Close', 'OOpen', 'OHigh', 'OLow', 'OClose']
-
-        comb['strike']    = comb.apply(lambda row: self.calc_strike(cc,row), axis=1)
-        comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(cc,row), axis=1)
-
-        vlinedictlst = [datetime.strftime(datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y %b %d %H:%M:%S"), "%Y%m%d %H:%M:%S")]
-        hlinelst = []
-        collst=[]
-        for ra in cc.statData.rollingActivity:
-            rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
-            vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
-            hlinelst.append(float(ra["strike"]))
-            collst.append('r')
-
-        apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax2, color='black')
-        strkdict = mpf.make_addplot(comb['strike'], ax=self.ax2, color='green')
-
-        mpf.plot(comb,addplot=[apdict,strkdict], returnfig = True,type='candle', ax=self.ax, axisoff=True,
-                 vlines=dict(vlines=vlinedictlst, linewidths=1),
-                 tight_layout=True,figscale=0.75,show_nontrading=False,style='yahoo')
-
-        for label in self.ax.xaxis.get_ticklabels():
-            label.set_rotation(0)
-
-        self.ax.xaxis_date()
-        self.ax.set_xlabel('time')
-        self.ax.set_ylabel(cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
-        self.ax.grid(True)
-        self.ax.legend(loc=0)
-        self.sc.draw()
-        return True
 
 
 

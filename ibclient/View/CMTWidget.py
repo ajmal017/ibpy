@@ -142,7 +142,7 @@ class CMTWidget(QWidget):
             print('Row %d is selected' % index.row())
             return cc
 
-        return None
+        return self.table_model.bwl["4100"]
 
     def changeFont(self, font):
         self.current_font = font

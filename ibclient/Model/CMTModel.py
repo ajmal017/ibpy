@@ -1,8 +1,12 @@
 import xmltodict
+from datetime import datetime
+import pandas as pd
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5 import QtCore
+
+import matplotlib.dates as mdates
 
 from Misc.globals import globvars
 from Misc import const
@@ -121,7 +125,32 @@ class CMTModel(QAbstractTableModel):
 
     def getHistStockData(self, cc):
         cc.histData = []
-        self.brkConnection.getStockData(cc)
+        if cc.statData.buyWrite["@id"] == "0":
+            rgensdatadf = pd.read_csv("./Model/Cache/RGEN.csv", index_col=0)
+            rgenodtaadf = pd.read_csv("./Model/Cache/RGEN20201120.csv", index_col=0)
+
+            rgensdatadf['Datetime'] = [datetime.strftime(mdates.num2date(x), format="%Y%m%d %H:%M:%S") for x in
+                                   rgensdatadf['Date']]
+            rgenodtaadf['Datetime'] = [datetime.strftime(mdates.num2date(x), format="%Y%m%d %H:%M:%S") for x in
+                                   rgenodtaadf['Date']]
+
+            format = "%Y%m%d  %H:%M:%S"
+            rgensdatadf['Datetime'] = pd.to_datetime(rgensdatadf['Datetime'], format=format)
+            rgenodtaadf['Datetime'] = pd.to_datetime(rgenodtaadf['Datetime'], format=format)
+
+            # rgensdatadf.set_index('Datetime', inplace=True)
+            # rgenodtaadf.set_index('Datetime', inplace=True)
+
+            # rgensdatadf.sort_index(inplace=True)
+            # rgenodtaadf.sort_index(inplace=True)
+
+            rgensdatadf.drop('Date', axis=1, inplace=True)
+            rgenodtaadf.drop('Date', axis=1, inplace=True)
+
+            cc.histData = rgensdatadf
+            cc.ophistData = rgenodtaadf
+        else:
+            self.brkConnection.getStockData(cc)
 
     def startModelTimer(self):
         self.timer = QtCore.QTimer()
