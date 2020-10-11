@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from PyQt5.QtWidgets import QMainWindow, QTextEdit, QAction, QMenu, QLabel, QColorDialog, QFontDialog, QStatusBar
+from PyQt5.QtWidgets import QLabel, QStatusBar
 from PyQt5.QtCore import QTimer
 
 from Misc.globals import globvars
