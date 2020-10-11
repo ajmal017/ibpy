@@ -65,9 +65,6 @@ class DemoWindow(QWidget):
     def __init__(self):
         super().__init__()
 
-        sdatadf = prepareYahooDemo()
-        odatadf = prepareYahooOpDemo()
-
         rgensdatadf = pd.read_csv("../../Model/Cache/RGEN.csv", index_col=0)
         rgenodtaadf = pd.read_csv("../../Model/Cache/RGEN20201120.csv", index_col=0)
 
@@ -83,8 +80,6 @@ class DemoWindow(QWidget):
 
         rgensdatadf.sort_index(inplace=True)
         rgenodtaadf.sort_index(inplace=True)
-
-        a = {'import': 'trade', 1: 7.8}
 
         self.rollingActivity = [
             {
@@ -106,9 +101,6 @@ class DemoWindow(QWidget):
                 "strike": "160"
             },
         ]
-        # cols = ['Date', 'Open', 'High', 'Low', 'Close']
-        # sdatadf.columns = cols
-        # odtaadf.columns = cols
 
         self.sc = FigureCanvasQTAgg(Figure(figsize=(1, 1)))
         self.ax = self.sc.figure.subplots()
@@ -121,12 +113,6 @@ class DemoWindow(QWidget):
         comb = rgensdatadf.merge(rgenodtaadf, on=['Date'])
         comb.sort_values(by='Date', inplace=True)
         comb.columns = ['Open', 'High', 'Low', 'Close', 'OOpen', 'OHigh', 'OLow', 'OClose']
-
-        # for ra in rollingActivity:
-        #     rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
-        #     #ratime = mdates.date2num(rastrptime)
-        #     vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
-
 
         comb['strike']    = comb.apply(lambda row: self.calc_strike(row), axis=1)
         comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(row), axis=1)
@@ -142,7 +128,6 @@ class DemoWindow(QWidget):
         apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax2, color='black')
         strkdict = mpf.make_addplot(comb['strike'], ax=self.ax2, color='black')
         mpf.plot(comb,addplot=[apdict, strkdict], returnfig = True,type='candle', ax=self.ax,
-                 #hlines=dict(hlines=hlinelst, linewidths=1),
                  vlines=dict(vlines=vlinedictlst, linewidths=1),
                  tight_layout=True,figscale=0.75,show_nontrading=False,style='yahoo')
 
@@ -151,34 +136,7 @@ class DemoWindow(QWidget):
 
         self.setLayout(qvb)
 
-
-        #self.ax2.set_ylabel("OPTION - TIMEVALUE")
-        #cols = ['Date', 'Open', 'High', 'Low', 'Close']
-
-        #df = sdatadf.loc['1995-01-03':'1996-08-20', :]
-
-        #dates_df = pd.DataFrame(sdatadf.index)
-        #where_values = pd.notnull(dates_df[(dates_df >= '1996-08-20') & (dates_df <= '1996-08-21')])['Date'].values
-
-
-        # fig = mpf.plot(rgensdatadf, returnfig = True,type='candle', ax=self.ax,
-        #          hlines=[6,7],
-        #          vlines=dict(vlines=['1995-07-06', '1996-01-15'],linewidths=(1,2,3),colors=('r','g','b')),
-        #          # vlines=dict(vlines='1995-08-06',linewidths=100, alpha=0.4),
-        #          tight_layout=True,figscale=0.75,show_nontrading=False,style='yahoo')
-
-
-        # mpf.plot(odatadf,type='ohlc', mav=4, ax=self.ax2, tight_layout=True,figscale=0.75,show_nontrading=False ,
-        #          # fill_between=dict(y1=7,y2=8,where=where_values,alpha=0.5,color='g')
-        #          )
-
-        #candlestick_ohlc(self.ax, sdatadf[cols].values, colorup='#77d879', colordown='#db3f3f', width=0.001)
-        # x = sdatadf['Date']
-        # y = sdatadf['Close']
-        # self.ax.plot(self.ax, x, y)
-
     def numpy2Datetime(self, input):
-        #input is of type numpy.datetime64, e.g. "numpy.datetime64('2020-08-07T15:30:00.000000000')"
         dt64 = input
         ts = (dt64 - np.datetime64('1970-01-01T00:00:00Z')) / np.timedelta64(1, 's')
         return datetime.utcfromtimestamp(ts)
