@@ -43,69 +43,82 @@ class BrkConnection:
         return hours, minutes, seconds
 
     def getStockData(self, cc):
+        optQueryList=[]
+        optionQuery = {}
+        raStart = {}
+        vhbss = OrderedDict({
+            "1 secs": 1,"5 secs": 5,"10 secs": 10,"15 secs": 15,"30 secs": 30,"1 min": 60,"2 mins": 120,"3 mins": 180,
+            "5 mins": 300,"10 mins": 600,"15 mins": 900,"20 mins": 1200,"30 mins": 1800,"1 hour": 3600,"2 hours": 7200,
+            "3 hours": 10800,"4 hours": 14400,"8 hours": 28800,"1 day": 3*28800,"1 W": 7*3*28800,"1 M": 4*7*3*28800})
 
         ul = cc.underlyer()
-        op = cc.option()
+        raStart['to']            = cc.statData.buyWrite["option"]["@expiry"]
+        raStart['strike']        = cc.statData.buyWrite["option"]["@strike"]
+        raStart['sellprice']     = cc.statData.buyWrite["option"]["@price"]
 
         dtnyse = Support.find_last_sx_opening_time(const.STOCKEXCHANGE_NYSE)
         ifdtnyse = dtnyse.strftime("%Y%m%d %H:%M:%S")
         ifdtcboe = Support.find_last_sx_opening_time(const.STOCKEXCHANGE_CBOE)
         ifdtcboe = ifdtcboe.strftime("%Y%m%d %H:%M:%S")
 
+        for i,ra in enumerate(cc.statData.rollingActivity):
+            if i == 0:
+                optionQuery["Contract"] = cc.getRolledOption(raStart)
+                optionQuery['ClosingTime'] = ra["when"]
+                optQueryList.append(optionQuery)
+                nextOptionQuery={}
+                nextOptionQuery["Contract"] = cc.getRolledOption(ra)
+                optQueryList.append(nextOptionQuery)
+            else:
+                optQueryList[-1]['ClosingTime'] = ra["when"]
+                nextOptionQuery = {}
+                nextOptionQuery["Contract"] = cc.getRolledOption(ra)
+                optQueryList.append(nextOptionQuery)
+
+        optQueryList[-1]['ClosingTime'] = ifdtcboe
+
         icc = cc.tickData.tickerId
         self.brkApi.resetHistData(icc)
         self.brkApi.resetHistData(icc+1)
-        self.brkApi.endflag[icc] = False
-        self.brkApi.endflag[icc+1] = False
 
-        # we must have arount 200-400 candles:
-        # 1) duration in days => seconds
-        candlewidthinsec = int(cc.statData.duration) * 24*3600
-        widthstr = str(candlewidthinsec)+" S"
+        enteringTime = cc.statData.buyWrite["@enteringTime"]
+        beg = datetime.datetime.strptime(enteringTime, "%Y%m%d %H:%M:%S")
 
-        vhbss = OrderedDict({
-            "1 secs": 1,
-            "5 secs": 5,
-            "10 secs": 10,
-            "15 secs": 15,
-            "30 secs": 30,
-            "1 min": 60,
-            "2 mins": 120,
-            "3 mins": 180,
-            "5 mins": 300,
-            "10 mins": 600,
-            "15 mins": 900,
-            "20 mins": 1200,
-            "30 mins": 1800,
-            "1 hour": 3600,
-            "2 hours": 7200,
-            "3 hours": 10800,
-            "4 hours": 14400,
-            "8 hours": 28800,
-            "1 day": 3*28800,
-            "1 W": 7*3*28800,
-            "1 M": 4*7*3*28800})
+        for opQuery in optQueryList:
+            self.brkApi.endflag[icc+1] = False
+            endstr = opQuery["ClosingTime"]
+            end = datetime.datetime.strptime(endstr, "%Y%m%d %H:%M:%S")
+            op = opQuery["Contract"]
+            timePassed = end - beg
+            durstr = str(timePassed.days)+" D"
 
-        nbrOfBars = 1000
-        i = 0
-        while nbrOfBars > 400:
-            barsizeinsecs = vhbss[list(vhbss.keys())[i]]
-            nbrOfBars = candlewidthinsec/barsizeinsecs
-            i = i + 1
+            # we must have arount 200-400 candles:
+            # 1) duration in days => seconds
+            durInSeconds = int(timePassed.days) * 24 * 3600
+            widthstr = str(durInSeconds) + " S"
+            nbrOfBars = 1000
+            i = 0
+            while nbrOfBars > 200:
+                barsizeinsecs = vhbss[list(vhbss.keys())[i]]
+                nbrOfBars = durInSeconds / barsizeinsecs
+                i = i + 1
+            widthstr = list(vhbss.keys())[i - 1]
 
-        widthstr = list(vhbss.keys())[i-1]
-        durstr = cc.statData.duration + " D"
+            self.brkApi.reqHistoricalData(icc+1, op, endstr, durstr, widthstr, "MIDPOINT",
+                                          const.HISTDATA_INSIDERTH, 1, False, [])
+
+            counter = 0
+            while counter < 60 and (self.brkApi.endflag[icc+1] == False):
+                time.sleep(1)
+                counter = counter + 1
 
         # Valid Duration: S(econds), D(ay), W(eek), M(onth), Y(ear)
         # Valid Bar Sizes: 1 secs 5 secs... 1 min 2 mins, 1hour, 2 hours, 1 day, 1 week, 1 month
+        self.brkApi.endflag[icc] = False
         self.brkApi.reqHistoricalData(icc, ul, ifdtnyse, durstr, widthstr, "MIDPOINT",
                                       const.HISTDATA_INSIDERTH, 1, False, [])
-
-        self.brkApi.reqHistoricalData(icc+1, op, ifdtcboe, durstr, widthstr, "MIDPOINT",
-                                      const.HISTDATA_INSIDERTH, 1, False, [])
-
         counter = 0
-        while counter < 60 and (self.brkApi.endflag[icc] == False or self.brkApi.endflag[icc+1] == False):
+        while counter < 60 and (self.brkApi.endflag[icc] == False):
             time.sleep(1)
             counter = counter + 1
 

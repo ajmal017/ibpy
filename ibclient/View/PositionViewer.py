@@ -62,7 +62,7 @@ class PositionViewer(QWidget):
         comb['strike']    = comb.apply(lambda row: self.calc_strike(cc,row), axis=1)
         comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(cc,row), axis=1)
 
-        vlinedictlst = [datetime.strftime(datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y %b %d %H:%M:%S"), "%Y%m%d %H:%M:%S")]
+        vlinedictlst = [datetime.strftime(datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y%m%d %H:%M:%S"), "%Y%m%d %H:%M:%S")]
         hlinelst = []
         collst=[]
         for ra in cc.statData.rollingActivity:
@@ -99,7 +99,7 @@ class PositionViewer(QWidget):
         if len(cc.statData.rollingActivity) == 0:
             return cc.statData.buyWrite["option"]["@strike"]
         else:
-            entrydatetime = datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y %b %d %H:%M:%S")
+            entrydatetime = datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y%m%d %H:%M:%S")
             radatetime = datetime.strptime(cc.statData.rollingActivity[0]["when"], "%Y%m%d %H:%M:%S")
 
             if self.numpy2Datetime(row.name) < entrydatetime:
@@ -115,7 +115,7 @@ class PositionViewer(QWidget):
             return ra["strike"]
 
     def calc_timevalue(self, cc, row):
-        entrydatetime = datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y %b %d %H:%M:%S")
+        entrydatetime = datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y%m%d %H:%M:%S")
 
         if self.numpy2Datetime(row.name) < entrydatetime:
             return np.nan

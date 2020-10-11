@@ -241,7 +241,7 @@ class covered_call():
 
         beg1 = self.statData.buyWrite["@enteringTime"]
         try:
-            beg = datetime.strptime(beg1, "%Y %b %d %H:%M:%S")
+            beg = datetime.strptime(beg1, "%Y%m%d %H:%M:%S")
             timePassed = datetime.now()-beg
             self.statData.duration = str(timePassed.days)
         except:
@@ -380,19 +380,29 @@ class covered_call():
         underlyer.currency = "USD"
         return underlyer
 
-    def option(self, expiry=None):
+    def getRolledOption(self, r):
+        option = Contract()
+        option.symbol = self.statData.buyWrite["underlyer"]["@tickerSymbol"]
+        option.avPrice = r["sellprice"]
+        option.secType = "OPT"
+        option.exchange = "SMART"
+        option.currency = "USD"
+        option.lastTradeDateOrContractMonth = r['to']
+        option.strike = r['strike']
+        option.right = "Call"
+        option.multiplier = "100"
+
+        return option
+
+
+    def option(self):
         option = Contract()
         option.symbol = self.statData.buyWrite["underlyer"]["@tickerSymbol"]
         option.avPrice = self.statData.inioptprice
         option.secType = "OPT"
         option.exchange = "SMART"
         option.currency = "USD"
-
-        if expiry == None:
-            option.lastTradeDateOrContractMonth = self.statData.expiry
-        else:
-            option.lastTradeDateOrContractMonth = expiry
-
+        option.lastTradeDateOrContractMonth = self.statData.expiry
         option.strike = self.statData.strike
         option.right = "Call"
         option.multiplier = "100"
