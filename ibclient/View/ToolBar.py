@@ -8,8 +8,10 @@ import Misc.const
 from Color import PALETTES_NAMED
 
 class ToolBar(QToolBar):
-    def __init__(self, parent = None):
+    def __init__(self, w, c, parent = None):
         super(ToolBar, self).__init__(parent)
+        self.cwidget = w
+        self.controller = c
 
         self.actionSelectFont               = self.myAddAction('View/icons/Digital - Zero.png', "Select Font"                 , self.openFontDialog)
         self.actionShowPositionViewer       = self.myAddAction('View/icons/Torch.png', "Show Position"                        , self.showPositionViewer)

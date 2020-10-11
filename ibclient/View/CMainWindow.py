@@ -21,7 +21,7 @@ class CMainWindow(QMainWindow):
         self.positionViewer = PositionViewer(l)
 
         self.setStatusBar(StatusBar(c))
-        self.addToolBar(ToolBar())
+        self.addToolBar(ToolBar(w,c))
 
         self.centerLayout.addWidget(self.cwidget)
         self.centerLayout.addWidget(self.positionViewer)
