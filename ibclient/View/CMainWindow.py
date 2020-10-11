@@ -36,18 +36,21 @@ class CMainWindow(QMainWindow):
     def initUI(self):
         self.centerLayout = QVBoxLayout()
 
-        self.dock2 = QDockWidget()
+        self.dock2 = QDockWidget("Portfolio Table")
         self.dock2.setAllowedAreas(Qt.TopDockWidgetArea)
         self.dock2.setAllowedAreas(Qt.BottomDockWidgetArea)
         self.dock2.setAllowedAreas(Qt.LeftDockWidgetArea)
         self.dock2.setAllowedAreas(Qt.RightDockWidgetArea)
+        self.dock2.setObjectName("Table")
+        self.dock2.DockWidgetVerticalTitleBar
         self.dock2.setWidget(self.cwidget)
 
-        self.dock1 = QDockWidget()
+        self.dock1 = QDockWidget("Single Position Chart")
         self.dock1.setAllowedAreas(Qt.BottomDockWidgetArea)
         self.dock1.setAllowedAreas(Qt.TopDockWidgetArea)
         self.dock1.setAllowedAreas(Qt.LeftDockWidgetArea)
         self.dock1.setAllowedAreas(Qt.RightDockWidgetArea)
+        self.dock1.setObjectName("PositionChart")
         self.dock1.setWidget(self.positionViewer)
 
         self.centerLayout.addWidget(self.dock2)

@@ -111,8 +111,3 @@ class ToolBar(QToolBar):
         self.actionConnectToBrkApi.setEnabled(True)
         self.actionDisconnectFromBrkApi.setEnabled(False)
         self.controller.disconnect()
-
-
-
-
-

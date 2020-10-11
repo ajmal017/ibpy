@@ -102,7 +102,6 @@ class CMTWidget(QWidget):
         self.table_view.setPalette(pal)
         self.table_view.setSelectionMode(QAbstractItemView.SingleSelection)
         self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
-
         self.table_view.clicked.connect(self.showSelection)
         self.table_view.clicked.connect(self.selectRow)
 
@@ -110,25 +109,9 @@ class CMTWidget(QWidget):
         self.table_view.setSortingEnabled(True)
         self.table_view.horizontalHeader().sectionDoubleClicked.connect(self.onSectionDoubleClicked)
 
-        # twt1 = QWidget()
-        #
-        # twt1.layout = QVBoxLayout(self)
-        # twt1.layout.addStretch(1)
-        # twt1.setLayout((twt1.layout))
-
-        # vs = QSplitter(Qt.Vertical)
-        # self.hs = QSplitter(Qt.Horizontal)
         vlayout = QVBoxLayout(self)
-        # upperPart = QHBoxLayout(self)
-        # self.hs.addWidget(self.table_view)
         vlayout.addWidget(self.table_view)
-
-        # vs.addWidget(self.hs)
-        # vlayout.addWidget(vs)
-        # ft = QFont("MS Shell Dlg 2", 8, QFont.Bold)
         self.current_font = QFont("Arial Black", 10)
-
-
         self.table_view.setFont(self.current_font);
         self.setLayout(vlayout)
         self.table_view.resizeColumnsToContents();
@@ -169,11 +152,8 @@ class CMTWidget(QWidget):
 
     def showSelection(self, item):
         cellContent = item.data()
-        # print(cellContent)  # test
         sf = "You clicked on {}".format(cellContent)
-        # display in title bar for convenience
         self.setWindowTitle(sf)
 
     def selectRow(self, index):
-        # print("current row is %d", index.row())
         pass

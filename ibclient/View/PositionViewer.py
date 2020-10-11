@@ -126,7 +126,3 @@ class PositionViewer(QWidget):
         else:
             tv = oval - (sval - float(row["strike"]))
         return tv
-
-
-
-
