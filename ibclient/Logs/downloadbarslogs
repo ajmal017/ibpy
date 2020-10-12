@@ -1,0 +1,63 @@
+C:\Users\marcm\AppData\Local\Programs\Python\Python38\python.exe "C:\Program Files\JetBrains\PyCharm Community Edition 2020.2\plugins\python-ce\helpers\pydev\pydevd.py" --multiproc --qt-support=auto --client 127.0.0.1 --port 3094 --file C:/git/ibpy/ibclient/download_bars.py --port 7495 --security-type STK --size "1 min" --start-date 20200202 --end-date 20200207 AMGN
+pydev debugger: process 19020 is connecting
+Connected to pydev debugger (build 202.6948.78)
+INFO:ibapi.client:sent startApi
+INFO:ibapi.client:REQUEST startApi {}
+INFO:ibapi.client:SENDING startApi b'\x00\x00\x00\x0871\x002\x000\x00\x00'
+INFO:root:Connected
+INFO:ibapi.wrapper:ANSWER managedAccounts {'accountsList': 'U806698'}
+INFO:ibapi.wrapper:ANSWER nextValidId {'orderId': 1}
+INFO:root:nextValidId: 1
+INFO:ibapi.client:REQUEST reqHeadTimeStamp {'reqId': 1, 'contract': 1947751445168: 0,AMGN,STK,,,,,SMART,,USD,,,False,,combo:, 'whatToShow': 'MIDPOINT', 'useRTH': 0, 'formatDate': 1}
+INFO:ibapi.client:SENDING reqHeadTimeStamp b'\x00\x00\x00087\x001\x000\x00AMGN\x00STK\x00\x00\x00\x00\x00SMART\x00\x00USD\x00\x00\x000\x000\x00MIDPOINT\x001\x00'
+INFO:ibapi.wrapper:ANSWER error {'reqId': -1, 'errorCode': 2104, 'errorString': 'Market data farm connection is OK:usfuture.nj'}
+ERROR:ibapi.wrapper:ERROR -1 2104 Market data farm connection is OK:usfuture.nj
+INFO:ibapi.wrapper:ANSWER error {'reqId': -1, 'errorCode': 2104, 'errorString': 'Market data farm connection is OK:usfarm.nj'}
+ERROR:ibapi.wrapper:ERROR -1 2104 Market data farm connection is OK:usfarm.nj
+INFO:ibapi.wrapper:ANSWER error {'reqId': -1, 'errorCode': 2104, 'errorString': 'Market data farm connection is OK:eufarm'}
+ERROR:ibapi.wrapper:ERROR -1 2104 Market data farm connection is OK:eufarm
+INFO:ibapi.wrapper:ANSWER error {'reqId': -1, 'errorCode': 2104, 'errorString': 'Market data farm connection is OK:cafarm'}
+ERROR:ibapi.wrapper:ERROR -1 2104 Market data farm connection is OK:cafarm
+INFO:ibapi.wrapper:ANSWER error {'reqId': -1, 'errorCode': 2104, 'errorString': 'Market data farm connection is OK:cashfarm'}
+ERROR:ibapi.wrapper:ERROR -1 2104 Market data farm connection is OK:cashfarm
+INFO:ibapi.wrapper:ANSWER error {'reqId': -1, 'errorCode': 2104, 'errorString': 'Market data farm connection is OK:usopt'}
+ERROR:ibapi.wrapper:ERROR -1 2104 Market data farm connection is OK:usopt
+INFO:ibapi.wrapper:ANSWER error {'reqId': -1, 'errorCode': 2104, 'errorString': 'Market data farm connection is OK:usfarm'}
+ERROR:ibapi.wrapper:ERROR -1 2104 Market data farm connection is OK:usfarm
+INFO:ibapi.wrapper:ANSWER error {'reqId': -1, 'errorCode': 2106, 'errorString': 'HMDS data farm connection is OK:euhmds'}
+ERROR:ibapi.wrapper:ERROR -1 2106 HMDS data farm connection is OK:euhmds
+INFO:ibapi.wrapper:ANSWER error {'reqId': -1, 'errorCode': 2106, 'errorString': 'HMDS data farm connection is OK:ushmds'}
+ERROR:ibapi.wrapper:ERROR -1 2106 HMDS data farm connection is OK:ushmds
+INFO:ibapi.wrapper:ANSWER error {'reqId': -1, 'errorCode': 2158, 'errorString': 'Sec-def data farm connection is OK:secdefeu'}
+ERROR:ibapi.wrapper:ERROR -1 2158 Sec-def data farm connection is OK:secdefeu
+Error. Id: -1 Code: 2104 Msg: Market data farm connection is OK:usfuture.nj
+Error. Id: -1 Code: 2104 Msg: Market data farm connection is OK:usfarm.nj
+Error. Id: -1 Code: 2104 Msg: Market data farm connection is OK:eufarm
+Error. Id: -1 Code: 2104 Msg: Market data farm connection is OK:cafarm
+Error. Id: -1 Code: 2104 Msg: Market data farm connection is OK:cashfarm
+Error. Id: -1 Code: 2104 Msg: Market data farm connection is OK:usopt
+Error. Id: -1 Code: 2104 Msg: Market data farm connection is OK:usfarm
+Error. Id: -1 Code: 2106 Msg: HMDS data farm connection is OK:euhmds
+Error. Id: -1 Code: 2106 Msg: HMDS data farm connection is OK:ushmds
+Error. Id: -1 Code: 2158 Msg: Sec-def data farm connection is OK:secdefeu
+INFO:root:Head Timestamp for 0,AMGN,STK,,,,,SMART,,USD,,,False,,combo: is 2004-01-23 14:30:00
+INFO:ibapi.client:REQUEST reqHistoricalData {'reqId': 2, 'contract': 1947751445168: 0,AMGN,STK,,,,,SMART,,USD,,,False,,combo:, 'endDateTime': '20200207 00:00:00', 'durationStr': '1 D', 'barSizeSetting': '1 min', 'whatToShow': 'MIDPOINT', 'useRTH': 0, 'formatDate': 1, 'keepUpToDate': False, 'chartOptions': []}
+INFO:ibapi.client:SENDING reqHistoricalData b'\x00\x00\x00O20\x002\x000\x00AMGN\x00STK\x00\x00\x00\x00\x00SMART\x00\x00USD\x00\x00\x000\x0020200207 00:00:00\x001 min\x001 D\x000\x00MIDPOINT\x001\x000\x00\x00'
+INFO:ibapi.wrapper:ANSWER historicalDataEnd {'reqId': 2, 'start': '20200206  00:00:00', 'end': '20200207  00:00:00'}
+All requests for 2020-02-07 00:00:00 complete.
+INFO:ibapi.client:REQUEST reqHistoricalData {'reqId': 3, 'contract': 1947751445168: 0,AMGN,STK,,,,,SMART,,USD,,,False,,combo:, 'endDateTime': '20200206 00:00:00', 'durationStr': '1 D', 'barSizeSetting': '1 min', 'whatToShow': 'MIDPOINT', 'useRTH': 0, 'formatDate': 1, 'keepUpToDate': False, 'chartOptions': []}
+INFO:ibapi.client:SENDING reqHistoricalData b'\x00\x00\x00O20\x003\x000\x00AMGN\x00STK\x00\x00\x00\x00\x00SMART\x00\x00USD\x00\x00\x000\x0020200206 00:00:00\x001 min\x001 D\x000\x00MIDPOINT\x001\x000\x00\x00'
+INFO:ibapi.wrapper:ANSWER historicalDataEnd {'reqId': 3, 'start': '20200205  00:00:00', 'end': '20200206  00:00:00'}
+All requests for 2020-02-06 00:00:00 complete.
+INFO:ibapi.client:REQUEST reqHistoricalData {'reqId': 4, 'contract': 1947751445168: 0,AMGN,STK,,,,,SMART,,USD,,,False,,combo:, 'endDateTime': '20200205 00:00:00', 'durationStr': '1 D', 'barSizeSetting': '1 min', 'whatToShow': 'MIDPOINT', 'useRTH': 0, 'formatDate': 1, 'keepUpToDate': False, 'chartOptions': []}
+INFO:ibapi.client:SENDING reqHistoricalData b'\x00\x00\x00O20\x004\x000\x00AMGN\x00STK\x00\x00\x00\x00\x00SMART\x00\x00USD\x00\x00\x000\x0020200205 00:00:00\x001 min\x001 D\x000\x00MIDPOINT\x001\x000\x00\x00'
+INFO:ibapi.wrapper:ANSWER historicalDataEnd {'reqId': 4, 'start': '20200204  00:00:00', 'end': '20200205  00:00:00'}
+All requests for 2020-02-05 00:00:00 complete.
+INFO:ibapi.client:REQUEST reqHistoricalData {'reqId': 5, 'contract': 1947751445168: 0,AMGN,STK,,,,,SMART,,USD,,,False,,combo:, 'endDateTime': '20200204 00:00:00', 'durationStr': '1 D', 'barSizeSetting': '1 min', 'whatToShow': 'MIDPOINT', 'useRTH': 0, 'formatDate': 1, 'keepUpToDate': False, 'chartOptions': []}
+INFO:ibapi.client:SENDING reqHistoricalData b'\x00\x00\x00O20\x005\x000\x00AMGN\x00STK\x00\x00\x00\x00\x00SMART\x00\x00USD\x00\x00\x000\x0020200204 00:00:00\x001 min\x001 D\x000\x00MIDPOINT\x001\x000\x00\x00'
+INFO:ibapi.wrapper:ANSWER historicalDataEnd {'reqId': 5, 'start': '20200203  00:00:00', 'end': '20200204  00:00:00'}
+All requests for 2020-02-04 00:00:00 complete.
+INFO:ibapi.client:REQUEST reqHistoricalData {'reqId': 6, 'contract': 1947751445168: 0,AMGN,STK,,,,,SMART,,USD,,,False,,combo:, 'endDateTime': '20200203 00:00:00', 'durationStr': '1 D', 'barSizeSetting': '1 min', 'whatToShow': 'MIDPOINT', 'useRTH': 0, 'formatDate': 1, 'keepUpToDate': False, 'chartOptions': []}
+INFO:ibapi.client:SENDING reqHistoricalData b'\x00\x00\x00O20\x006\x000\x00AMGN\x00STK\x00\x00\x00\x00\x00SMART\x00\x00USD\x00\x00\x000\x0020200203 00:00:00\x001 min\x001 D\x000\x00MIDPOINT\x001\x000\x00\x00'
+INFO:ibapi.wrapper:ANSWER historicalDataEnd {'reqId': 6, 'start': '20200202  00:00:00', 'end': '20200203  00:00:00'}
+All requests for 2020-02-03 00:00:00 complete.

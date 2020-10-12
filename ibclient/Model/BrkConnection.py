@@ -104,6 +104,11 @@ class BrkConnection:
                 i = i + 1
             widthstr = list(vhbss.keys())[i - 1]
 
+            if datetime.datetime.strptime(op.lastTradeDateOrContractMonth,"%Y%m%d") < datetime.datetime.now():
+                #expired options not available as you can see here:
+                # https://interactivebrokers.github.io/tws-api/historical_limitations.html
+                continue
+
             self.brkApi.reqHistoricalData(icc+1, op, endstr, durstr, widthstr, "MIDPOINT",
                                           const.HISTDATA_INSIDERTH, 1, False, [])
 
