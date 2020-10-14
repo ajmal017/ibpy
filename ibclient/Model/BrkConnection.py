@@ -35,6 +35,22 @@ class BrkConnection:
     def run_loop(self):
         self.brkApi.run()
 
+    def make_contract(self, symbol: str, sec_type: str, currency: str, exchange: str, expiry: str, strike: str) -> Contract:
+        contract = Contract()
+        contract.symbol = symbol
+        contract.secType = sec_type
+        contract.currency = currency
+
+        if sec_type == "OPT":
+            contract.lastTradeDateOrContractMonth = expiry
+            contract.strike = strike
+            contract.right = "Call"
+            contract.multiplier = "100"
+
+        contract.exchange = exchange
+
+        return contract
+
     def convert_timedelta(self, duration):
         days, seconds = duration.days, duration.seconds
         hours = days * 24 + seconds // 3600

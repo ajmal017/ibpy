@@ -196,6 +196,7 @@
     <underlyer type="STK" tickerSymbol="FNV" price = "145.27" earningscall = "20201104"/>
     <option expiry="20201016" strike="140" multiplier="100" price = "9.07"/>
         <rolling_activities>
+            <rolled when="20201015 21:12:33" from="20201016" to="20201120" strike="135"  buyprice = "1.25" sellprice="9.75" ulprice="140.43" commission = "1.39"/>
         </rolling_activities>
    </bw>
 

@@ -42,37 +42,53 @@ class PositionViewer(QWidget):
         dfsk = cc.histData
         dfop = cc.ophistData
 
-        format = "%Y%m%d  %H:%M:%S"
-        dfop['Datetime'] = pd.to_datetime(dfop['Datetime'], format=format)
-        dfsk['Datetime'] = pd.to_datetime(dfsk['Datetime'], format=format)
+        dfsk = dfsk[['open', 'high', 'low', 'close']]
+        dfop = dfop[['open', 'high', 'low', 'close']]
 
-        dfsk = dfsk.set_index('Datetime')
-        dfop = dfop.set_index('Datetime')
+        dfsk.reset_index(inplace=True)
+        dfop.reset_index(inplace=True)
+        dfop.drop('level_0', axis=1, inplace=True)
+
+        format = "%Y-%m-%d  %H:%M:%S"
+        dfop['date'] = pd.to_datetime(dfop['date'], format=format)
+        dfsk['date'] = pd.to_datetime(dfsk['date'], format=format)
+
+        dfsk = dfsk.set_index('date')
+        dfop = dfop.set_index('date')
 
         dfsk = dfsk.sort_index()
         dfop = dfop.sort_index()
+        #
+        # rsk, csk = dfsk.shape
+        # rop, cop = dfop.shape
 
-        rsk, csk = dfsk.shape
-        rop, cop = dfop.shape
-
-        comb = dfsk.merge(dfop, on=['Datetime'])
-        comb.sort_values(by='Datetime', inplace=True)
+        comb = dfsk.merge(dfop, on=['date'])
+        comb.sort_values(by='date', inplace=True)
         comb.columns = ['Open', 'High', 'Low', 'Close', 'OOpen', 'OHigh', 'OLow', 'OClose']
 
         comb['strike']    = comb.apply(lambda row: self.calc_strike(cc,row), axis=1)
         comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(cc,row), axis=1)
 
-        vlinedictlst = [datetime.strftime(datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y%m%d %H:%M:%S"), "%Y%m%d %H:%M:%S")]
+        if datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y%m%d %H:%M:%S")<comb.iloc[0].name:
+            vlinedictlst = [comb.iloc[0].name]
+        else:
+            vlinedictlst = [datetime.strftime(datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y%m%d %H:%M:%S"), "%Y%m%d %H:%M:%S")]
         hlinelst = []
         collst=[]
         for ra in cc.statData.rollingActivity:
             rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
-            vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
+            if pd.to_datetime(rastrptime) < comb.iloc[0].name:
+                vlinedictlst.append(comb.iloc[0].name)
+            else:
+                vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
             hlinelst.append(float(ra["strike"]))
             collst.append('r')
 
         apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax, color='black')
         strkdict = mpf.make_addplot(comb['strike'], ax=self.ax2, color='green')
+
+        # mpf.plot(dfsk, mav=2, returnfig = True,type='candle', ax=self.ax2,
+        #          tight_layout=True,show_nontrading=False,style='yahoo')
 
         mpf.plot(comb,addplot=[apdict,strkdict], mav=2, returnfig = True,type='candle', ax=self.ax2,
                  vlines=dict(vlines=vlinedictlst, linewidths=1),

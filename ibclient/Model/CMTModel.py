@@ -156,11 +156,9 @@ class CMTModel(QAbstractTableModel):
             else:
                 cc.statData.exitingTime = datetime.now().strftime("%Y%m%d %H:%M:%S")
 
-
             dfDataList = []
-            # rgensdatadf = pd.read_csv("./Model/Cache/RGEN.csv", index_col=0)
-            for file in os.listdir("./data/STK_MIDPOINT_/1_min\RGEN/"):
-                file = os.path.join("./data/STK_MIDPOINT_/1_min\RGEN/", file)
+            for file in os.listdir("./data/STK_MIDPOINT/1_min\DEMO/"):
+                file = os.path.join("./data/STK_MIDPOINT/1_min\DEMO/", file)
                 dfDataList.append(pd.read_csv(file, index_col=0, parse_dates=True))
 
             stockData = pd.concat(dfDataList)
@@ -179,35 +177,10 @@ class CMTModel(QAbstractTableModel):
                         df = pd.read_csv(file, index_col=0, parse_dates=True)
                         #[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
                         dfDataList.append(df)
-
-
                     optiondata[optionname] = pd.concat(dfDataList)[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
 
-            od = []
-
-            #das geht !
-            stockData['2020-07-07 10:00:00': '2020-07-07 11:00:00']
-
-            #rgensdatadf['Datetime'] = [datetime.strftime(mdates.num2date(x), format="%Y%m%d %H:%M:%S") for x in
-                                   #rgensdatadf['Date']]
-            # rgenodtaadf['Datetime'] = [datetime.strftime(mdates.num2date(x), format="%Y%m%d %H:%M:%S") for x in
-            #                        rgenodtaadf['Date']]
-
-            format = "%Y%m%d  %H:%M:%S"
-            rgensdatadf['Datetime'] = pd.to_datetime(rgensdatadf['Datetime'], format=format)
-            rgenodtaadf['Datetime'] = pd.to_datetime(rgenodtaadf['Datetime'], format=format)
-
-            # rgensdatadf.set_index('Datetime', inplace=True)
-            # rgenodtaadf.set_index('Datetime', inplace=True)
-
-            # rgensdatadf.sort_index(inplace=True)
-            # rgenodtaadf.sort_index(inplace=True)
-
-            rgensdatadf.drop('Date', axis=1, inplace=True)
-            rgenodtaadf.drop('Date', axis=1, inplace=True)
-
-            cc.histData = rgensdatadf
-            cc.ophistData = rgenodtaadf
+            cc.ophistData = pd.concat(optiondata)
+            cc.histData = stockData[cc.statData.enteringTime:]
         else:
             self.brkConnection.getStockData(cc)
 
@@ -268,7 +241,15 @@ class CMTModel(QAbstractTableModel):
         globvars.lock.release()
 
     def rowCount(self, parent):
+        # if (self.bwl.keys())/2 == 0:
+        #     return 0
+        #
+        # for x in self.bwl:
+        #     if x.statData.exitingTime != "" :
+        #         c = c+1
+        #tmplst = len([ x for x in self.bwl if x.statData.exitingTime != "" ])
         return int(len(self.bwl.keys())/2)
+        #return int(len([ x for x in self.bwl if self.bwl[x].statData.exitingTime != ""])/2)
 
     def columnCount(self, parent):
         k = list(self.bwl.keys())[0]
@@ -284,10 +265,14 @@ class CMTModel(QAbstractTableModel):
         r = index.row()
         c = index.column()
 
+
+        cc = self.bwl[str(((index.row() * 2) + const.INITIALTTICKERID))]
+        # if cc.statData.exitingTime != "":
+        #     return None
+
         if role == QtCore.Qt.BackgroundRole:
             # globvars.logger.info("")
 
-            cc = self.bwl[str(((index.row()*2)+const.INITIALTTICKERID))]
 
             pat = Qt.SolidPattern
 

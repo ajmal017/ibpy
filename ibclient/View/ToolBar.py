@@ -16,6 +16,7 @@ class ToolBar(QToolBar):
         self.actionSelectFont               = self.myAddAction('View/icons/Digital - Zero.png', "Select Font"                 , self.openFontDialog)
         self.actionShowPositionViewer       = self.myAddAction('View/icons/Torch.png', "Show Position"                        , self.showPositionViewer)
         self.actionResizeColumnWidth        = self.myAddAction("View/icons/I don't know.png", "resize columnwidth in table"   , self.doActionResizeColumns)
+        self.actionUpdateHistory = self.myAddAction('View/icons/Signal.png', "Update Historydata", self.updateHistory)
         self.addSeparator()
         self.colorSelectorCombo             = self.getColorCbx()
         self.addWidget(self.colorSelectorCombo)
@@ -28,6 +29,9 @@ class ToolBar(QToolBar):
         self.actionConnectToBrkApi          = self.myAddAction('View/icons/Link - 01.png', "Connect toIBKR"                   , self.cmw_actionConnectToBrkApi)
         self.actionDisconnectFromBrkApi     = self.myAddAction('View/icons/Link - 02.png', "Disconnect from IBKR"             , self.cmw_actionDisconnectFromBrkApi)
         self.portSelectorCombo.currentIndexChanged.connect(self.changeBrokerPort)
+        self.filterSelectorCombo              = self.getFilterSelectCbx()
+        self.filterSelectorCombo.currentIndexChanged.connect(self.changeFilter)
+        self.addWidget(self.filterSelectorCombo)
 
     def myAddAction(self, icon, tttext, callback):
         action = QAction(QIcon(icon), 'Flee the Scene', self)
@@ -50,6 +54,13 @@ class ToolBar(QToolBar):
         ret.addItem("BCI Candidates")
         ret.addItem("Closed Positions")
         return ret
+
+    def getFilterSelectCbx(self):
+        ret = QComboBox()
+        ret.addItem("include closed positions")
+        ret.addItem("excluse closed positions")
+        return ret
+
 
     def getPortSelectlistCbx(self):
         ret = QComboBox()
@@ -79,6 +90,14 @@ class ToolBar(QToolBar):
     def changeColorPalette(self):
         globvars.colors = PALETTES_NAMED[self.colorSelectorCombo.currentText()]
 
+    def changeFilter(self):
+        curtext = self.filterSelectorCombo.currentText()
+        if curtext == "include closed positions":
+            self.controller.model.includeZeroPositions = True
+        else:
+            self.controller.model.includeZeroPositions = False
+
+
     def changeBrokerPort(self):
         port = 4002
         if self.portSelectorCombo.currentText() == "TWS REAL  7495":
@@ -97,6 +116,9 @@ class ToolBar(QToolBar):
         if ok:
             self.cwidget.changeFont(font)
         return font
+
+    def updateHistory(self):
+        self.controller.updateHistory()
 
     def cmw_actionConnectToBrkApi(self):
         self.actionConnectToBrkApi.setEnabled(False)
