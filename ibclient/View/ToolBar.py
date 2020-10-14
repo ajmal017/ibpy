@@ -29,7 +29,6 @@ class ToolBar(QToolBar):
         self.actionDisconnectFromBrkApi     = self.myAddAction('View/icons/Link - 02.png', "Disconnect from IBKR"             , self.cmw_actionDisconnectFromBrkApi)
         self.portSelectorCombo.currentIndexChanged.connect(self.changeBrokerPort)
 
-
     def myAddAction(self, icon, tttext, callback):
         action = QAction(QIcon(icon), 'Flee the Scene', self)
         action.setToolTip(tttext)
@@ -91,9 +90,6 @@ class ToolBar(QToolBar):
         if self.portSelectorCombo.currentText() == "GTW PAPER 4002":
             port= 4002
         self.controller.changeBrokerPort(port)
-
-    def updateStatusBar(self):
-            self.statusBar.update()
 
     def openFontDialog(self):
         font, ok = QFontDialog.getFont(self.cwidget.current_font)

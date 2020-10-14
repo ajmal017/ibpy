@@ -35,6 +35,12 @@ class StatData():
         self.inistkprice     = float(bw["underlyer"]["@price"])
         self.inioptprice     = float(bw["option"]["@price"])
         self.expiry          = bw["option"]["@expiry"]
+
+        if "closed" in bw:
+            self.exitingTime = bw["closed"]["@exitingTime"]
+        else:
+            self.exitingTime = ""
+
         self.earningscall    = bw["underlyer"]["@earningscall"]
 
         if "rolling_activities" in bw:

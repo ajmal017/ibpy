@@ -7,6 +7,7 @@
             <rolled when="20201006 20:52:55" from="20201016" to="20201120" strike="155" buyprice = "15.38" sellprice="17.50" ulprice="162.00" commission = "1.41"/>
             <rolled when="20201007 20:32:32" from="20201120" to="20201120" strike="160" buyprice = "17.23" sellprice="14.03" ulprice="165.00" commission = "1.40"/>
         </rolling_activities>
+        <closed exitingTime="20201013 20:14:46" exitingPrice="170" ulprice="175.7" optprice="5.7" commission = "2.71"/>
     </bw>
 
     <bw id="1" name="AMD" enteringTime="20200806 00:00:00" enteringPrice="77.522" commission="" quantity="2">
@@ -16,6 +17,7 @@
             <rolled when="20200818 14:09:55" from="20200821" to="20200918" strike="75" buyprice = "4.25" sellprice="8.87" ulprice="82.70" commission = "3.02"/>
             <rolled when="20200917 16:58:00" from="20200918" to="20201023" strike="80" buyprice = "1.41" sellprice="3.61" ulprice="75.60" commission = "1.46"/>
         </rolling_activities>
+        <closed exitingTime="20201012 20:14:46" exitingPrice="78.81" ulprice="84.51" optprice="5.7" commission = "2.71"/>
     </bw>
 
     <bw id="2" name="CDNS" enteringTime="20200806 20:09:47" enteringPrice="104.087" commission="" quantity="1">
@@ -78,6 +80,7 @@
             <rolled when="20200915 20:20:24" from="20200918" to="20201016" strike="40"  buyprice = "3.90" sellprice="1.70" ulprice="38.83" commission = "3.85"/>
             <rolled when="20201001 17:35:53" from="20201016" to="20201120" strike="45"  buyprice = "5.17" sellprice="3.97" ulprice="44.70" commission = "0.56"/>
         </rolling_activities>
+        <closed exitingTime="20201012 20:14:46" exitingPrice="41.35" ulprice="45.12" optprice="3.77" commission = "1.93"/>
     </bw>
 
     <bw id="9" name="SEDG" enteringTime="20200818 21:46:17" enteringPrice="185.016" commission="" quantity="1">
@@ -113,6 +116,7 @@
         <rolling_activities>
             <rolled when="20200917 21:52:07" from="20200918" to="20201023" strike="192.5" buyprice = "0.06" sellprice="3.81" ulprice="174.61" commission = "1.28"/>
         </rolling_activities>
+        <closed exitingTime="20201012 20:35:43" exitingPrice="190.89" ulprice="203.69" optprice="12.80" commission = "1.92"/>
     </bw>
 
     <bw id="13" name="TTGT" enteringTime="20200813 20:01:50" enteringPrice="37.658" commission="" quantity="2">
@@ -150,6 +154,7 @@
             <rolled when="20201006 20:52:55" from="20201016" to="20201120" strike="155" buyprice = "15.38" sellprice="17.50" ulprice="162.00" commission = "1.41"/>
             <rolled when="20201007 20:32:32" from="20201120" to="20201120" strike="160" buyprice = "17.23" sellprice="14.03" ulprice="165.00" commission = "1.40"/>
         </rolling_activities>
+        <closed exitingTime="20201012 20:16:21" exitingPrice="153.69" ulprice="173.88" optprice="20.19" commission = "1.08"/>
     </bw>
 
     <bw id="17" name="FTNT" enteringTime="20200825 20:48:29" enteringPrice="126.21" commission="1.48" quantity="1">
@@ -161,13 +166,13 @@
       <closed exitingTime="20201006 21:36:08" exitingPrice="114.84" ulprice="119.24" optprice="4.40" commission = "1.73"/>
     </bw>
 
-   <bw id="18" name="EBAY" enteringTime="20200826 18:51:40" enteringPrice="55.095" commission="2.34" quantity="2" exchange="SMART">
+   <bw id="18" name="EBAY" enteringTime="20200826 18:51:40" enteringPrice="55.095" commission="2.34" quantity="1" exchange="SMART">
     <underlyer type="STK" tickerSymbol="EBAY" price = "57.85" earningscall = "20201027"/>
     <option expiry="20200918" strike="56" multiplier="100" price = "2.76"/>
         <rolling_activities>
             <rolled when="20200911 18:51:01" from="20200918" to="20201023" strike="56"  buyprice = "0.12" sellprice="1.4" ulprice="52.55" commission = "1.45"/>
         </rolling_activities>
-    <closed exitingTime="20201006 21:12:30" exitingPrice="49.81" ulprice="50.10" optprice="0.29" commission = "1.58"/>
+<!--    <closed exitingTime="20201006 21:12:30" exitingPrice="49.81" ulprice="50.10" optprice="0.29" commission = "1.58"/>-->
    </bw>
 
    <bw id="19" name="TMO" enteringTime="20200902 19:35:18" enteringPrice="423.85" commission="1.49" quantity="1" exchange="SMART">
@@ -232,5 +237,16 @@
         <underlyer type="STK" tickerSymbol="QNST" price = "17.09" earningscall = "20201104"/>
         <option expiry="20201120" strike="15" multiplier="100" price = "2.68"/>
    </bw>
+
+   <bw id="28" enteringTime="20201013 19:16:18" enteringPrice="76.07" commission="1.47" quantity="1">
+        <underlyer type="STK" tickerSymbol="LEN" price = "83.64" earningscall = "20201214"/>
+        <option expiry="20201127" strike="79" multiplier="100" price = "7.57"/>
+   </bw>
+
+   <bw id="29" enteringTime="20201013 19:21:02" enteringPrice="98.45" commission="0.5" quantity="1">
+        <underlyer type="STK" tickerSymbol="WSM" price = "106.05" earningscall = "20201125"/>
+        <option expiry="20201120" strike="105" multiplier="100" price = "7.60"/>
+   </bw>
+
 
 </coveredCalls>

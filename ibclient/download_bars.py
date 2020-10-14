@@ -32,7 +32,7 @@ def make_download_path(args: argparse.Namespace, contract: Contract) -> str:
         path = os.path.sep.join(
             [
                 args.base_directory,
-                args.security_type,
+                args.security_type+"_"+args.data_type,
                 args.size.replace(" ", "_"),
                 contract.symbol+contract.lastTradeDateOrContractMonth+"C"+contract.strike,
             ]
@@ -41,7 +41,7 @@ def make_download_path(args: argparse.Namespace, contract: Contract) -> str:
         path = os.path.sep.join(
             [
                 args.base_directory,
-                args.security_type,
+                args.security_type+"_"+args.data_type+"_",
                 args.size.replace(" ", "_"),
                 contract.symbol
             ]
@@ -74,7 +74,7 @@ class DownloadApp(EClient, wrapper.EWrapper):
     def historicalDataRequest(self, contract: Contract) -> None:
         cid = self.next_request_id(contract)
         self.pending_ends.add(cid)
-
+        time.sleep(10)
         self.reqHistoricalData(
             cid,  # tickerId, used to identify incoming data
             contract,

@@ -1,9 +1,11 @@
+import threading
 import datetime
 import time
 from collections import OrderedDict
 from Color import PALETTES_NAMED
 
 from pandas.plotting import register_matplotlib_converters
+
 register_matplotlib_converters()
 
 class Sleep:
@@ -82,6 +84,7 @@ class globvars:
     eurchfrate                  = None
 
     def init_globvars():
+        globvars.lock = threading.Lock()
         globvars.testscriptcounter           = 0
         globvars.opcconnecting               = False
         globvars.currenttestscript           = ""
@@ -167,4 +170,7 @@ class globvars:
 
     def set_logger(logger):
         globvars.logger = logger
+        globvars.logger.info("**********************************************")
+        globvars.logger.info("*          IBPY - Covered Call Analyzer      *")
+        globvars.logger.info("**********************************************")
 

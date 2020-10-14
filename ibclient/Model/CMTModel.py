@@ -1,3 +1,4 @@
+import os
 import xmltodict
 from datetime import datetime
 import pandas as pd
@@ -103,8 +104,7 @@ class CMTModel(QAbstractTableModel):
 
         tickerId = const.INITIALTTICKERID
         for bw in ccdict["coveredCalls"]["bw"]:
-            if "closed" in bw:
-                continue
+            #if "closed" in bw and bw["@name"] != "DEMO":
             self.bwl[str(tickerId)] = covered_call(bw, tickerId)
             self.bwl[str(tickerId+1)] = self.bwl[str(tickerId)]
             tickerId = tickerId + 2
@@ -126,13 +126,72 @@ class CMTModel(QAbstractTableModel):
     def getHistStockData(self, cc):
         cc.histData = []
         if cc.statData.buyWrite["@id"] == "0":
-            rgensdatadf = pd.read_csv("./Model/Cache/RGEN.csv", index_col=0)
-            rgenodtaadf = pd.read_csv("./Model/Cache/RGEN20201120.csv", index_col=0)
+            optQueryList = []
+            optionQuery = {}
+            raStart = {}
+            raStart['to'] = cc.statData.buyWrite["option"]["@expiry"]
+            raStart['strike'] = cc.statData.buyWrite["option"]["@strike"]
+            raStart['sellprice'] = cc.statData.buyWrite["option"]["@price"]
 
-            rgensdatadf['Datetime'] = [datetime.strftime(mdates.num2date(x), format="%Y%m%d %H:%M:%S") for x in
-                                   rgensdatadf['Date']]
-            rgenodtaadf['Datetime'] = [datetime.strftime(mdates.num2date(x), format="%Y%m%d %H:%M:%S") for x in
-                                   rgenodtaadf['Date']]
+            for i, ra in enumerate(cc.statData.rollingActivity):
+                if i == 0:
+                    optionQuery["Contract"] = cc.getRolledOption(raStart)
+                    optionQuery['ClosingTime'] = ra["when"]
+                    optionQuery['OpeningTime'] = cc.statData.enteringTime
+                    optQueryList.append(optionQuery)
+
+                    nextOptionQuery = {}
+                    nextOptionQuery["Contract"] = cc.getRolledOption(ra)
+                    nextOptionQuery['OpeningTime'] = ra["when"]
+                    optQueryList.append(nextOptionQuery)
+                else:
+                    optQueryList[-1]['ClosingTime'] = ra["when"]
+                    nextOptionQuery = {}
+                    nextOptionQuery['OpeningTime'] = ra["when"] #optQueryList[i-1]['ClosingTime']
+                    nextOptionQuery["Contract"] = cc.getRolledOption(ra)
+                    optQueryList.append(nextOptionQuery)
+
+            if cc.statData.exitingTime != "":
+                optQueryList[-1]['ClosingTime'] = cc.statData.buyWrite["closed"]["@exitingTime"]
+            else:
+                cc.statData.exitingTime = datetime.now().strftime("%Y%m%d %H:%M:%S")
+
+
+            dfDataList = []
+            # rgensdatadf = pd.read_csv("./Model/Cache/RGEN.csv", index_col=0)
+            for file in os.listdir("./data/STK_MIDPOINT_/1_min\RGEN/"):
+                file = os.path.join("./data/STK_MIDPOINT_/1_min\RGEN/", file)
+                dfDataList.append(pd.read_csv(file, index_col=0, parse_dates=True))
+
+            stockData = pd.concat(dfDataList)
+
+            dfDataList = []
+            optiondata = {}
+            for optionContract in optQueryList:
+                expiry = optionContract["Contract"].lastTradeDateOrContractMonth
+                strike = optionContract["Contract"].strike
+                symbol = optionContract["Contract"].symbol
+                optionname= symbol+expiry+"C"+strike
+                path = os.path.join("data\OPT_MIDPOINT/1_min",optionname)
+                if os.path.exists(path):
+                    for file in os.listdir(path):
+                        file = os.path.join(path, file)
+                        df = pd.read_csv(file, index_col=0, parse_dates=True)
+                        #[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
+                        dfDataList.append(df)
+
+
+                    optiondata[optionname] = pd.concat(dfDataList)[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
+
+            od = []
+
+            #das geht !
+            stockData['2020-07-07 10:00:00': '2020-07-07 11:00:00']
+
+            #rgensdatadf['Datetime'] = [datetime.strftime(mdates.num2date(x), format="%Y%m%d %H:%M:%S") for x in
+                                   #rgensdatadf['Date']]
+            # rgenodtaadf['Datetime'] = [datetime.strftime(mdates.num2date(x), format="%Y%m%d %H:%M:%S") for x in
+            #                        rgenodtaadf['Date']]
 
             format = "%Y%m%d  %H:%M:%S"
             rgensdatadf['Datetime'] = pd.to_datetime(rgensdatadf['Datetime'], format=format)
@@ -198,9 +257,15 @@ class CMTModel(QAbstractTableModel):
         globvars.totalCtv = self.summary.totalctv
         globvars.totalItv = self.summary.totalitv
 
-        # self.layoutAboutToBeChanged.emit()
-        # self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
-        # self.layoutChanged.emit()
+        globvars.lock.acquire()
+        self.layoutAboutToBeChanged.emit()
+        globvars.lock.release()
+
+        self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
+
+        globvars.lock.acquire()
+        self.layoutChanged.emit()
+        globvars.lock.release()
 
     def rowCount(self, parent):
         return int(len(self.bwl.keys())/2)

@@ -1,4 +1,3 @@
-import threading
 import signal, os
 import faulthandler; faulthandler.enable()
 
@@ -18,16 +17,12 @@ def handler(signum, frame):
 signal.signal(signal.SIGSEGV, handler)
 
 if __name__ == '__main__':
-    globvars.lock = threading.Lock()
 
     globvars.init_globvars()
     capp = QApplication([])
 
     mainLogger = logger.initMainLogger()
     globvars.set_logger(mainLogger)
-    globvars.logger.info("**********************************************")
-    globvars.logger.info("*          IBPY - Covered Call Analyzer      *")
-    globvars.logger.info("**********************************************")
 
     model = CMTModel()
     controller = Controller(model)

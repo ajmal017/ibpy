@@ -45,13 +45,15 @@ class BrkConnection:
     def getStockData(self, cc):
         optQueryList=[]
         optionQuery = {}
-        raStart = {}
+
         vhbss = OrderedDict({
             "1 secs": 1,"5 secs": 5,"10 secs": 10,"15 secs": 15,"30 secs": 30,"1 min": 60,"2 mins": 120,"3 mins": 180,
             "5 mins": 300,"10 mins": 600,"15 mins": 900,"20 mins": 1200,"30 mins": 1800,"1 hour": 3600,"2 hours": 7200,
             "3 hours": 10800,"4 hours": 14400,"8 hours": 28800,"1 day": 3*28800,"1 W": 7*3*28800,"1 M": 4*7*3*28800})
 
         ul = cc.underlyer()
+
+        raStart = {}
         raStart['to']            = cc.statData.buyWrite["option"]["@expiry"]
         raStart['strike']        = cc.statData.buyWrite["option"]["@strike"]
         raStart['sellprice']     = cc.statData.buyWrite["option"]["@price"]
