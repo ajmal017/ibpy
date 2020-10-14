@@ -159,8 +159,8 @@ class CMTModel(QAbstractTableModel):
 
             dfDataList = []
             # rgensdatadf = pd.read_csv("./Model/Cache/RGEN.csv", index_col=0)
-            for file in os.listdir("./data/STK_MIDPOINT_/1_min\RGEN/"):
-                file = os.path.join("./data/STK_MIDPOINT_/1_min\RGEN/", file)
+            for file in os.listdir("./data/STK_MIDPOINT/1_min\DEMO/"):
+                file = os.path.join("./data/STK_MIDPOINT/1_min\DEMO/", file)
                 dfDataList.append(pd.read_csv(file, index_col=0, parse_dates=True))
 
             stockData = pd.concat(dfDataList)
