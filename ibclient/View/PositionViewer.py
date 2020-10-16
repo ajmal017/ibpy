@@ -49,9 +49,16 @@ class PositionViewer(QWidget):
         dfop.reset_index(inplace=True)
         dfop.drop('level_0', axis=1, inplace=True)
 
+        #avoid copy warning of pandas as we are aware of this issue:
+        pd.set_option('mode.chained_assignment', None)
+
         format = "%Y-%m-%d  %H:%M:%S"
+        dfop.is_copy = None
         dfop['date'] = pd.to_datetime(dfop['date'], format=format)
+
+        dfsk.is_copy = None
         dfsk['date'] = pd.to_datetime(dfsk['date'], format=format)
+
 
         dfsk = dfsk.set_index('date')
         dfop = dfop.set_index('date')
