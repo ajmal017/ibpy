@@ -4,6 +4,7 @@ import sys
 import time
 import argparse
 import logging
+import logging
 from datetime import datetime, timedelta
 
 from typing import List, Optional
@@ -74,7 +75,7 @@ class DownloadApp(EClient, wrapper.EWrapper):
     def historicalDataRequest(self, contract: Contract) -> None:
         cid = self.next_request_id(contract)
         self.pending_ends.add(cid)
-        time.sleep(10)
+        time.sleep(20)
         self.reqHistoricalData(
             cid,  # tickerId, used to identify incoming data
             contract,

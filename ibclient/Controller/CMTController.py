@@ -69,13 +69,21 @@ class Controller:
                 print(os.path.join(root, name))
         for ctrct in newest:
             newestdate=newest[ctrct]["c"]+datetime.timedelta(1)
-            print('py .\download.py --port "4002" --security-type "OPT" --size "1 min" --start-date '+
-                  datetime.datetime.strftime(newestdate, "%Y%m%d")+
+            if datetime.datetime.strftime(datetime.datetime.now(),"%Y%m%d") != datetime.datetime.strftime(newestdate, "%Y%m%d"):
+                print('py .\download.py --port "4002" --security-type "OPT" --size "1 min" --start-date '+
+                      datetime.datetime.strftime(newestdate, "%Y%m%d")+
+                      ' --end-date '+ datetime.datetime.strftime(datetime.datetime.now(),"%Y%m%d")+
+                      ' --data-type ' +  newest[ctrct]["t"] +
+                      ' --expiry '+ ctrct.lastTradeDateOrContractMonth +
+                      ' --strike ' + ctrct.strike +
+                      '  ' + ctrct.symbol)
+
+            print('py .\download.py --port "4002" --security-type "STK" --size "1 min" --start-date '+
+                  datetime.datetime.strftime(datetime.datetime.strptime("20200701","%Y%m%d"), "%Y%m%d")+
                   ' --end-date '+ datetime.datetime.strftime(datetime.datetime.now(),"%Y%m%d")+
                   ' --data-type ' +  newest[ctrct]["t"] +
-                  ' --expiry '+ ctrct.lastTradeDateOrContractMonth +
-                  ' --strike ' + ctrct.strike +
                   '  ' + ctrct.symbol)
+
         return
 
 
