@@ -2,6 +2,7 @@ import os
 import re
 import datetime
 
+import Misc.const
 import Model
 from Misc.globals import globvars
 from Model.download_bars import DownloadApp
@@ -23,67 +24,97 @@ class Controller:
         latest = {}
         newest = {}
         contracts=[]
-        for root, dirs, files in os.walk("data"):
-            for name in files:
-                r = re.match(r"data\\(...)_(.+)\\(.....)\\(\w*)(....)(..)(..)C(.+)$", root)
-                if r:
-                    #option
-                    (dt, type, barwidth, ul, expiry_y, expiry_m, expiry_d,strike) = r.groups(0)
-                    expiry_d = expiry_y+expiry_m+expiry_d
+        optpat = re.compile(Misc.const.DATADIR + r"\\(...)_(.+)\\(.....)\\(\w*)(....)(..)(..)C(.+)$")
+        stkpat = re.compile(Misc.const.DATADIR + r"\\(...)_(.+)\\(.....)\\(\w*)$")
 
-                    if dt not in latest:
-                        latest[dt]={}
-                    if type not in latest[dt]:
-                        latest[dt][type] = {}
-                    if barwidth not in latest[dt][type]:
-                        latest[dt][type][barwidth] = {}
-                    if ul not in latest[dt][type][barwidth]:
-                        latest[dt][type][barwidth][ul] = {}
-                    if expiry_d not in latest[dt][type][barwidth][ul]:
-                        latest[dt][type][barwidth][ul][expiry_d] = {}
-                    if strike not in latest[dt][type][barwidth][ul][expiry_d]:
-                        latest[dt][type][barwidth][ul][expiry_d][strike] = {}
-                        ctrct = self.model.brkConnection.make_contract(ul, "OPT", "USD", "SMART", expiry_d,strike)
-                        contracts.append(ctrct)
-                        newest[ctrct]={}
-                        newest[ctrct]["c"] = datetime.datetime.strptime("19700101", "%Y%m%d")
-                        newest[ctrct]["t"] = type
+        for root, dirs, files in os.walk(Misc.const.DATADIR):
+            for name in files:
+                o = optpat.match(root)
+                if o:
+                    #option
+                    (dt, type, barwidth, ul, expiry_y, expiry_m, expiry_d,strike) = o.groups(0)
+                    if ul != "DEMO" and ul != "CTLT":
+                        expiry_d = expiry_y+expiry_m+expiry_d
+
+                        if type != "MIDPOINT":
+                            continue
+
+                        if dt not in latest:
+                            latest[dt]={}
+                        if type not in latest[dt]:
+                            latest[dt][type] = {}
+                        if barwidth not in latest[dt][type]:
+                            latest[dt][type][barwidth] = {}
+                        if ul not in latest[dt][type][barwidth]:
+                            latest[dt][type][barwidth][ul] = {}
+                        if expiry_d not in latest[dt][type][barwidth][ul]:
+                            latest[dt][type][barwidth][ul][expiry_d] = {}
+                        if strike not in latest[dt][type][barwidth][ul][expiry_d]:
+                            latest[dt][type][barwidth][ul][expiry_d][strike] = {}
+                            ctrct = self.model.brkConnection.make_contract(ul, dt, "USD", "SMART", expiry_d,strike)
+                            contracts.append(ctrct)
+                            newest[ctrct]={}
+                            newest[ctrct]["c"] = datetime.datetime.strptime("19700101", "%Y%m%d")
+                            newest[ctrct]["t"] = type
+                else:
+                    s = stkpat.match(root)
+                    if s:
+                        (dt, type, barwidth, ul) = s.groups(0)
+
+                        if ul != "DEMO":
+                            if dt not in latest:
+                                latest[dt]={}
+                            if type not in latest[dt]:
+                                latest[dt][type] = {}
+                            if barwidth not in latest[dt][type]:
+                                latest[dt][type][barwidth] = {}
+                            if ul not in latest[dt][type][barwidth]:
+                                latest[dt][type][barwidth][ul] = {}
+
+                                ctrct = self.model.brkConnection.make_contract(ul, dt, "USD", "SMART")
+                                contracts.append(ctrct)
+                                newest[ctrct]={}
+                                newest[ctrct]["c"] = datetime.datetime.strptime("19700101", "%Y%m%d")
+                                newest[ctrct]["t"] = type
+
 
                 m = re.match(r"^(....)(..)(..)\.csv", name)
                 if m:
                     y,m,d = m.groups(0)
 
-                    # if latest[dt][type][barwidth][ul][expiry_d][strike] < datetime.datetime.strptime(y+m+d, "%Y%m%d"):
                     if newest[ctrct]["c"] < datetime.datetime.strptime(y + m + d,"%Y%m%d"):
                             newest[ctrct]["c"] = datetime.datetime.strptime(y+m+d, "%Y%m%d")
+                            newname = datetime.datetime.strftime(newest[ctrct]["c"], "%Y%m%d")+".csv"
+                            nextname = datetime.datetime.strftime(newest[ctrct]["c"]+datetime.timedelta(1), "%Y%m%d")+".csv"
+                            #newestname[ctrct]["f"] = os.path.join(root,name)
+                            newest[ctrct]["f"] = os.path.join(root,nextname)
 
-
-                        # latest[dt][type][barwidth][ul][expiry_d][strike] = datetime.datetime.strptime(y+m+d, "%Y%m%d")
-
-            # for c in contracts:
-            #     app = DownloadApp(contracts, args)
-            #     app.connect("127.0.0.1", args.port, clientId=0)
-            #     app.run()
-
-            for name in dirs:
-                print(os.path.join(root, name))
-        for ctrct in newest:
-            newestdate=newest[ctrct]["c"]+datetime.timedelta(1)
-            if datetime.datetime.strftime(datetime.datetime.now(),"%Y%m%d") != datetime.datetime.strftime(newestdate, "%Y%m%d"):
-                print('py .\download.py --port "4002" --security-type "OPT" --size "1 min" --start-date '+
-                      datetime.datetime.strftime(newestdate, "%Y%m%d")+
-                      ' --end-date '+ datetime.datetime.strftime(datetime.datetime.now(),"%Y%m%d")+
-                      ' --data-type ' +  newest[ctrct]["t"] +
-                      ' --expiry '+ ctrct.lastTradeDateOrContractMonth +
-                      ' --strike ' + ctrct.strike +
-                      '  ' + ctrct.symbol)
-
-            print('py .\download.py --port "4002" --security-type "STK" --size "1 min" --start-date '+
-                  datetime.datetime.strftime(datetime.datetime.strptime("20200701","%Y%m%d"), "%Y%m%d")+
-                  ' --end-date '+ datetime.datetime.strftime(datetime.datetime.now(),"%Y%m%d")+
-                  ' --data-type ' +  newest[ctrct]["t"] +
-                  '  ' + ctrct.symbol)
-
+        with open("downloadOptions.ps1","w") as f:
+            for ctrct in newest:
+                newestdate=newest[ctrct]["c"].date()
+                today = datetime.datetime.today().date()
+                csvfile = newest[ctrct]["f"]
+                if  today > newestdate+datetime.timedelta(1):
+    #            if datetime.datetime.strftime(datetime.datetime.now()-datetime.timedelta(1),"%Y%m%d") > datetime.datetime.strftime(newestdate, "%Y%m%d"):
+                    #print("rm "+newest[ctrct]["f"])
+                    if not os.path.exists(csvfile):
+                        startdate = datetime.datetime.strftime(newestdate, "%Y%m%d")
+                        enddate = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d")
+                        if startdate != enddate:
+                            if ctrct.secType == "OPT":
+                                f.write('py .\download.py --port "4002" --security-type "OPT" --size "1 min" '+
+                                      ' --start-date '+ startdate +
+                                      ' --end-date '+ enddate +
+                                      ' --data-type ' +  newest[ctrct]["t"] +
+                                      ' --expiry '+ ctrct.lastTradeDateOrContractMonth +
+                                      ' --strike ' + ctrct.strike +
+                                      '  ' + ctrct.symbol+"\n")
+                            else:
+                                f.write('py .\download.py --port "4002" --security-type "STK" --size "1 min" ' +
+                                      ' --start-date '+ startdate +
+                                      ' --end-date '+ enddate +
+                                      ' --data-type ' +  newest[ctrct]["t"] +
+                                      '  ' + ctrct.symbol+"\n")
         return
 
 

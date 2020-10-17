@@ -23,6 +23,9 @@ ContractList = List[Contract]
 BarDataList = List[BarData]
 OptionalDate = Optional[datetime]
 
+class IBApiException(Exception):
+    pass
+
 
 def make_download_path(args: argparse.Namespace, contract: Contract) -> str:
     """Make path for saving csv files.
@@ -203,6 +206,8 @@ class DownloadApp(EClient, wrapper.EWrapper):
     def error(self, req_id: TickerId, error_code: int, error: str):
         super().error(req_id, error_code, error)
         print("Error. Id:", req_id, "Code:", error_code, "Msg:", error)
+        if error_code == 162:
+            raise (IBApiException)
 
 
 def make_contract(symbol: str, sec_type: str, currency: str, exchange: str, expiry: str, strike: str) -> Contract:

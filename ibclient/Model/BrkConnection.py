@@ -35,7 +35,7 @@ class BrkConnection:
     def run_loop(self):
         self.brkApi.run()
 
-    def make_contract(self, symbol: str, sec_type: str, currency: str, exchange: str, expiry: str, strike: str) -> Contract:
+    def make_contract(self, symbol: str, sec_type: str, currency: str, exchange: str, expiry: str = "", strike: str = "") -> Contract:
         contract = Contract()
         contract.symbol = symbol
         contract.secType = sec_type
