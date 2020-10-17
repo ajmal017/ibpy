@@ -206,7 +206,7 @@ class DownloadApp(EClient, wrapper.EWrapper):
     def error(self, req_id: TickerId, error_code: int, error: str):
         super().error(req_id, error_code, error)
         print("Error. Id:", req_id, "Code:", error_code, "Msg:", error)
-        if error_code == 162:# or error_code == 2106:
+        if error_code == 162 or error_code == 2107:
             raise (IBApiException)
 
 

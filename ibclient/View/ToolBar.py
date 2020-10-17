@@ -30,8 +30,13 @@ class ToolBar(QToolBar):
         self.actionDisconnectFromBrkApi     = self.myAddAction('View/icons/Link - 02.png', "Disconnect from IBKR"             , self.cmw_actionDisconnectFromBrkApi)
         self.portSelectorCombo.currentIndexChanged.connect(self.changeBrokerPort)
         self.filterSelectorCombo              = self.getFilterSelectCbx()
+        self.candleWidthSelectorCombo              = self.getCandleWidthSelectCbx()
+
         self.filterSelectorCombo.currentIndexChanged.connect(self.changeFilter)
+        self.candleWidthSelectorCombo.currentIndexChanged.connect(self.changeCandleWidth)
+        self.candleWidthSelectorCombo.setCurrentIndex(2)
         self.addWidget(self.filterSelectorCombo)
+        self.addWidget(self.candleWidthSelectorCombo)
 
     def myAddAction(self, icon, tttext, callback):
         action = QAction(QIcon(icon), 'Flee the Scene', self)
@@ -53,6 +58,13 @@ class ToolBar(QToolBar):
         ret.addItem("Current Portfolio")
         ret.addItem("BCI Candidates")
         ret.addItem("Closed Positions")
+        return ret
+
+    def getCandleWidthSelectCbx(self):
+        ret = QComboBox()
+        ret.addItem("1 min")
+        ret.addItem("5 min")
+        ret.addItem("60 min")
         return ret
 
     def getFilterSelectCbx(self):
@@ -84,11 +96,18 @@ class ToolBar(QToolBar):
     def showPositionViewer(self):
         cc = self.cwidget.getSelectedRow()
         if cc != None:
-            self.controller.getStockData(cc)
-            self.positionViewer.updateMplChart(cc)
+            if self.controller.getStockData(cc):
+                self.positionViewer.updateMplChart(cc)
 
     def changeColorPalette(self):
         globvars.colors = PALETTES_NAMED[self.colorSelectorCombo.currentText()]
+
+    def changeCandleWidth(self):
+        curCandleWidthText = self.candleWidthSelectorCombo.currentText()
+        if curCandleWidthText == "1 min":
+            self.controller.model.candleWidth = Misc.const.CANDLEWIDTH1
+        else:
+            self.controller.model.candleWidth = Misc.const.CANDLEWIDTH5
 
     def changeFilter(self):
         curtext = self.filterSelectorCombo.currentText()
@@ -97,6 +116,16 @@ class ToolBar(QToolBar):
         else:
             self.controller.model.includeZeroPositions = False
 
+    def changeCandleWidth(self):
+        curtext = self.candleWidthSelectorCombo.currentText()
+        if curtext == "1 min":
+            self.controller.model.candleWidth = Misc.const.CANDLEWIDTH1
+        elif curtext == "5 min":
+            self.controller.model.candleWidth = Misc.const.CANDLEWIDTH5
+        elif curtext == "60 min":
+            self.controller.model.candleWidth = Misc.const.CANDLEWIDTH60
+        else:
+            self.controller.model.candleWidth = Misc.const.CANDLEWIDTH60
 
     def changeBrokerPort(self):
         port = 4002

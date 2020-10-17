@@ -16,29 +16,78 @@ class Controller:
         self.view = v
 
     def getStockData(self, cc):
-        self.model.getHistStockData(cc)
-        pass
+        return self.model.getHistStockData(cc)
 
-    def updateHistory(self, do_overwrite=False, forced_startdate = "20200801", forced_enddate = "20201017"):
+    def updateHistory(self, do_overwrite=False, forced_startdate = "20200501", forced_enddate = "20201017"):
         datetimepattern=""
         latest = {}
         newest = {}
         contracts=[]
-        optpat = re.compile(Misc.const.DATADIR + r"\\(...)_(.+)\\(.....)\\(\w*)(....)(..)(..)C(.+)$")
-        stkpat = re.compile(Misc.const.DATADIR + r"\\(...)_(.+)\\(.....)\\(\w*)$")
-
+        optpat = re.compile(Misc.const.DATADIR + r"\\(...)_(.+)\\1_min\\(\w*)(....)(..)(..)C(.+)$")
+        stkpat = re.compile(Misc.const.DATADIR + r"\\(...)_(.+)\\1_min\\(\w*)$")
+        barwidth = "1_min"
         for root, dirs, files in os.walk(Misc.const.DATADIR):
-            for name in files:
-                o = optpat.match(root)
-                if o:
+            o = optpat.match(root)
+            if o:
+                (dt, type, ul, expiry_y, expiry_m, expiry_d, strike) = o.groups(0)
+                if ul == "DEMO" or ul == "CTLT":
+                    continue
+
+                expiry_d = expiry_y + expiry_m + expiry_d
+
+                ctrct = self.model.brkConnection.make_contract(ul, dt, "USD", "SMART", expiry_d, strike)
+                contracts.append(ctrct)
+                newest[ctrct] = {}
+                newest[ctrct]["c"] = datetime.datetime.strptime("20200701", "%Y%m%d")
+                newest[ctrct]["t"] = type
+                nextname = datetime.datetime.strftime(newest[ctrct]["c"] + datetime.timedelta(1),
+                                                      "%Y%m%d") + ".csv"
+                newest[ctrct]["f"] = os.path.join(root, nextname)
+
+                for name in files:
                     #option
-                    (dt, type, barwidth, ul, expiry_y, expiry_m, expiry_d,strike) = o.groups(0)
-                    if ul != "DEMO" and ul != "CTLT":
-                        expiry_d = expiry_y+expiry_m+expiry_d
 
-                        if type != "MIDPOINT":
-                            continue
+                    if type != "MIDPOINT":
+                        continue
 
+                    if dt not in latest:
+                        latest[dt]={}
+                    if type not in latest[dt]:
+                        latest[dt][type] = {}
+                    if barwidth not in latest[dt][type]:
+                        latest[dt][type][barwidth] = {}
+                    if ul not in latest[dt][type][barwidth]:
+                        latest[dt][type][barwidth][ul] = {}
+                    if expiry_d not in latest[dt][type][barwidth][ul]:
+                        latest[dt][type][barwidth][ul][expiry_d] = {}
+                    if strike not in latest[dt][type][barwidth][ul][expiry_d]:
+                        latest[dt][type][barwidth][ul][expiry_d][strike] = {}
+
+                    m = re.match(r"^(....)(..)(..)\.csv", name)
+                    if m:
+                        y, m, d = m.groups(0)
+
+                        if newest[ctrct]["c"] < datetime.datetime.strptime(y + m + d, "%Y%m%d"):
+                            newest[ctrct]["c"] = datetime.datetime.strptime(y + m + d, "%Y%m%d")
+                            nextname = datetime.datetime.strftime(newest[ctrct]["c"] + datetime.timedelta(1),
+                                                                  "%Y%m%d") + ".csv"
+                            newest[ctrct]["f"] = os.path.join(root, nextname)
+            else:
+                s = stkpat.match(root)
+                if s:
+                    (dt, type, ul) = s.groups(0)
+                    if ul == "DEMO" or ul == "CTLT":
+                        continue
+                    ctrct = self.model.brkConnection.make_contract(ul, dt, "USD", "SMART")
+                    contracts.append(ctrct)
+                    newest[ctrct] = {}
+                    newest[ctrct]["c"] = datetime.datetime.strptime("20200501", "%Y%m%d")
+                    newest[ctrct]["t"] = type
+                    nextname = datetime.datetime.strftime(newest[ctrct]["c"] + datetime.timedelta(1), "%Y%m%d") + ".csv"
+
+                    newest[ctrct]["f"] = os.path.join(root, nextname)
+
+                    for name in files:
                         if dt not in latest:
                             latest[dt]={}
                         if type not in latest[dt]:
@@ -47,47 +96,15 @@ class Controller:
                             latest[dt][type][barwidth] = {}
                         if ul not in latest[dt][type][barwidth]:
                             latest[dt][type][barwidth][ul] = {}
-                        if expiry_d not in latest[dt][type][barwidth][ul]:
-                            latest[dt][type][barwidth][ul][expiry_d] = {}
-                        if strike not in latest[dt][type][barwidth][ul][expiry_d]:
-                            latest[dt][type][barwidth][ul][expiry_d][strike] = {}
-                            ctrct = self.model.brkConnection.make_contract(ul, dt, "USD", "SMART", expiry_d,strike)
-                            contracts.append(ctrct)
-                            newest[ctrct]={}
-                            newest[ctrct]["c"] = datetime.datetime.strptime("19700101", "%Y%m%d")
-                            newest[ctrct]["t"] = type
-                else:
-                    s = stkpat.match(root)
-                    if s:
-                        (dt, type, barwidth, ul) = s.groups(0)
 
-                        if ul != "DEMO":
-                            if dt not in latest:
-                                latest[dt]={}
-                            if type not in latest[dt]:
-                                latest[dt][type] = {}
-                            if barwidth not in latest[dt][type]:
-                                latest[dt][type][barwidth] = {}
-                            if ul not in latest[dt][type][barwidth]:
-                                latest[dt][type][barwidth][ul] = {}
+                        m = re.match(r"^(....)(..)(..)\.csv", name)
+                        if m:
+                            y,m,d = m.groups(0)
 
-                                ctrct = self.model.brkConnection.make_contract(ul, dt, "USD", "SMART")
-                                contracts.append(ctrct)
-                                newest[ctrct]={}
-                                newest[ctrct]["c"] = datetime.datetime.strptime("19700101", "%Y%m%d")
-                                newest[ctrct]["t"] = type
-
-
-                m = re.match(r"^(....)(..)(..)\.csv", name)
-                if m:
-                    y,m,d = m.groups(0)
-
-                    if newest[ctrct]["c"] < datetime.datetime.strptime(y + m + d,"%Y%m%d"):
-                            newest[ctrct]["c"] = datetime.datetime.strptime(y+m+d, "%Y%m%d")
-                            newname = datetime.datetime.strftime(newest[ctrct]["c"], "%Y%m%d")+".csv"
-                            nextname = datetime.datetime.strftime(newest[ctrct]["c"]+datetime.timedelta(1), "%Y%m%d")+".csv"
-                            #newestname[ctrct]["f"] = os.path.join(root,name)
-                            newest[ctrct]["f"] = os.path.join(root,nextname)
+                            if newest[ctrct]["c"] < datetime.datetime.strptime(y + m + d,"%Y%m%d"):
+                                    newest[ctrct]["c"] = datetime.datetime.strptime(y+m+d, "%Y%m%d")
+                                    nextname = datetime.datetime.strftime(newest[ctrct]["c"]+datetime.timedelta(1), "%Y%m%d")+".csv"
+                                    newest[ctrct]["f"] = os.path.join(root,nextname)
 
         with open("downHist.ps1","w") as f:
             for ctrct in newest:

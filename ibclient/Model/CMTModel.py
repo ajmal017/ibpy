@@ -94,6 +94,7 @@ class CMTModel(QAbstractTableModel):
         self.account  = Account()
         self.bwl = {}
         self.summary = Summary()
+        self.candleWidth = const.CANDLEWIDTH1
         self.brkConnection = BrkConnection()
 
     def initData(self, c):
@@ -125,13 +126,20 @@ class CMTModel(QAbstractTableModel):
 
     def getHistStockData(self, cc):
         cc.histData = []
-        if cc.statData.buyWrite["@id"] == "0":
-            optQueryList = []
-            optionQuery = {}
-            raStart = {}
-            raStart['to'] = cc.statData.buyWrite["option"]["@expiry"]
-            raStart['strike'] = cc.statData.buyWrite["option"]["@strike"]
-            raStart['sellprice'] = cc.statData.buyWrite["option"]["@price"]
+        optQueryList = []
+        optionQuery = {}
+        raStart = {}
+        raStart['to'] = cc.statData.buyWrite["option"]["@expiry"]
+        raStart['strike'] = cc.statData.buyWrite["option"]["@strike"]
+        raStart['sellprice'] = cc.statData.buyWrite["option"]["@price"]
+        dfDataList = []
+        if os.path.exists(os.path.join("./data/STK_MIDPOINT", self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"])):
+            files = os.listdir(os.path.join("./data/STK_MIDPOINT", self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"]))
+            for file in files:
+                filetmp = os.path.join("./data/STK_MIDPOINT",self.candleWidth,cc.statData.buyWrite["underlyer"]["@tickerSymbol"], file)
+                dfDataList.append(pd.read_csv(filetmp, index_col=0, parse_dates=True))
+
+            stockData = pd.concat(dfDataList)
 
             for i, ra in enumerate(cc.statData.rollingActivity):
                 if i == 0:
@@ -154,14 +162,8 @@ class CMTModel(QAbstractTableModel):
             if cc.statData.exitingTime != "":
                 optQueryList[-1]['ClosingTime'] = cc.statData.buyWrite["closed"]["@exitingTime"]
             else:
+                optQueryList[-1]['ClosingTime'] = datetime.now().strftime("%Y%m%d %H:%M:%S")
                 cc.statData.exitingTime = datetime.now().strftime("%Y%m%d %H:%M:%S")
-
-            dfDataList = []
-            for file in os.listdir("./data/STK_MIDPOINT/1_min\DEMO/"):
-                file = os.path.join("./data/STK_MIDPOINT/1_min\DEMO/", file)
-                dfDataList.append(pd.read_csv(file, index_col=0, parse_dates=True))
-
-            stockData = pd.concat(dfDataList)
 
             dfDataList = []
             optiondata = {}
@@ -170,19 +172,24 @@ class CMTModel(QAbstractTableModel):
                 strike = optionContract["Contract"].strike
                 symbol = optionContract["Contract"].symbol
                 optionname= symbol+expiry+"C"+strike
-                path = os.path.join("data\OPT_MIDPOINT/1_min",optionname)
+                path = os.path.join("data\OPT_MIDPOINT",self.candleWidth,optionname)
                 if os.path.exists(path):
-                    for file in os.listdir(path):
+                    files=os.listdir(path)
+                    for file in files:
                         file = os.path.join(path, file)
                         df = pd.read_csv(file, index_col=0, parse_dates=True)
                         #[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
                         dfDataList.append(df)
-                    optiondata[optionname] = pd.concat(dfDataList)[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
+                    if len(files) > 0:
+                        optiondata[optionname] = pd.concat(dfDataList)[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
+                else:
+                    print(path,"does not exist")
 
             cc.ophistData = pd.concat(optiondata)
             cc.histData = stockData[cc.statData.enteringTime:]
+            return True
         else:
-            self.brkConnection.getStockData(cc)
+            return False
 
     def startModelTimer(self):
         self.timer = QtCore.QTimer()

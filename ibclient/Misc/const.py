@@ -10,6 +10,11 @@ LASTPRICE   = "4"
 LASTSIZE    = "5"
 
 DATADIR     = "data"
+
+CANDLEWIDTH1    = "1_min"
+CANDLEWIDTH5    = "5_min"
+CANDLEWIDTH60    = "60_min"
+
 IBPORT      = 4002
 
 INITIALTTICKERID = 4100
