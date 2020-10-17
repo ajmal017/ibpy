@@ -44,7 +44,7 @@ def make_download_path(args: argparse.Namespace, contract: Contract) -> str:
         path = os.path.sep.join(
             [
                 args.base_directory,
-                args.security_type+"_"+args.data_type+"_",
+                args.security_type+"_"+args.data_type,
                 args.size.replace(" ", "_"),
                 contract.symbol
             ]
@@ -206,7 +206,7 @@ class DownloadApp(EClient, wrapper.EWrapper):
     def error(self, req_id: TickerId, error_code: int, error: str):
         super().error(req_id, error_code, error)
         print("Error. Id:", req_id, "Code:", error_code, "Msg:", error)
-        if error_code == 162:
+        if error_code == 162:# or error_code == 2106:
             raise (IBApiException)
 
 

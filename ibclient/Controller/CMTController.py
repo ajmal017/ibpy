@@ -19,7 +19,7 @@ class Controller:
         self.model.getHistStockData(cc)
         pass
 
-    def updateHistory(self):
+    def updateHistory(self, do_overwrite=False, forced_startdate = "20200801", forced_enddate = "20201017"):
         datetimepattern=""
         latest = {}
         newest = {}
@@ -89,32 +89,42 @@ class Controller:
                             #newestname[ctrct]["f"] = os.path.join(root,name)
                             newest[ctrct]["f"] = os.path.join(root,nextname)
 
-        with open("downloadOptions.ps1","w") as f:
+        with open("downHist.ps1","w") as f:
             for ctrct in newest:
                 newestdate=newest[ctrct]["c"].date()
                 today = datetime.datetime.today().date()
                 csvfile = newest[ctrct]["f"]
-                if  today > newestdate+datetime.timedelta(1):
-    #            if datetime.datetime.strftime(datetime.datetime.now()-datetime.timedelta(1),"%Y%m%d") > datetime.datetime.strftime(newestdate, "%Y%m%d"):
-                    #print("rm "+newest[ctrct]["f"])
-                    if not os.path.exists(csvfile):
-                        startdate = datetime.datetime.strftime(newestdate, "%Y%m%d")
-                        enddate = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d")
+                if  today > newestdate+datetime.timedelta(1) or do_overwrite == True:
+                    if not os.path.exists(csvfile) or do_overwrite == True:
+                        # Posiible datatypes: TRADES, MIDPOINT, BID, ASK, BID_ASK, ADJUSTED_LAST, HISTORICAL_VOLATILITY, OPTION_IMPLIED_VOLATILITY, REBATE_RATE, FEE_RATE, YIELD_BID, YIELD_ASK, YIELD_BID_ASK, YIELD_LAST
+                        if do_overwrite == True:
+                            startdate = forced_startdate
+                            enddate = forced_enddate
+                            datatypes = ["TRADES", "BID", "ASK", "BID_ASK", "ADJUSTED_LAST",
+                                         "HISTORICAL_VOLATILITY", "OPTION_IMPLIED_VOLATILITY"]
+                        else:
+                            startdate = datetime.datetime.strftime(newestdate, "%Y%m%d")
+                            enddate = datetime.datetime.strftime(datetime.datetime.now(), "%Y%m%d")
+                            datatypes = [newest[ctrct]["t"]]
+
                         if startdate != enddate:
                             if ctrct.secType == "OPT":
-                                f.write('py .\download.py --port "4002" --security-type "OPT" --size "1 min" '+
-                                      ' --start-date '+ startdate +
-                                      ' --end-date '+ enddate +
-                                      ' --data-type ' +  newest[ctrct]["t"] +
-                                      ' --expiry '+ ctrct.lastTradeDateOrContractMonth +
-                                      ' --strike ' + ctrct.strike +
-                                      '  ' + ctrct.symbol+"\n")
+                                for dt in datatypes:
+                                    f.write('py .\download.py --port "4002" --security-type "OPT" --size "1 min" '+
+                                          ' --start-date '+ startdate +
+                                          ' --end-date '+ enddate +
+                                          ' --data-type ' +  dt +
+                                          ' --expiry '+ ctrct.lastTradeDateOrContractMonth +
+                                          ' --strike ' + ctrct.strike +
+                                          '  ' + ctrct.symbol+"\n")
                             else:
-                                f.write('py .\download.py --port "4002" --security-type "STK" --size "1 min" ' +
-                                      ' --start-date '+ startdate +
-                                      ' --end-date '+ enddate +
-                                      ' --data-type ' +  newest[ctrct]["t"] +
-                                      '  ' + ctrct.symbol+"\n")
+
+                                for dt in datatypes:
+                                    f.write('py .\download.py --port "4002" --security-type "STK" --size "1 min" ' +
+                                          ' --start-date '+ startdate +
+                                          ' --end-date '+ enddate +
+                                          ' --data-type ' +  dt +
+                                          '  ' + ctrct.symbol+"\n")
         return
 
 
