@@ -139,9 +139,10 @@ class CMTModel(QAbstractTableModel):
             for file in files:
                 filetmp = os.path.join("./data/STK_MIDPOINT",self.candleWidth,cc.statData.buyWrite["underlyer"]["@tickerSymbol"], file)
                 tmpdf = pd.read_csv(filetmp, index_col=0, parse_dates=True)
+                #filter out outside RTH times as we have too many outliers otherwise:
                 dt = file.split(".")
                 dtstart = dt[0]+" 15:30:00"
-                dtend = dt[0]+" 22:00:00"
+                dtend = dt[0]+" 21:59:00"
                 tmpdf = tmpdf[dtstart:dtend]
                 dfDataList.append(tmpdf)
 
