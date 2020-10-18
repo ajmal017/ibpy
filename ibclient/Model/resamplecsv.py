@@ -5,11 +5,14 @@ import argparse
 
 def resample(mode, ow, symbols):
     ret = []
+    orgdir = "1_min"
+    dstdir = "5_min"
+
     if mode == "1TO5":
         modulo = 5
         orgdir = "1_min"
         dstdir = "5_min"
-    elif mode == "5to60":
+    else:
         modulo = 12
         orgdir = "5_min"
         dstdir = "60_min"
