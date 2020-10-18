@@ -6,13 +6,13 @@ Visualize and track status, timevalue and volatility of all positions of a cover
 This tool serves already now - in a quite early stage - as a helper for this implementing a covered-call-strategy designed and promoted by the "Blue Collar Investor" [BCI], promoted by Alan Ellman (https://www.thebluecollarinvestor.com/) and his group.
 This "strategy" tries to help managing Entries, Exits, Rollovers, Stock- and Option Selection by giving a set of rules described on the Homepage and in numerous videos you can find everywhere. Furthermore there are special addon services for paying premium members.
 
-# Both Widget in docked state
+### Both Widget in docked state
 ![screenshot](screenshots/Capture.PNG)
 
-# Undocked Table Widget
+### Undocked Table Widget
 ![screenshot](screenshots/CaptureTable.PNG)
 
-# Undocked Chart Widget
+### Undocked Chart Widget
 ![screenshot](screenshots/CaptureChart.PNG)
 
 ## Background
