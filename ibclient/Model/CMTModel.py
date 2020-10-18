@@ -166,7 +166,6 @@ class CMTModel(QAbstractTableModel):
         else:
             optQueryList[-1]['ClosingTime'] = datetime.now().strftime("%Y%m%d %H:%M:%S")
 
-        dfDataList = []
         optiondata = {}
         for optionContract in optQueryList:
             expiry = optionContract["Contract"].lastTradeDateOrContractMonth
@@ -176,6 +175,7 @@ class CMTModel(QAbstractTableModel):
             path = os.path.join("data\OPT_MIDPOINT",self.candleWidth,optionname)
             if os.path.exists(path):
                 files=os.listdir(path)
+                dfDataList = []
                 for file in files:
                     file = os.path.join(path, file)
                     print(file)
@@ -183,7 +183,8 @@ class CMTModel(QAbstractTableModel):
                     #[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
                     dfDataList.append(df)
                 if len(files) > 0:
-                    optiondata[optionname] = pd.concat(dfDataList)[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
+                    dfall = pd.concat(dfDataList)
+                    optiondata[optionname] = dfall[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
             else:
                 print(path,"does not exist")
 
