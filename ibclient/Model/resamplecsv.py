@@ -73,13 +73,11 @@ def resample(mode, ow, symbols):
                             rowout.append(max)
                             rowout.append(min)
                             rowout.append(row['close'])
-
+                            started = False
                             dfout.loc[i] = rowout
                             rowout=[]
                             i = i + 1
                     dfout.to_csv(os.path.join(newdir,a), index=False)
-            ret.append(dfout)
-    return ret
 
 argp = argparse.ArgumentParser()
 argp.add_argument("symbol", nargs="+")
@@ -92,7 +90,7 @@ if args.overwrite=="yes":
 else:
     ow = False
 
-out_df = resample(args.mode, ow, args.symbol)
+resample(args.mode, ow, args.symbol)
 
 # stkdf = out_df[0]
 # optdf = out_df[1]
