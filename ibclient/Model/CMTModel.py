@@ -137,9 +137,13 @@ class CMTModel(QAbstractTableModel):
         if os.path.exists(os.path.join("./data/STK_MIDPOINT", self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"])):
             files = os.listdir(os.path.join("./data/STK_MIDPOINT", self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"]))
             for file in files:
-                print(file)
                 filetmp = os.path.join("./data/STK_MIDPOINT",self.candleWidth,cc.statData.buyWrite["underlyer"]["@tickerSymbol"], file)
-                dfDataList.append(pd.read_csv(filetmp, index_col=0, parse_dates=True))
+                tmpdf = pd.read_csv(filetmp, index_col=0, parse_dates=True)
+                dt = file.split(".")
+                dtstart = dt[0]+" 15:30:00"
+                dtend = dt[0]+" 22:00:00"
+                tmpdf = tmpdf[dtstart:dtend]
+                dfDataList.append(tmpdf)
 
             stockData = pd.concat(dfDataList)
 
@@ -178,9 +182,7 @@ class CMTModel(QAbstractTableModel):
                 dfDataList = []
                 for file in files:
                     file = os.path.join(path, file)
-                    print(file)
                     df = pd.read_csv(file, index_col=0, parse_dates=True)
-                    #[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
                     dfDataList.append(df)
                 if len(files) > 0:
                     dfall = pd.concat(dfDataList)
