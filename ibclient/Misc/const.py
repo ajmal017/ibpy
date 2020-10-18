@@ -9,7 +9,7 @@ ASKSIZE     = "3"
 LASTPRICE   = "4"
 LASTSIZE    = "5"
 
-DATADIR     = "data"
+DATADIR     = "C:/importantData/data"
 
 CANDLEWIDTH1    = "1_min"
 CANDLEWIDTH5    = "5_min"

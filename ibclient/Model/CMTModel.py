@@ -145,10 +145,10 @@ class CMTModel(QAbstractTableModel):
         raStart['sellprice'] = cc.statData.buyWrite["option"]["@price"]
         dfDataList = []
 
-        if os.path.exists(os.path.join("./data/STK_MIDPOINT", self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"])):
-            files = os.listdir(os.path.join("./data/STK_MIDPOINT", self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"]))
+        if os.path.exists(os.path.join(os.path.join(const.DATADIR,"STK_MIDPOINT"), self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"])):
+            files = os.listdir(os.path.join(os.path.join(const.DATADIR,"STK_MIDPOINT"), self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"]))
             for file in files:
-                filetmp = os.path.join("./data/STK_MIDPOINT",self.candleWidth,cc.statData.buyWrite["underlyer"]["@tickerSymbol"], file)
+                filetmp = os.path.join(os.path.join(const.DATADIR,"STK_MIDPOINT"),self.candleWidth,cc.statData.buyWrite["underlyer"]["@tickerSymbol"], file)
                 tmpdf = pd.read_csv(filetmp, index_col=0, parse_dates=True)
                 #filter out outside RTH times as we have too many outliers otherwise:
                 dt = file.split(".")
@@ -194,7 +194,7 @@ class CMTModel(QAbstractTableModel):
             strike = optionContract["Contract"].strike
             symbol = optionContract["Contract"].symbol
             optionname= symbol+expiry+"C"+strike
-            path = os.path.join("data\OPT_MIDPOINT",self.candleWidth,optionname)
+            path = os.path.join(os.path.join(const.DATADIR,"OPT_MIDPOINT"),self.candleWidth,optionname)
             if os.path.exists(path):
                 files=os.listdir(path)
                 dfDataList = []
