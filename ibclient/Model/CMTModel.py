@@ -83,6 +83,17 @@ class PrxyModel(QSortFilterProxyModel):
         else:
             return (str(self.sourceModel().data(left, role))) < str((self.sourceModel().data(right, role)))
 
+
+    def filterAcceptsRow(self, source_row, source_parent):
+        # model = self.sourceModel()  # the underlying model,
+        #
+        # row = model.index(source_row, 0, source_parent)
+        # if row[const.COL_POSITION] != 0:
+        #     return True
+
+        return True
+
+
 class CMTModel(QAbstractTableModel):
     """
     keep the method names
@@ -148,28 +159,34 @@ class CMTModel(QAbstractTableModel):
 
             stockData = pd.concat(dfDataList)
 
-        for i, ra in enumerate(cc.statData.rollingActivity):
-            if i == 0:
-                optionQuery["Contract"] = cc.getRolledOption(raStart)
-                optionQuery['ClosingTime'] = ra["when"]
-                optionQuery['OpeningTime'] = cc.statData.enteringTime
-                optQueryList.append(optionQuery)
-
-                nextOptionQuery = {}
-                nextOptionQuery["Contract"] = cc.getRolledOption(ra)
-                nextOptionQuery['OpeningTime'] = ra["when"]
-                optQueryList.append(nextOptionQuery)
-            else:
-                optQueryList[-1]['ClosingTime'] = ra["when"]
-                nextOptionQuery = {}
-                nextOptionQuery['OpeningTime'] = ra["when"] #optQueryList[i-1]['ClosingTime']
-                nextOptionQuery["Contract"] = cc.getRolledOption(ra)
-                optQueryList.append(nextOptionQuery)
-
-        if cc.statData.exitingTime != "":
-            optQueryList[-1]['ClosingTime'] = cc.statData.buyWrite["closed"]["@exitingTime"]
+        if len(cc.statData.rollingActivity) == 0:
+            optionQuery["Contract"] = cc.getInitialOption()
+            optionQuery['OpeningTime'] = cc.statData.enteringTime
+            optQueryList.append(optionQuery)
         else:
-            optQueryList[-1]['ClosingTime'] = datetime.now().strftime("%Y%m%d %H:%M:%S")
+            for i, ra in enumerate(cc.statData.rollingActivity):
+                if i == 0:
+                    optionQuery["Contract"] = cc.getRolledOption(raStart)
+                    optionQuery['ClosingTime'] = ra["when"]
+                    optionQuery['OpeningTime'] = cc.statData.enteringTime
+                    optQueryList.append(optionQuery)
+
+                    nextOptionQuery = {}
+                    nextOptionQuery["Contract"] = cc.getRolledOption(ra)
+                    nextOptionQuery['OpeningTime'] = ra["when"]
+                    optQueryList.append(nextOptionQuery)
+                else:
+                    optQueryList[-1]['ClosingTime'] = ra["when"]
+                    nextOptionQuery = {}
+                    nextOptionQuery['OpeningTime'] = ra["when"] #optQueryList[i-1]['ClosingTime']
+                    nextOptionQuery["Contract"] = cc.getRolledOption(ra)
+                    optQueryList.append(nextOptionQuery)
+
+        if len(optQueryList) > 0:
+            if cc.statData.exitingTime != "":
+                optQueryList[-1]['ClosingTime'] = cc.statData.buyWrite["closed"]["@exitingTime"]
+            else:
+                optQueryList[-1]['ClosingTime'] = datetime.now().strftime("%Y%m%d %H:%M:%S")
 
         optiondata = {}
         for optionContract in optQueryList:
@@ -190,8 +207,10 @@ class CMTModel(QAbstractTableModel):
                     optiondata[optionname] = dfall[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
             else:
                 print(path,"does not exist")
-
-        cc.ophistData = pd.concat(optiondata)
+        if len(optiondata) > 0:
+            cc.ophistData = pd.concat(optiondata)
+        else:
+            cc.ophistData = optiondata
         cc.histData = stockData[cc.statData.enteringTime:]
         return True
 
@@ -241,26 +260,12 @@ class CMTModel(QAbstractTableModel):
         globvars.totalCtv = self.summary.totalctv
         globvars.totalItv = self.summary.totalitv
 
-        globvars.lock.acquire()
-        self.layoutAboutToBeChanged.emit()
-        globvars.lock.release()
-
-        self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
-
-        globvars.lock.acquire()
-        self.layoutChanged.emit()
-        globvars.lock.release()
+        #self.layoutAboutToBeChanged.emit()
+        #self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
+        #self.layoutChanged.emit()
 
     def rowCount(self, parent):
-        # if (self.bwl.keys())/2 == 0:
-        #     return 0
-        #
-        # for x in self.bwl:
-        #     if x.statData.exitingTime != "" :
-        #         c = c+1
-        #tmplst = len([ x for x in self.bwl if x.statData.exitingTime != "" ])
         return int(len(self.bwl.keys())/2)
-        #return int(len([ x for x in self.bwl if self.bwl[x].statData.exitingTime != ""])/2)
 
     def columnCount(self, parent):
         k = list(self.bwl.keys())[0]

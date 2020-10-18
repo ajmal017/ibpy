@@ -34,7 +34,7 @@ class ToolBar(QToolBar):
 
         self.filterSelectorCombo.currentIndexChanged.connect(self.changeFilter)
         self.candleWidthSelectorCombo.currentIndexChanged.connect(self.changeCandleWidth)
-        self.candleWidthSelectorCombo.setCurrentIndex(1)
+        self.candleWidthSelectorCombo.setCurrentIndex(2)
         self.addWidget(self.filterSelectorCombo)
         self.addWidget(self.candleWidthSelectorCombo)
 
@@ -106,8 +106,11 @@ class ToolBar(QToolBar):
         curCandleWidthText = self.candleWidthSelectorCombo.currentText()
         if curCandleWidthText == "1 min":
             self.controller.model.candleWidth = Misc.const.CANDLEWIDTH1
-        else:
+        elif curCandleWidthText == "5 min":
             self.controller.model.candleWidth = Misc.const.CANDLEWIDTH5
+        elif curCandleWidthText == "60 min":
+            self.controller.model.candleWidth = Misc.const.CANDLEWIDTH60
+
 
     def changeFilter(self):
         curtext = self.filterSelectorCombo.currentText()
@@ -125,7 +128,7 @@ class ToolBar(QToolBar):
         elif curtext == "60 min":
             self.controller.model.candleWidth = Misc.const.CANDLEWIDTH60
         else:
-            self.controller.model.candleWidth = Misc.const.CANDLEWIDTH60
+            self.controller.model.candleWidth = Misc.const.CANDLEWIDTH5
 
     def changeBrokerPort(self):
         port = 4002

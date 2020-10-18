@@ -38,6 +38,7 @@ class StatData():
 
         if "closed" in bw:
             self.exitingTime = bw["closed"]["@exitingTime"]
+            self.position = 0
         else:
             self.exitingTime = ""
 
@@ -72,6 +73,7 @@ class StatData():
                                 "ulprice":      bw["rolling_activities"]["rolled"]["@ulprice"]
                             }
                         )
+
 
     def get_ioa_initial(self):
         if (self.strike > self.inistkprice):
@@ -395,6 +397,20 @@ class covered_call():
         option.currency = "USD"
         option.lastTradeDateOrContractMonth = r['to']
         option.strike = r['strike']
+        option.right = "Call"
+        option.multiplier = "100"
+
+        return option
+
+    def getInitialOption(self):
+        option = Contract()
+        option.symbol = self.statData.buyWrite["underlyer"]["@tickerSymbol"]
+        option.avPrice = self.statData.buyWrite["option"]["@price"]
+        option.secType = "OPT"
+        option.exchange = "SMART"
+        option.currency = "USD"
+        option.lastTradeDateOrContractMonth = self.statData.buyWrite["option"]["@expiry"]
+        option.strike = self.statData.buyWrite["option"]["@strike"]
         option.right = "Call"
         option.multiplier = "100"
 
