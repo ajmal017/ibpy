@@ -48,7 +48,6 @@ class PositionViewer(QWidget):
         dfsk.reset_index(inplace=True)
         dfop.reset_index(inplace=True)
         dfop.drop('level_0', axis=1, inplace=True)
-
         #avoid copy warning of pandas as we are aware of this issue:
         pd.set_option('mode.chained_assignment', None)
 
@@ -59,14 +58,13 @@ class PositionViewer(QWidget):
         dfsk.is_copy = None
         dfsk['date'] = pd.to_datetime(dfsk['date'], format=format)
 
-
         dfsk = dfsk.set_index('date')
         dfop = dfop.set_index('date')
 
         dfsk = dfsk.sort_index()
         dfop = dfop.sort_index()
 
-        comb = dfsk.merge(dfop, on=['date'])
+        comb = dfsk.merge(dfop, how='outer', on=['date'])
         comb.sort_values(by='date', inplace=True)
         comb.columns = ['Open', 'High', 'Low', 'Close', 'OOpen', 'OHigh', 'OLow', 'OClose']
 
@@ -89,7 +87,7 @@ class PositionViewer(QWidget):
             collst.append('r')
 
         apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax, color='black')
-        strkdict = mpf.make_addplot(comb['strike'], ax=self.ax2, color='green')
+        strkdict = mpf.make_addplot(comb['strike'], scatter=True, ax=self.ax2, y_on_right=True, color='green')
 
         # mpf.plot(comb,addplot=[apdict,strkdict], returnfig = True,type='candle', ax=self.ax2,
         #          vlines=dict(vlines=vlinedictlst, linewidths=1),

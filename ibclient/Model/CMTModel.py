@@ -133,63 +133,63 @@ class CMTModel(QAbstractTableModel):
         raStart['strike'] = cc.statData.buyWrite["option"]["@strike"]
         raStart['sellprice'] = cc.statData.buyWrite["option"]["@price"]
         dfDataList = []
+
         if os.path.exists(os.path.join("./data/STK_MIDPOINT", self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"])):
             files = os.listdir(os.path.join("./data/STK_MIDPOINT", self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"]))
             for file in files:
+                print(file)
                 filetmp = os.path.join("./data/STK_MIDPOINT",self.candleWidth,cc.statData.buyWrite["underlyer"]["@tickerSymbol"], file)
                 dfDataList.append(pd.read_csv(filetmp, index_col=0, parse_dates=True))
 
             stockData = pd.concat(dfDataList)
 
-            for i, ra in enumerate(cc.statData.rollingActivity):
-                if i == 0:
-                    optionQuery["Contract"] = cc.getRolledOption(raStart)
-                    optionQuery['ClosingTime'] = ra["when"]
-                    optionQuery['OpeningTime'] = cc.statData.enteringTime
-                    optQueryList.append(optionQuery)
+        for i, ra in enumerate(cc.statData.rollingActivity):
+            if i == 0:
+                optionQuery["Contract"] = cc.getRolledOption(raStart)
+                optionQuery['ClosingTime'] = ra["when"]
+                optionQuery['OpeningTime'] = cc.statData.enteringTime
+                optQueryList.append(optionQuery)
 
-                    nextOptionQuery = {}
-                    nextOptionQuery["Contract"] = cc.getRolledOption(ra)
-                    nextOptionQuery['OpeningTime'] = ra["when"]
-                    optQueryList.append(nextOptionQuery)
-                else:
-                    optQueryList[-1]['ClosingTime'] = ra["when"]
-                    nextOptionQuery = {}
-                    nextOptionQuery['OpeningTime'] = ra["when"] #optQueryList[i-1]['ClosingTime']
-                    nextOptionQuery["Contract"] = cc.getRolledOption(ra)
-                    optQueryList.append(nextOptionQuery)
-
-            if cc.statData.exitingTime != "":
-                optQueryList[-1]['ClosingTime'] = cc.statData.buyWrite["closed"]["@exitingTime"]
+                nextOptionQuery = {}
+                nextOptionQuery["Contract"] = cc.getRolledOption(ra)
+                nextOptionQuery['OpeningTime'] = ra["when"]
+                optQueryList.append(nextOptionQuery)
             else:
-                optQueryList[-1]['ClosingTime'] = datetime.now().strftime("%Y%m%d %H:%M:%S")
-                cc.statData.exitingTime = datetime.now().strftime("%Y%m%d %H:%M:%S")
+                optQueryList[-1]['ClosingTime'] = ra["when"]
+                nextOptionQuery = {}
+                nextOptionQuery['OpeningTime'] = ra["when"] #optQueryList[i-1]['ClosingTime']
+                nextOptionQuery["Contract"] = cc.getRolledOption(ra)
+                optQueryList.append(nextOptionQuery)
 
-            dfDataList = []
-            optiondata = {}
-            for optionContract in optQueryList:
-                expiry = optionContract["Contract"].lastTradeDateOrContractMonth
-                strike = optionContract["Contract"].strike
-                symbol = optionContract["Contract"].symbol
-                optionname= symbol+expiry+"C"+strike
-                path = os.path.join("data\OPT_MIDPOINT",self.candleWidth,optionname)
-                if os.path.exists(path):
-                    files=os.listdir(path)
-                    for file in files:
-                        file = os.path.join(path, file)
-                        df = pd.read_csv(file, index_col=0, parse_dates=True)
-                        #[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
-                        dfDataList.append(df)
-                    if len(files) > 0:
-                        optiondata[optionname] = pd.concat(dfDataList)[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
-                else:
-                    print(path,"does not exist")
-
-            cc.ophistData = pd.concat(optiondata)
-            cc.histData = stockData[cc.statData.enteringTime:]
-            return True
+        if cc.statData.exitingTime != "":
+            optQueryList[-1]['ClosingTime'] = cc.statData.buyWrite["closed"]["@exitingTime"]
         else:
-            return False
+            optQueryList[-1]['ClosingTime'] = datetime.now().strftime("%Y%m%d %H:%M:%S")
+
+        dfDataList = []
+        optiondata = {}
+        for optionContract in optQueryList:
+            expiry = optionContract["Contract"].lastTradeDateOrContractMonth
+            strike = optionContract["Contract"].strike
+            symbol = optionContract["Contract"].symbol
+            optionname= symbol+expiry+"C"+strike
+            path = os.path.join("data\OPT_MIDPOINT",self.candleWidth,optionname)
+            if os.path.exists(path):
+                files=os.listdir(path)
+                for file in files:
+                    file = os.path.join(path, file)
+                    print(file)
+                    df = pd.read_csv(file, index_col=0, parse_dates=True)
+                    #[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
+                    dfDataList.append(df)
+                if len(files) > 0:
+                    optiondata[optionname] = pd.concat(dfDataList)[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
+            else:
+                print(path,"does not exist")
+
+        cc.ophistData = pd.concat(optiondata)
+        cc.histData = stockData[cc.statData.enteringTime:]
+        return True
 
     def startModelTimer(self):
         self.timer = QtCore.QTimer()
