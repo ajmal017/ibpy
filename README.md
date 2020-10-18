@@ -8,6 +8,10 @@ This "strategy" tries to help managing Entries, Exits, Rollovers, Stock- and Opt
 
 ![screenshot](screenshots/Capture.PNG)
 
+![screenshot](screenshots/CaptureTable.PNG)
+
+![screenshot](screenshots/CaptureChart.PNG)
+
 ## Background
 One rule of the BCIstrategy says to rollover the option as soon as the timevalue decreases below 20 or 10% under specific conditions. But when managing portfolios consisting of more than 10 or 15 positions this begins to get difficult. Furthermore it is more and more difficult to track earning dates, dividend dates andso on if you  manage more than 10 positions. This tool shouldhelp out by visualizing these most important data.
 
