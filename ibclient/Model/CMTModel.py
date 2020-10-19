@@ -93,7 +93,8 @@ class PrxyModel(QSortFilterProxyModel):
         cc = model.bwl[str(((index.row() * 2) + const.INITIALTTICKERID))]
 
         if model.includeZeroPositions == False and cc.statData.position == 0:
-            return False
+            if cc.statData.buyWrite["underlyer"]["@tickerSymbol"] != "DEMO":
+                return False
 
         return True
 
@@ -382,4 +383,8 @@ class CMTModel(QAbstractTableModel):
 
     def getNumPositions(self):
         #one less because of demo position
-        return int((len(self.bwl)/2) -1)
+        if self.includeZeroPositions == True:
+            tmplst = self.bwl
+        else:
+            tmplst = [cc for cc in self.bwl if self.bwl[cc].statData.position > 0]
+        return int((len(tmplst)/2))

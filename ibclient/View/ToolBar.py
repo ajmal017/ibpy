@@ -33,7 +33,7 @@ class ToolBar(QToolBar):
         self.candleWidthSelectorCombo              = self.getCandleWidthSelectCbx()
 
         self.filterSelectorCombo.currentIndexChanged.connect(self.changeFilter)
-        self.filterSelectorCombo.setCurrentIndex(0)
+        self.filterSelectorCombo.setCurrentIndex(1)
         self.candleWidthSelectorCombo.currentIndexChanged.connect(self.changeCandleWidth)
         self.candleWidthSelectorCombo.setCurrentIndex(2)
         self.addWidget(self.filterSelectorCombo)

@@ -29,6 +29,6 @@ for sc in securities:
          '--end-date', '20201017', '--data-type', 'MIDPOINT', s])
     for strik in sc["strikes"]:
         for expir in sc["expiry"]:
-            subprocess.call(["py", main, '--port', '4002', '--security-type', 'OPT', '--size', '1 min', '--start-date', '20200601', '--end-date', '20201017',  '--data-type', 'MIDPOINT',  '--expiry', expir, '--strike', strik, s])
+            subprocess.call(["py", main, '--port', port, '--security-type', 'OPT', '--size', '1 min', '--start-date', '20200601', '--end-date', '20201017',  '--data-type', 'MIDPOINT',  '--expiry', expir, '--strike', strik, s])
 
 
