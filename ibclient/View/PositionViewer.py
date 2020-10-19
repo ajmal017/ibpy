@@ -35,7 +35,7 @@ class PositionViewer(QWidget):
         qvb.addWidget(self.sc)
         self.setLayout(qvb)
 
-    def updateMplChart(self, cc):
+    def updateMplChart(self, cc, alns):
         self.ax.clear()
         self.ax2.clear()
 
@@ -75,6 +75,23 @@ class PositionViewer(QWidget):
             vlinedictlst = [comb.iloc[0].name]
         else:
             vlinedictlst = [datetime.strftime(datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y%m%d %H:%M:%S"), "%Y%m%d %H:%M:%S")]
+
+        strikeLine=[]
+        prevstrike = 0
+        for a in alns:
+            if datetime.strptime(a[0], "%Y%m%d %H:%M:%S")<comb.iloc[0].name:
+                strikeLine.append((comb.iloc[0].name, a[1]))
+                prevstrike = a[1]
+            else:
+                strikeLine.append((a[0], prevstrike))
+                strikeLine.append((a[0], a[1]))
+                prevstrike = a[1]
+        if cc.statData.exitingTime != "":
+            strikeLine.append((cc.statData.exitingTime, prevstrike))
+        else:
+            strikeLine.append((comb.iloc[-1].name, prevstrike))
+
+        # comb.iloc[0].name
         hlinelst = []
         collst=[]
         for ra in cc.statData.rollingActivity:
@@ -83,18 +100,19 @@ class PositionViewer(QWidget):
                 vlinedictlst.append(comb.iloc[0].name)
             else:
                 vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
+
+            if cc.statData.exitingTime != "":
+                vlinedictlst.append(cc.statData.exitingTime)
+
             hlinelst.append(float(ra["strike"]))
             collst.append('r')
 
         apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax, color='black')
         strkdict = mpf.make_addplot(comb['strike'], scatter=True, ax=self.ax2, y_on_right=True, color='green')
 
-        # mpf.plot(comb,addplot=[apdict,strkdict], returnfig = True,type='candle', ax=self.ax2,
-        #          vlines=dict(vlines=vlinedictlst, linewidths=1),
-        #          tight_layout=True,show_nontrading=False,style='yahoo')
-
         mpf.plot(comb,addplot=apdict, returnfig = True,type='candle', ax=self.ax2,
                  vlines=dict(vlines=vlinedictlst, linewidths=1),
+                 alines = dict(alines=strikeLine, colors='r', linewidths=1),
                  tight_layout=True,show_nontrading=False,style='yahoo')
 
         for label in self.ax.xaxis.get_ticklabels():

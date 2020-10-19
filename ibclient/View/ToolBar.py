@@ -97,8 +97,8 @@ class ToolBar(QToolBar):
     def showPositionViewer(self):
         cc = self.cwidget.getSelectedRow()
         if cc != None:
-            if self.controller.getStockData(cc):
-                self.positionViewer.updateMplChart(cc)
+            a = self.controller.getStockData(cc)
+            self.positionViewer.updateMplChart(cc, a)
 
     def changeColorPalette(self):
         globvars.colors = PALETTES_NAMED[self.colorSelectorCombo.currentText()]

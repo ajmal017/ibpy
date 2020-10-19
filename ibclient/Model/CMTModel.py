@@ -216,7 +216,9 @@ class CMTModel(QAbstractTableModel):
         else:
             cc.ophistData = optiondata
         cc.histData = stockData[cc.statData.enteringTime:]
-        return True
+
+        #return the alines for the mplfinance plot
+        return [(q["OpeningTime"], float(q["Contract"].strike)) for q in optQueryList]
 
     def startModelTimer(self):
         self.timer = QtCore.QTimer()
