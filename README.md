@@ -21,6 +21,7 @@ IBPY helps in calculating your profit and loss for the covered call portfolio. I
 ### Undocked Chart Widget
 ![screenshot](screenshots/CaptureChart.PNG)
 
+
 So the main pupose of having this tool is to get and track how much timevalue is left. This is not provided by the broker but it is the core main information for trading along this BCI strategy if you bring it down to one single item: realizing profits at the right time an in the right position.
 Having a basis like this one gets the opportunityfor optimization of almost all aspects of the covered call position management.
 
