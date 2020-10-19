@@ -3,7 +3,7 @@ import subprocess
 
 stkarray = [ "TSLA","MRCY"]
 expiries= [ "20201120","20201218"]
-port = 4001
+port = "7495"
 startdate=20200701
 enddate=20201017
 
@@ -25,7 +25,7 @@ main="C:\git\ibpy\ibclient\Model\download.py"
 for sc in securities:
     s = sc["symbol"]
     subprocess.call(
-        ["py", main, '--port', '4002', '--security-type', 'STK', '--size', '1 min', '--start-date', '20200601',
+        ["py", main, '--port', port, '--security-type', 'STK', '--size', '1 min', '--start-date', '20200601',
          '--end-date', '20201017', '--data-type', 'MIDPOINT', s])
     for strik in sc["strikes"]:
         for expir in sc["expiry"]:

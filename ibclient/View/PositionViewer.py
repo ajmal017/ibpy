@@ -100,10 +100,10 @@ class PositionViewer(QWidget):
         pd.set_option('mode.chained_assignment', None)
 
         format = "%Y-%m-%d  %H:%M:%S"
-        dfop.is_copy = None
+        # dfop.is_copy = None
         dfop['date'] = pd.to_datetime(dfop['date'], format=format)
 
-        dfsk.is_copy = None
+        # dfsk.is_copy = None
         dfsk['date'] = pd.to_datetime(dfsk['date'], format=format)
 
         dfsk = dfsk.set_index('date')

@@ -122,7 +122,6 @@ class CMTWidget(QWidget):
         for index in sorted(indexes):
             index = self.proxy_model.mapToSource(index)
             cc = self.table_model.bwl[str(((index.row() * 2) + Misc.const.INITIALTTICKERID))]
-            print('Row %d is selected' % index.row())
             return cc
 
         return self.table_model.bwl["4100"]
