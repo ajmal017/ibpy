@@ -18,7 +18,7 @@ IBPY helps in calculating your profit and loss for the covered call portfolio. I
 ### Undocked Table Widget
 ![screenshot](screenshots/CaptureTable.PNG)
 
-### Undocked Chart Widget
+### Undocked Chart Widget for KLAC including rolling- and strike-informations: rolled up and out (Diagonal Spread) twice
 ![screenshot](screenshots/CaptureChart.PNG)
 
 
@@ -30,10 +30,11 @@ This small tool consists of a table with the most important column "TV Change/%"
 Used Technologies:
 
 - Python3
+- PyQT5 
+- Matplotlib
+- https://github.com/matplotlib/mplfinance
+- https://github.com/YuChenAmberLu/Options-Calculator
 - Interactive Brokers API Framework for Python
-- PyQT5 Framework
-- Matploblib library
-- Option Calculator Framework ( https://github.com/YuChenAmberLu/Options-Calculator )
 
 It was tried to design along the MVC Pattern as good as possible.
 
