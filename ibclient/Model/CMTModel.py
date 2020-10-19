@@ -85,11 +85,14 @@ class PrxyModel(QSortFilterProxyModel):
 
 
     def filterAcceptsRow(self, source_row, source_parent):
-        # model = self.sourceModel()  # the underlying model,
-        #
-        # row = model.index(source_row, 0, source_parent)
-        # if row[const.COL_POSITION] != 0:
-        #     return True
+        model = self.sourceModel()  # the underlying model,
+
+        index = model.index(source_row, const.COL_POSITION, source_parent)
+
+        cc = model.bwl[str(((index.row() * 2) + const.INITIALTTICKERID))]
+
+        if model.includeZeroPositions == False and cc.statData.position == 0:
+            return False
 
         return True
 
@@ -104,6 +107,7 @@ class CMTModel(QAbstractTableModel):
         QAbstractTableModel.__init__(self, *args)
         self.account  = Account()
         self.bwl = {}
+        self.includeZeroPositions = False
         self.summary = Summary()
         self.candleWidth = const.CANDLEWIDTH1
         self.brkConnection = BrkConnection()
@@ -260,9 +264,7 @@ class CMTModel(QAbstractTableModel):
         globvars.totalCtv = self.summary.totalctv
         globvars.totalItv = self.summary.totalitv
 
-        #self.layoutAboutToBeChanged.emit()
-        #self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
-        #self.layoutChanged.emit()
+        self.dataChanged.emit(self.createIndex(0, 0), self.createIndex(self.rowCount(0), self.columnCount(0)))
 
     def rowCount(self, parent):
         return int(len(self.bwl.keys())/2)
@@ -273,7 +275,7 @@ class CMTModel(QAbstractTableModel):
 
 
     def data(self, index, role):
-#        globvars.lock.acquire()
+
         if not index.isValid():
             globvars.logger.info("data: index not valid")
             return None
@@ -283,12 +285,8 @@ class CMTModel(QAbstractTableModel):
 
 
         cc = self.bwl[str(((index.row() * 2) + const.INITIALTTICKERID))]
-        # if cc.statData.exitingTime != "":
-        #     return None
 
         if role == QtCore.Qt.BackgroundRole:
-            # globvars.logger.info("")
-
 
             pat = Qt.SolidPattern
 
@@ -324,9 +322,6 @@ class CMTModel(QAbstractTableModel):
 
             coltup = hex2rgb(globvars.colors['braun'])
             return QBrush(QColor.fromRgb(coltup[0], coltup[1], coltup[2]), pat)
-            #return QBrush(globvars.colors['braun'], pat)
-
-            #return QBrush(QtCore.Qt.gray, pat)
 
         elif role == QtCore.Qt.DisplayRole:
             value = self.bwl[str(((index.row()*2)+const.INITIALTTICKERID))].dispData[index.column()]
@@ -375,30 +370,6 @@ class CMTModel(QAbstractTableModel):
             return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsUserCheckable
         else:
             return QtCore.Qt.ItemIsEnabled | QtCore.Qt.ItemIsSelectable
-
-    def setData(self, index, value, role):
-        if not index.isValid():
-            return False
-
-        if role == QtCore.Qt.CheckStateRole and index.column() == 0:
-            print(">>> setData() role = ", role)
-            print(">>> setData() index.column() = ", index.column())
-            if value == QtCore.Qt.Checked:
-                self.buywrites[index.row()][index.column()].setChecked(True)
-                self.buywrites[index.row()][index.column()].setText("C")
-                # if studentInfos.size() > index.row():
-                #     emit StudentInfoIsChecked(studentInfos[index.row()])
-            else:
-                self.buywrites[index.row()][index.column()].setChecked(False)
-                self.buywrites[index.row()][index.column()].setText("D")
-        else:
-            print(">>> setData() role = ", role)
-            print(">>> setData() index.column() = ", index.column())
-        # self.emit(SIGNAL("dataChanged(QModelIndex,QModelIndex)"), index, index)
-        print(">>> setData() index.row = ", index.row())
-        print(">>> setData() index.column = ", index.column())
-        self.dataChanged.emit(index, index)
-        return True
 
     def getNumPositions(self):
         #one less because of demo position
