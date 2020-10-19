@@ -30,10 +30,11 @@ This small tool consists of a table with the most important column "TV Change/%"
 Used Technologies:
 
 - Python3
+- PyQT5 
+- Matplotlib
+- https://github.com/matplotlib/mplfinance
+- https://github.com/YuChenAmberLu/Options-Calculator
 - Interactive Brokers API Framework for Python
-- PyQT5 Framework
-- Matploblib library
-- Option Calculator Framework ( https://github.com/YuChenAmberLu/Options-Calculator )
 
 It was tried to design along the MVC Pattern as good as possible.
 
