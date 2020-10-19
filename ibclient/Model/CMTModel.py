@@ -41,6 +41,7 @@ class PrxyModel(QSortFilterProxyModel):
                 const.COL_ID                    ,
                 const.COL_ROLLED                ,
                 const.COL_POSITION              ,
+                const.COL_CAPPART               ,
                 const.COL_DURATION              ,
                 const.COL_STRIKE                ,
                 const.COL_STATUS                ,
@@ -109,6 +110,7 @@ class CMTModel(QAbstractTableModel):
         self.bwl = {}
         self.includeZeroPositions = True
         self.summary = Summary()
+        self.summary.overallMarketValue = 0
         self.candleWidth = const.CANDLEWIDTH1
         self.brkConnection = BrkConnection()
 
@@ -252,15 +254,20 @@ class CMTModel(QAbstractTableModel):
         self.summary.total    = 0
         self.summary.totalctv = 0
         self.summary.totalitv = 0
+        self.summary.marketValue = 0
 
         for pos in self.bwl.keys():
             if int(pos) % 2 == 0:
                 self.summary.total = self.summary.total + self.bwl[pos].total
+                self.summary.marketValue = self.summary.marketValue + self.bwl[pos].currentMarketValue()
+                self.bwl[pos].setOverallMarketValue(self.summary.overallMarketValue)
                 c = self.bwl[pos].ctv()
                 i = self.bwl[pos].statData.itv()
                 p = self.bwl[pos].statData.position
                 self.summary.totalctv = self.summary.totalctv + c * p * 100
                 self.summary.totalitv = self.summary.totalitv + i * p * 100
+
+        self.summary.overallMarketValue =  self.summary.marketValue
 
         globvars.total = self.summary.total
         globvars.totalCtv = self.summary.totalctv

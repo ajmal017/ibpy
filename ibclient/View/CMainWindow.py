@@ -18,8 +18,8 @@ class CMainWindow(QMainWindow):
         self.controller = c
         self.logger     = l
         self.positionViewer = PositionViewer(l)
-
-        self.setStatusBar(StatusBar(c))
+        self.statusBar = StatusBar(self,c)
+        self.setStatusBar(self.statusBar)
         self.addToolBar(ToolBar(w,c,self.positionViewer))
 
     def createMenu(self):
@@ -62,7 +62,9 @@ class CMainWindow(QMainWindow):
         self.createMenu()
 
         self.setGeometry(50, 50, 1500, 800)
-        self.setWindowTitle('Covered Call Analyzer Application')
+
+    def updateWindowTitle(self,val):
+        self.setWindowTitle(val+"Covered Call Analyzer Application: NLQ=")
 
     def contextMenuEvent(self, event):
         cmenu = QMenu(self)

@@ -206,7 +206,7 @@ class DownloadApp(EClient, wrapper.EWrapper):
     def error(self, req_id: TickerId, error_code: int, error: str):
         super().error(req_id, error_code, error)
         print("Error. Id:", req_id, "Code:", error_code, "Msg:", error)
-        if error_code == 162 or error_code == 2107:
+        if error_code == 162 or error_code == 2107 or error_code == 200:
             raise (IBApiException)
 
 
@@ -365,14 +365,15 @@ def main():
     logging.debug(f"args={args}")
     contracts = []
     for s in args.symbol:
+        print("sectype:", args.security_type)
+        print("strike:", args.strike)
         contract = make_contract(s, args.security_type, args.currency, args.exchange, args.expiry, args.strike)
         contracts.append(contract)
         os.makedirs(make_download_path(args, contract), exist_ok=True)
     app = DownloadApp(contracts, args)
-    app.connect("127.0.0.1", args.port, clientId=0)
+    app.connect("127.0.0.1", args.port, clientId=10)
 
     app.run()
-
 
 if __name__ == "__main__":
     main()

@@ -115,6 +115,7 @@ class covered_call():
         self.total = 0
         self.uncertaintyFlag = False
         self.oplastcalculated = False
+        self.overallMarketValue = 0
         self.calc_rlzd()
 
         self.dispData = self.table_data()
@@ -134,6 +135,7 @@ class covered_call():
         return [
             False,  #             globvars.header1['Id'         ] = "Unique Identifier"
             False, #             globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
+            False, #             globvars.header1['cap'     ] = "Marketshare"
             True,  #             globvars.header1['Industry'   ] = "Industry of Underlyer"
             False,  #             globvars.header1['Rolled'     ] = "How often this position was rolled"
             False,  #             globvars.header1['Pos'        ] = "How many legs"
@@ -258,9 +260,15 @@ class covered_call():
         self.downSideProtPct = self.calcDownSideProtection()
         self.upSidePotentPct = self.calcUpSidePotential()
 
+        if self.overallMarketValue == 0:
+            self.marketShare = 0
+        else:
+            self.marketShare = 100*(self.currentMarketValue()/self.overallMarketValue)
+
         return (
             "{:.2f}".format(100 * pcttvloss),
             self.statData.buyWrite["underlyer"]["@tickerSymbol"],
+            "{:.2f}".format(self.marketShare),
             self.statData.industry,
             len(self.statData.rollingActivity),
             self.statData.position,
@@ -301,6 +309,9 @@ class covered_call():
             "{:.2f}".format(ulurpnl),
             "{:.2f}".format(self.total)
         )
+
+    def setOverallMarketValue(self,mv):
+        self.overallMarketValue = mv
 
     def ticker_id(self):
         return self.statData.tickerId
@@ -350,6 +361,9 @@ class covered_call():
                 self.statData.strike = float(ra["strike"])
                 self.ul_ts  = ra["when"]
                 self.statData.expiry = ra["to"]
+
+    def  currentMarketValue(self):
+        return (self.tickData.ullst - self.tickData.oplst) * self.statData.position
 
     def ctv(self):
         if self.tickData.ullst <= float(self.statData.strike):

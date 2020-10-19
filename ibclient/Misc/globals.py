@@ -128,6 +128,7 @@ class globvars:
 
         globvars.header1['TV-Cg/%'   ] = "Change of Timevalue in %"
         globvars.header1['Symbl'     ] = "Tickersymbol of underlyer"
+        globvars.header1['Cap/%'     ] = "Percentage amount ($) of portfolio"
         globvars.header1['Ind'   ] = "Industry of Underlyer"
         globvars.header1['Rld'     ] = "How often this position was rolled"
         globvars.header1['Pos'        ] = "How many legs"

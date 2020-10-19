@@ -99,6 +99,7 @@
         <option expiry="20201016" strike="125" multiplier="100" price = "10.88"/>
         <rolling_activities>
         </rolling_activities>
+        <closed expiredItm = "1" exitingTime="20201016 22:00:00" />
     </bw>
 
     <bw id="11" name="SLV" enteringTime="20200803 19:52:00" enteringPrice="23.811" commission="" quantity="3">

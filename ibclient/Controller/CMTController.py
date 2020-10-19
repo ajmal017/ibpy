@@ -5,7 +5,6 @@ import datetime
 import Misc.const
 import Model
 from Misc.globals import globvars
-from Model.download_bars import DownloadApp
 
 class Controller:
     def __init__(self, model):

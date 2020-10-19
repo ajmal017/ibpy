@@ -6,8 +6,9 @@ from PyQt5.QtCore import QTimer
 from Misc.globals import globvars
 
 class StatusBar(QStatusBar):
-    def __init__(self, ctrl, parent = None):
+    def __init__(self, mw, ctrl, parent = None):
         super(StatusBar, self).__init__(parent)
+        self.mainWindow = mw
         self.exchgRatesLbl = []
         self.controller = ctrl
         self.nlqInfo = QLabel("NLQINFORMATION")
@@ -55,6 +56,7 @@ class StatusBar(QStatusBar):
                 self.showMessage("Accountupdate: "+act.accountData["lastUpdate"])
                 # self.exchgRatesLbl.setText(str(globvars.eurchfrate))
                 self.nlqInfo.setText(str(act.accountData["NetLiquidation"]))
+                self.mainWindow.updateWindowTitle(act.accountData["NetLiquidation"]+" @ "+act.accountData["lastUpdate"])
                 self.mrgInfo.setText(str(act.accountData["FullInitMarginReq"]))
                 self.totalCtv.setText("{:.2f}".format((globvars.totalCtv)))
                 self.totalItv.setText("{:.2f}".format((globvars.totalItv)))

@@ -3,6 +3,8 @@ import pandas as pd
 import datetime
 import argparse
 
+import  Misc.const
+
 def resample(mode, ow, symbols):
     ret = []
     orgdir = "1_min"
@@ -18,7 +20,8 @@ def resample(mode, ow, symbols):
         dstdir = "60_min"
 
     cols = ['date', 'open', 'high', 'low', 'close']
-    paths = [ os.path.join(r"C:\git\ibpy\ibclient\data\STK_MIDPOINT",orgdir), os.path.join(r"C:\git\ibpy\ibclient\data\OPT_MIDPOINT", orgdir) ]
+
+    paths = [ os.path.join(Misc.const.DATADIR, "STK_MIDPOINT",orgdir), os.path.join(Misc.const.DATADIR, "OPT_MIDPOINT", orgdir) ]
     for path in paths:
         os.chdir(path)
 
@@ -95,10 +98,4 @@ else:
 
 resample(args.mode, ow, args.symbol)
 
-# stkdf = out_df[0]
-# optdf = out_df[1]
-#
-# pdmrg = out_df[0].merge(out_df[1], how='outer', on=['date'])
-# x=0
-# print("ende")
 
