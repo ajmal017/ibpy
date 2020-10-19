@@ -6,7 +6,14 @@ Visualize and track status, timevalue and volatility of all positions of a cover
 This tool serves already now - in a quite early stage - as a helper for this implementing a covered-call-strategy designed and promoted by the "Blue Collar Investor" [BCI], promoted by Alan Ellman (https://www.thebluecollarinvestor.com/) and his group.
 This "strategy" tries to help managing Entries, Exits, Rollovers, Stock- and Option Selection by giving a set of rules described on the Homepage and in numerous videos you can find everywhere. Furthermore there are special addon services for paying premium members.
 
+### Both Widget in docked state
 ![screenshot](screenshots/Capture.PNG)
+
+### Undocked Table Widget
+![screenshot](screenshots/CaptureTable.PNG)
+
+### Undocked Chart Widget
+![screenshot](screenshots/CaptureChart.PNG)
 
 ## Background
 One rule of the BCIstrategy says to rollover the option as soon as the timevalue decreases below 20 or 10% under specific conditions. But when managing portfolios consisting of more than 10 or 15 positions this begins to get difficult. Furthermore it is more and more difficult to track earning dates, dividend dates andso on if you  manage more than 10 positions. This tool shouldhelp out by visualizing these most important data.
