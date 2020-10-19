@@ -18,7 +18,7 @@ IBPY helps in calculating your profit and loss for the covered call portfolio. I
 ### Undocked Table Widget
 ![screenshot](screenshots/CaptureTable.PNG)
 
-### Undocked Chart Widget
+### Undocked Chart Widget, KLAC, rolled twice
 ![screenshot](screenshots/CaptureChart.PNG)
 
 
