@@ -107,7 +107,7 @@ class CMTModel(QAbstractTableModel):
         QAbstractTableModel.__init__(self, *args)
         self.account  = Account()
         self.bwl = {}
-        self.includeZeroPositions = False
+        self.includeZeroPositions = True
         self.summary = Summary()
         self.candleWidth = const.CANDLEWIDTH1
         self.brkConnection = BrkConnection()
