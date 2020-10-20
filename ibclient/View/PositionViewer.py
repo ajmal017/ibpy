@@ -127,33 +127,56 @@ class PositionViewer(QWidget):
         strikeLine=[]
         prevstrike = 0
         for a in alns:
-            if datetime.strptime(a[0], "%Y%m%d %H:%M:%S")<comb.iloc[0].name:
-                strikeLine.append((comb.iloc[0].name, a[1]))
-                prevstrike = a[1]
+            if datetime.strptime(a[0], "%Y%m%d %H:%M:%S")<comb.iloc[0].name or datetime.strptime(a[0], "%Y%m%d %H:%M:%S")>comb.iloc[-1].name:
+                if datetime.strptime(a[0], "%Y%m%d %H:%M:%S")<comb.iloc[0].name:
+                    #outsider left
+                    strikeLine.append((comb.iloc[0].name, a[1]))
+                    prevstrike = a[1]
+                else:
+                    #outsider right
+                    strikeLine.append((comb.iloc[-1].name, a[1]))
+                    prevstrike = a[1]
             else:
+                #insider
                 strikeLine.append((a[0], prevstrike))
                 strikeLine.append((a[0], a[1]))
                 prevstrike = a[1]
+
         if cc.statData.exitingTime != "":
-            strikeLine.append((cc.statData.exitingTime, prevstrike))
+            if pd.to_datetime(cc.statData.exitingTime) > comb.iloc[-1].name:
+                strikeLine.append((comb.iloc[-1].name, prevstrike))
+            else:
+                strikeLine.append((cc.statData.exitingTime, prevstrike))
         else:
             strikeLine.append((comb.iloc[-1].name, prevstrike))
 
-        # comb.iloc[0].name
-        hlinelst = []
-        collst=[]
         for ra in cc.statData.rollingActivity:
             rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
-            if pd.to_datetime(rastrptime) < comb.iloc[0].name:
-                vlinedictlst.append(comb.iloc[0].name)
-            else:
-                vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
+            if pd.to_datetime(rastrptime) < comb.iloc[0].name or pd.to_datetime(rastrptime) > comb.iloc[-1].name:
+                #move outlier into the range
+                if pd.to_datetime(rastrptime) < comb.iloc[0].name:
+                    rastrptime = comb.iloc[0].name
+                else:
+                    rastrptime = comb.iloc[-1].name
+
+            vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
+            if pd.to_datetime(rastrptime) < comb.iloc[0].name or pd.to_datetime(rastrptime) > comb.iloc[-1].name:
+                #move outlier into the range
+                if pd.to_datetime(rastrptime) < comb.iloc[0].name:
+                    rastrptime = comb.iloc[0].name
+                else:
+                    rastrptime = comb.iloc[-1].name
+            vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
 
             if cc.statData.exitingTime != "":
-                vlinedictlst.append(cc.statData.exitingTime)
-
-            hlinelst.append(float(ra["strike"]))
-            collst.append('r')
+                rastrptime = cc.statData.exitingTime
+                if pd.to_datetime(rastrptime) < comb.iloc[0].name or pd.to_datetime(rastrptime) > comb.iloc[-1].name:
+                    #move outlier into the range
+                    if pd.to_datetime(rastrptime) < comb.iloc[0].name:
+                        rastrptime = comb.iloc[0].name
+                    else:
+                        rastrptime = comb.iloc[-1].name
+                vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
 
         apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax, color='black')
         strkdict = mpf.make_addplot(comb['strike'], scatter=True, ax=self.ax2, y_on_right=True, color='green')
