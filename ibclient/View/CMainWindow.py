@@ -18,6 +18,7 @@ class CMainWindow(QMainWindow):
         self.controller = c
         self.logger     = l
         self.positionViewer = PositionViewer(l)
+        self.cwidget.setPositionViewer(self.positionViewer)
         self.statusBar = StatusBar(self,c)
         self.setStatusBar(self.statusBar)
         self.addToolBar(ToolBar(w,c,self.positionViewer))

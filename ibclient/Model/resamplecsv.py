@@ -6,9 +6,6 @@ import argparse
 import  Misc.const
 
 def resample(mode, ow, symbols):
-    ret = []
-    orgdir = "1_min"
-    dstdir = "5_min"
 
     if mode == "1TO5":
         modulo = 5
@@ -96,6 +93,7 @@ if args.overwrite=="yes":
 else:
     ow = False
 
-resample(args.mode, ow, args.symbol)
+resample("1TO5", ow, args.symbol)
+resample("5TO12", ow, args.symbol)
 
 

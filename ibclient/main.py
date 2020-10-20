@@ -160,7 +160,7 @@ if __name__ == '__main__':
     controller = Controller(model)
     model.initData(controller)
 
-    view = CMTWidget(model)
+    view = CMTWidget(model, controller)
     cmw = CMainWindow(view, controller, mainLogger)
     controller.initData(view)
 

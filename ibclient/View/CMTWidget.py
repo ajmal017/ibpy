@@ -85,7 +85,7 @@ def BSM_put_value(St, K, t, T, r, sigma):
     return put_value
 
 class CMTWidget(QWidget):
-    def __init__(self, model, *args):
+    def __init__(self, model, controller, *args):
         QWidget.__init__(self, *args)
         pal = QPalette()
 
@@ -97,6 +97,7 @@ class CMTWidget(QWidget):
         self.proxy_model = PrxyModel()
 
         self.table_model = model
+        self.controller = controller
         self.proxy_model.setSourceModel(self.table_model)
         self.table_view.setModel(self.proxy_model)
         self.table_view.setPalette(pal)
@@ -104,6 +105,7 @@ class CMTWidget(QWidget):
         self.table_view.setSelectionBehavior(QAbstractItemView.SelectRows)
         self.table_view.clicked.connect(self.showSelection)
         self.table_view.clicked.connect(self.selectRow)
+        self.table_view.doubleClicked.connect(self.doubleClickedCell)
 
         # enable sorting
         self.table_view.setSortingEnabled(True)
@@ -115,6 +117,9 @@ class CMTWidget(QWidget):
         self.table_view.setFont(self.current_font);
         self.setLayout(vlayout)
         self.table_view.resizeColumnsToContents();
+
+    def setPositionViewer(self,p):
+        self.positionViewer =   p
 
     def getSelectedRow(self):
         indexes = self.table_view.selectionModel().selectedRows()
@@ -156,3 +161,15 @@ class CMTWidget(QWidget):
 
     def selectRow(self, index):
         pass
+
+    def doubleClickedCell(self, idx):
+        index = self.proxy_model.mapToSource(idx)
+        r = index.row()
+        c = index.column()
+        cc = self.proxy_model.sourceModel().bwl[str(((r * 2) + Misc.const.INITIALTTICKERID))]
+        sym = cc.statData.buyWrite["underlyer"]["@tickerSymbol"]
+        print ("clicked on ",sym," ",int(c))
+        if c == 1:
+            a = self.controller.getStockData(cc)
+            self.positionViewer.updateMplChart(cc, a)
+
