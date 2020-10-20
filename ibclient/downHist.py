@@ -3,15 +3,8 @@ import subprocess
 port = "7495"
 
 securities = [
-            {"symbol"  : ["EBAY"],
-             "strikes" : ["55"],
-             "expiry"  : [ "20201030","20201106","20201113","20201120","20201218"]},
 
-            {"symbol"  : ["AAPL"],
-             "strikes" : ["120","130"],
-             "expiry"  : [ "20201030","20201120","20201218"]},
-
-            {"symbol": ["SBUX", "KMX","HEI","MCHP","CYBR","GWRE","QLYS","PGR","TER","IART"],
+            {"symbol": ["CYBR","GWRE","QLYS","PGR","TER","IART"],
              "strikes": ["90", "100"],
              "expiry": ["20201120", "20201218"]},
 ]

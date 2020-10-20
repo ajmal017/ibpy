@@ -346,6 +346,10 @@ def main():
     argp.add_argument(
         "--max-days", help="Set start date to earliest date", action="store_true",
     )
+    argp.add_argument(
+        "--clientid", help="Set client id", action="store_true",
+    )
+
     args = argp.parse_args()
 
     if args.debug:
@@ -368,8 +372,10 @@ def main():
         print("sectype:", args.security_type)
         print("strike:", args.strike)
         contract = make_contract(s, args.security_type, args.currency, args.exchange, args.expiry, args.strike)
+        p = make_download_path(args, contract)
         contracts.append(contract)
-        os.makedirs(make_download_path(args, contract), exist_ok=True)
+        os.makedirs(p, exist_ok=True)
+
     app = DownloadApp(contracts, args)
     app.connect("127.0.0.1", args.port, clientId=10)
 

@@ -173,6 +173,7 @@
     <option expiry="20200918" strike="56" multiplier="100" price = "2.76"/>
         <rolling_activities>
             <rolled when="20200911 18:51:01" from="20200918" to="20201023" strike="56"  buyprice = "0.12" sellprice="1.4" ulprice="52.55" commission = "1.45"/>
+            <rolled when="20201021 21:32:47" from="20201023" to="20201030" strike="56"  buyprice = "0.04" sellprice="0.87" ulprice="53.10" commission = "1.27"/>
         </rolling_activities>
 <!--    <closed exitingTime="20201006 21:12:30" exitingPrice="49.81" ulprice="50.10" optprice="0.29" commission = "1.58"/>-->
    </bw>
@@ -279,8 +280,23 @@
         <option expiry="20201120" strike="117" multiplier="100" price = "5.99"/>
    </bw>
 
+   <bw id="35" name="TMO" enteringTime="20201022 21:29:41" enteringPrice="464.43" commission="1.49" quantity="1" exchange="SMART">
+    <underlyer type="STK" tickerSymbol="TMO" price = "480.61" earningscall = "20210120"/>
+    <option expiry="20201120" strike="480" multiplier="100" price = "16.18"/>
+    <closed exitingTime="20201023 21:55:04" exitingPrice="464.49" ulprice="480.84" optprice="16.35" commission = "2.53"/>
+   </bw>
 
-   <bw id="99" enteringTime="20201019 20:42:30" enteringPrice="217.14" commission="1.48" quantity="0">
+   <bw id="36" name="LAD" enteringTime="20201022 16:39:41" enteringPrice="244.00" commission="1.49" quantity="1" exchange="SMART">
+    <underlyer type="STK" tickerSymbol="LAD" price = "258.33" earningscall = "20210101"/>
+    <option expiry="20201120" strike="260" multiplier="100" price = "14.33"/>
+   </bw>
+
+   <bw id="37" name="TMO" enteringTime="20201023 15:40:00" enteringPrice="463.05" commission="1.74" quantity="1" exchange="SMART">
+    <underlyer type="STK" tickerSymbol="TMO" price = "478.50" earningscall = "20210120"/>
+    <option expiry="20210115" strike="500" multiplier="100" price = "15.446"/>
+   </bw>
+
+   <bw id="99" enteringTime="20201019 2:42:30" enteringPrice="217.14" commission="1.48" quantity="0">
         <underlyer type="STK" tickerSymbol="AMZN" price = "3240" earningscall = "20201129"/>
         <option expiry="20201030" strike="3220" multiplier="100" price = "11.27"/>
    </bw>

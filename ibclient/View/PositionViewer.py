@@ -9,6 +9,8 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 import mplfinance as mpf
 from matplotlib.figure import Figure
 
+from Misc.utilities import humanreadable_date
+
 class SnappingCursor:
     """
     A cross hair cursor that snaps to the data point of a line, which is
@@ -69,7 +71,7 @@ class PositionViewer(QWidget):
         daily = pd.read_csv("Misc/Demo/Demo.csv", index_col=0, parse_dates=True)
         daily.drop('Adj Close', axis=1, inplace=True)
 
-        mpf.plot(daily,type='candle', mav=4, ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=False)
+        mpf.plot(daily,type='candle', mav=4, ax=self.ax, tight_layout=True,show_nontrading=False)
 
         for label in self.ax.xaxis.get_ticklabels():
             label.set_rotation(0)
@@ -118,7 +120,7 @@ class PositionViewer(QWidget):
 
         comb['strike']    = comb.apply(lambda row: self.calc_strike(cc,row), axis=1)
         comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(cc,row), axis=1)
-
+        title=cc.statData.buyWrite["underlyer"]["@tickerSymbol"]+"("+cc.statData.duration+"D): "+ humanreadable_date(cc.statData.buyWrite["@enteringTime"])+"("+str(cc.statData.strike)+ ")"
         if datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y%m%d %H:%M:%S")<comb.iloc[0].name:
             vlinedictlst = [comb.iloc[0].name]
         else:
@@ -149,9 +151,10 @@ class PositionViewer(QWidget):
                 strikeLine.append((cc.statData.exitingTime, prevstrike))
         else:
             strikeLine.append((comb.iloc[-1].name, prevstrike))
-
+        title = title + "rld@:"
         for ra in cc.statData.rollingActivity:
             rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
+            title = title + " | " + humanreadable_date(rastrptime) + "(" + ra["strike"] + ")"
             if pd.to_datetime(rastrptime) < comb.iloc[0].name or pd.to_datetime(rastrptime) > comb.iloc[-1].name:
                 #move outlier into the range
                 if pd.to_datetime(rastrptime) < comb.iloc[0].name:
@@ -177,6 +180,8 @@ class PositionViewer(QWidget):
                     else:
                         rastrptime = comb.iloc[-1].name
                 vlinedictlst.append(datetime.strftime(pd.to_datetime(rastrptime), "%Y%m%d %H:%M:%S"))
+
+        self.ax.set_title(title)
 
         apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax, color='black')
         strkdict = mpf.make_addplot(comb['strike'], scatter=True, ax=self.ax2, y_on_right=True, color='green')
