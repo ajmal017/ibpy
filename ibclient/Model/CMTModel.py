@@ -218,7 +218,15 @@ class CMTModel(QAbstractTableModel):
             cc.ophistData = pd.concat(optiondata)
         else:
             cc.ophistData = optiondata
-        cc.histData = stockData[cc.statData.enteringTime:]
+
+        try:
+            cc.histData = stockData[cc.statData.enteringTime:]
+        except UnboundLocalError:
+            cols = ['date', 'open', 'high', 'low', 'close']
+            cc.histData = pd.DataFrame(columns=cols)
+            cc.histData.set_index('date')
+            cc.histData["19700101 00:00:00"] = [0,0,0,0]
+            print("no stockdata")
 
         #return the alines for the mplfinance plot
         return [(q["OpeningTime"], float(q["Contract"].strike)) for q in optQueryList]
