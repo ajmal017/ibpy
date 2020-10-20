@@ -9,6 +9,7 @@ from Misc.globals import globvars
 class Controller:
     def __init__(self, model):
         self.model = model
+        self.brokerPort = 4002
         self.autoUpdate = True
 
     def initData(self,v):
@@ -29,10 +30,15 @@ class Controller:
             o = optpat.match(root)
             if o:
                 (dt, type, ul, expiry_y, expiry_m, expiry_d, strike) = o.groups(0)
-                if ul == "DEMO" or ul == "CTLT":
-                    continue
+
 
                 expiry_d = expiry_y + expiry_m + expiry_d
+                #print(root, expiry_d)
+                expiryday = datetime.datetime.strptime(expiry_d, "%Y%m%d")
+                daybeforeyesterday = datetime.datetime.now()-datetime.timedelta(2)
+
+                if ul == "DEMO" or ul == "CTLT" or expiryday < daybeforeyesterday:
+                    continue
 
                 ctrct = self.model.brkConnection.make_contract(ul, dt, "USD", "SMART", expiry_d, strike)
                 contracts.append(ctrct)
@@ -126,7 +132,7 @@ class Controller:
                         if startdate != enddate:
                             if ctrct.secType == "OPT":
                                 for dt in datatypes:
-                                    f.write('py .\download.py --port "4002" --security-type "OPT" --size "1 min" '+
+                                    f.write('py .\Model\download.py --port "'+ str(self.brokerPort)+'" --security-type "OPT" --size "1 min" '+
                                           ' --start-date '+ startdate +
                                           ' --end-date '+ enddate +
                                           ' --data-type ' +  dt +
@@ -136,7 +142,7 @@ class Controller:
                             else:
 
                                 for dt in datatypes:
-                                    f.write('py .\download.py --port "4002" --security-type "STK" --size "1 min" ' +
+                                    f.write('py .\Model\download.py --port "'+ str(self.brokerPort)+'" --security-type "STK" --size "1 min" ' +
                                           ' --start-date '+ startdate +
                                           ' --end-date '+ enddate +
                                           ' --data-type ' +  dt +
@@ -155,6 +161,7 @@ class Controller:
         self.model.disconnectBroker()
 
     def changeBrokerPort(self, port):
+        self.brokerPort = port
         self.model.changeBrokerPort(port)
 
     def toggleAutoUpdate(self):

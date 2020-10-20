@@ -3,7 +3,7 @@ import subprocess
 
 stkarray = [ "TSLA","MRCY"]
 expiries= [ "20201120","20201218"]
-port = "7495"
+port = "4002"
 startdate=20200701
 enddate=20201017
 
@@ -11,13 +11,18 @@ symbols = [ "AMZN", "IBKR", "V", "MY", "MSCI"]
 
 securities = [
 
-            {"symbol"  : "AMZN",
-             "strikes" : ["3300","3400","3500"],
-             "expiry"  : [ "20201120","20201218"]},
+            {"symbol"  : "JD",
+             "strikes" : ["78"],
+             "expiry"  : [ "20201030","20201120"]},
 
-            # {"symbol"  : "IBKR",
-            #  "strikes" : ["45", "50", "55"],
-            #  "expiry"  : ["20201120", "20201218"]},
+            {"symbol": "WDAY",
+             "strikes": ["220"],
+             "expiry": ["20201030", "20201120", "20201218"]},
+
+            {"symbol": "TSM",
+             "strikes": ["88", "90", "92"],
+             "expiry": ["20201030", "20201218"]},
+
 ]
 
 main="C:\git\ibpy\ibclient\Model\download.py"
