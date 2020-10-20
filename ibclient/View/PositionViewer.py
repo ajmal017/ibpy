@@ -69,7 +69,7 @@ class PositionViewer(QWidget):
         daily = pd.read_csv("Misc/Demo/Demo.csv", index_col=0, parse_dates=True)
         daily.drop('Adj Close', axis=1, inplace=True)
 
-        mpf.plot(daily,type='candle', mav=4, ax=self.ax, tight_layout=True,figscale=0.75,show_nontrading=False)
+        mpf.plot(daily,type='candle', mav=4, ax=self.ax, tight_layout=True,show_nontrading=False)
 
         for label in self.ax.xaxis.get_ticklabels():
             label.set_rotation(0)
