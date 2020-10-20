@@ -176,7 +176,7 @@ class PositionViewer(QWidget):
                         rastrptime = comb.iloc[0].name
                     else:
                         rastrptime = comb.iloc[-1].name
-                vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
+                vlinedictlst.append(datetime.strftime(pd.to_datetime(rastrptime), "%Y%m%d %H:%M:%S"))
 
         apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax, color='black')
         strkdict = mpf.make_addplot(comb['strike'], scatter=True, ax=self.ax2, y_on_right=True, color='green')
