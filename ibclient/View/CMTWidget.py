@@ -113,7 +113,8 @@ class CMTWidget(QWidget):
 
         vlayout = QVBoxLayout(self)
         vlayout.addWidget(self.table_view)
-        self.current_font = QFont("Arial Black", 10)
+        # self.current_font = QFont("Arial Black", 10)
+        self.current_font = QFont("Cooper Black", 9)
         self.table_view.setFont(self.current_font);
         self.setLayout(vlayout)
         self.table_view.resizeColumnsToContents();

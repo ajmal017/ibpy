@@ -269,6 +269,17 @@
         <option expiry="20201030" strike="220" multiplier="100" price = "11.27"/>
    </bw>
 
+   <bw id="33" enteringTime="20201020 21:49:37" enteringPrice="71.40" commission="1.47" quantity="1">
+        <underlyer type="STK" tickerSymbol="TAN" price = "77.76" earningscall = " - ETF - "/>
+        <option expiry="20201106" strike="75" multiplier="100" price = "6.36"/>
+   </bw>
+
+   <bw id="34" enteringTime="20201020 21:52:06" enteringPrice="113.39" commission="1.47" quantity="1">
+        <underlyer type="STK" tickerSymbol="XLK" price = "119.38" earningscall = " - ETF - "/>
+        <option expiry="20201120" strike="117" multiplier="100" price = "5.99"/>
+   </bw>
+
+
    <bw id="99" enteringTime="20201019 20:42:30" enteringPrice="217.14" commission="1.48" quantity="0">
         <underlyer type="STK" tickerSymbol="AMZN" price = "3240" earningscall = "20201129"/>
         <option expiry="20201030" strike="3220" multiplier="100" price = "11.27"/>
