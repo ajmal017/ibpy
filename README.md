@@ -39,8 +39,6 @@ Used Technologies:
 It was tried to design along the MVC Pattern as good as possible.
 
 ## Next Steps
-- stabilizing (for some reason the app crashes sporadically rarely when connecting to ibkr)
-- better visualization with matplotlib: Prio 1 would be visualize the timevalue and/or IV over time
 - calculate the IV with the help of Black and Scholes and compare with real volatility
 - show the best rollover candidates as soon as timevalue has decreases enough
 - implement reminder for earningscall dates, dividend dates, expiry dates
