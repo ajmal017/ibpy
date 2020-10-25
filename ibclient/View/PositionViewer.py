@@ -92,117 +92,120 @@ class PositionViewer(QWidget):
         dfsk = cc.histData
         dfop = cc.ophistData
 
-        dfsk = dfsk[['open', 'high', 'low', 'close']]
-        dfop = dfop[['open', 'high', 'low', 'close']]
+        if dfsk is not None:
+            dfsk = dfsk[['open', 'high', 'low', 'close']]
+            dfop = dfop[['open', 'high', 'low', 'close']]
 
-        dfsk.reset_index(inplace=True)
-        dfop.reset_index(inplace=True)
-        dfop.drop('level_0', axis=1, inplace=True)
-        #avoid copy warning of pandas as we are aware of this issue:
-        pd.set_option('mode.chained_assignment', None)
+            dfsk.reset_index(inplace=True)
+            dfop.reset_index(inplace=True)
+            dfop.drop('level_0', axis=1, inplace=True)
+            #avoid copy warning of pandas as we are aware of this issue:
+            pd.set_option('mode.chained_assignment', None)
 
-        format = "%Y-%m-%d  %H:%M:%S"
-        # dfop.is_copy = None
-        dfop['date'] = pd.to_datetime(dfop['date'], format=format)
+            format = "%Y-%m-%d  %H:%M:%S"
+            # dfop.is_copy = None
+            dfop['date'] = pd.to_datetime(dfop['date'], format=format)
 
-        # dfsk.is_copy = None
-        dfsk['date'] = pd.to_datetime(dfsk['date'], format=format)
+            # dfsk.is_copy = None
+            dfsk['date'] = pd.to_datetime(dfsk['date'], format=format)
 
-        dfsk = dfsk.set_index('date')
-        dfop = dfop.set_index('date')
+            dfsk = dfsk.set_index('date')
+            dfop = dfop.set_index('date')
 
-        dfsk = dfsk.sort_index()
-        dfop = dfop.sort_index()
+            dfsk = dfsk.sort_index()
+            dfop = dfop.sort_index()
 
-        comb = dfsk.merge(dfop, how='outer', on=['date'])
-        comb.sort_values(by='date', inplace=True)
-        comb.columns = ['Open', 'High', 'Low', 'Close', 'OOpen', 'OHigh', 'OLow', 'OClose']
+            comb = dfsk.merge(dfop, how='outer', on=['date'])
+            comb.sort_values(by='date', inplace=True)
+            comb.columns = ['Open', 'High', 'Low', 'Close', 'OOpen', 'OHigh', 'OLow', 'OClose']
 
-        comb['strike']    = comb.apply(lambda row: self.calc_strike(cc,row), axis=1)
-        comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(cc,row), axis=1)
-        title=cc.statData.buyWrite["underlyer"]["@tickerSymbol"]+"("+cc.statData.duration+"D): "+ humanreadable_date(cc.statData.buyWrite["@enteringTime"])+"("+str(cc.statData.strike)+ ")"
-        if datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y%m%d %H:%M:%S")<comb.iloc[0].name:
-            vlinedictlst = [comb.iloc[0].name]
-        else:
-            vlinedictlst = [datetime.strftime(datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y%m%d %H:%M:%S"), "%Y%m%d %H:%M:%S")]
-
-        strikeLine=[]
-        prevstrike = 0
-        for a in alns:
-            if datetime.strptime(a[0], "%Y%m%d %H:%M:%S")<comb.iloc[0].name or datetime.strptime(a[0], "%Y%m%d %H:%M:%S")>comb.iloc[-1].name:
-                if datetime.strptime(a[0], "%Y%m%d %H:%M:%S")<comb.iloc[0].name:
-                    #outsider left
-                    strikeLine.append((comb.iloc[0].name, a[1]))
-                    prevstrike = a[1]
-                else:
-                    #outsider right
-                    strikeLine.append((comb.iloc[-1].name, a[1]))
-                    prevstrike = a[1]
+            comb['strike']    = comb.apply(lambda row: self.calc_strike(cc,row), axis=1)
+            comb['timevalue'] = comb.apply(lambda row: self.calc_timevalue(cc,row), axis=1)
+            title=cc.statData.buyWrite["underlyer"]["@tickerSymbol"]+"("+cc.statData.duration+"D): "+ humanreadable_date(cc.statData.buyWrite["@enteringTime"])+"("+str(cc.statData.strike)+ ")"
+            if datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y%m%d %H:%M:%S")<comb.iloc[0].name:
+                vlinedictlst = [comb.iloc[0].name]
             else:
-                #insider
-                strikeLine.append((a[0], prevstrike))
-                strikeLine.append((a[0], a[1]))
-                prevstrike = a[1]
+                vlinedictlst = [datetime.strftime(datetime.strptime(cc.statData.buyWrite["@enteringTime"], "%Y%m%d %H:%M:%S"), "%Y%m%d %H:%M:%S")]
 
-        if cc.statData.exitingTime != "":
-            if pd.to_datetime(cc.statData.exitingTime) > comb.iloc[-1].name:
-                strikeLine.append((comb.iloc[-1].name, prevstrike))
-            else:
-                strikeLine.append((cc.statData.exitingTime, prevstrike))
-        else:
-            strikeLine.append((comb.iloc[-1].name, prevstrike))
-        title = title + "rld@:"
-        for ra in cc.statData.rollingActivity:
-            rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
-            title = title + " | " + humanreadable_date(rastrptime) + "(" + ra["strike"] + ")"
-            if pd.to_datetime(rastrptime) < comb.iloc[0].name or pd.to_datetime(rastrptime) > comb.iloc[-1].name:
-                #move outlier into the range
-                if pd.to_datetime(rastrptime) < comb.iloc[0].name:
-                    rastrptime = comb.iloc[0].name
+            strikeLine=[]
+            prevstrike = 0
+            for a in alns:
+                if datetime.strptime(a[0], "%Y%m%d %H:%M:%S")<comb.iloc[0].name or datetime.strptime(a[0], "%Y%m%d %H:%M:%S")>comb.iloc[-1].name:
+                    if datetime.strptime(a[0], "%Y%m%d %H:%M:%S")<comb.iloc[0].name:
+                        #outsider left
+                        strikeLine.append((comb.iloc[0].name, a[1]))
+                        prevstrike = a[1]
+                    else:
+                        #outsider right
+                        strikeLine.append((comb.iloc[-1].name, a[1]))
+                        prevstrike = a[1]
                 else:
-                    rastrptime = comb.iloc[-1].name
-
-            vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
-            if pd.to_datetime(rastrptime) < comb.iloc[0].name or pd.to_datetime(rastrptime) > comb.iloc[-1].name:
-                #move outlier into the range
-                if pd.to_datetime(rastrptime) < comb.iloc[0].name:
-                    rastrptime = comb.iloc[0].name
-                else:
-                    rastrptime = comb.iloc[-1].name
-            vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
+                    #insider
+                    strikeLine.append((a[0], prevstrike))
+                    strikeLine.append((a[0], a[1]))
+                    prevstrike = a[1]
 
             if cc.statData.exitingTime != "":
-                rastrptime = cc.statData.exitingTime
+                if pd.to_datetime(cc.statData.exitingTime) > comb.iloc[-1].name:
+                    strikeLine.append((comb.iloc[-1].name, prevstrike))
+                else:
+                    strikeLine.append((cc.statData.exitingTime, prevstrike))
+            else:
+                strikeLine.append((comb.iloc[-1].name, prevstrike))
+            title = title + "rld@:"
+            for ra in cc.statData.rollingActivity:
+                rastrptime = datetime.strptime(ra["when"], "%Y%m%d %H:%M:%S")
+                title = title + " | " + humanreadable_date(rastrptime) + "(" + ra["strike"] + ")"
                 if pd.to_datetime(rastrptime) < comb.iloc[0].name or pd.to_datetime(rastrptime) > comb.iloc[-1].name:
                     #move outlier into the range
                     if pd.to_datetime(rastrptime) < comb.iloc[0].name:
                         rastrptime = comb.iloc[0].name
                     else:
                         rastrptime = comb.iloc[-1].name
-                vlinedictlst.append(datetime.strftime(pd.to_datetime(rastrptime), "%Y%m%d %H:%M:%S"))
 
-        self.ax.set_title(title)
+                vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
+                if pd.to_datetime(rastrptime) < comb.iloc[0].name or pd.to_datetime(rastrptime) > comb.iloc[-1].name:
+                    #move outlier into the range
+                    if pd.to_datetime(rastrptime) < comb.iloc[0].name:
+                        rastrptime = comb.iloc[0].name
+                    else:
+                        rastrptime = comb.iloc[-1].name
+                vlinedictlst.append(datetime.strftime(rastrptime, "%Y%m%d %H:%M:%S"))
 
-        apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax, color='black')
-        strkdict = mpf.make_addplot(comb['strike'], scatter=True, ax=self.ax2, y_on_right=True, color='green')
+                if cc.statData.exitingTime != "":
+                    rastrptime = cc.statData.exitingTime
+                    if pd.to_datetime(rastrptime) < comb.iloc[0].name or pd.to_datetime(rastrptime) > comb.iloc[-1].name:
+                        #move outlier into the range
+                        if pd.to_datetime(rastrptime) < comb.iloc[0].name:
+                            rastrptime = comb.iloc[0].name
+                        else:
+                            rastrptime = comb.iloc[-1].name
+                    vlinedictlst.append(datetime.strftime(pd.to_datetime(rastrptime), "%Y%m%d %H:%M:%S"))
 
-        mpf.plot(comb,addplot=apdict, returnfig = True,type='candle', ax=self.ax2,
-                 vlines=dict(vlines=vlinedictlst, linewidths=1),
-                 alines = dict(alines=strikeLine, colors='r', linewidths=1),
-                 tight_layout=True,show_nontrading=False,style='yahoo')
+            self.ax.set_title(title)
 
-        for label in self.ax.xaxis.get_ticklabels():
-            label.set_rotation(0)
+            apdict = mpf.make_addplot(comb['timevalue'], ax=self.ax, color='black')
+            strkdict = mpf.make_addplot(comb['strike'], scatter=True, ax=self.ax2, y_on_right=True, color='green')
 
-        # self.ax.xaxis_date()
-        # self.ax.set_xlabel('time')
-        self.ax2.set_ylabel(cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
-        # self.ax2.tick_params(axis='y', labelcolor='b')
-        self.ax.set_ylabel("TIMEVALUE")
-        self.ax.grid(True)
-        # self.ax.legend(loc=0)
-        self.sc.draw()
-        return True
+            mpf.plot(comb,addplot=apdict, returnfig = True,type='candle', ax=self.ax2,
+                     vlines=dict(vlines=vlinedictlst, linewidths=1),
+                     alines = dict(alines=strikeLine, colors='r', linewidths=1),
+                     tight_layout=True,show_nontrading=False,style='yahoo')
+
+            for label in self.ax.xaxis.get_ticklabels():
+                label.set_rotation(0)
+
+            # self.ax.xaxis_date()
+            # self.ax.set_xlabel('time')
+            self.ax2.set_ylabel(cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
+            # self.ax2.tick_params(axis='y', labelcolor='b')
+            self.ax.set_ylabel("TIMEVALUE")
+            self.ax.grid(True)
+            # self.ax.legend(loc=0)
+            self.sc.draw()
+            return True
+        else:
+            return False
 
     def numpy2Datetime(self, input):
         #input is of type numpy.datetime64, e.g. "numpy.datetime64('2020-08-07T15:30:00.000000000')"

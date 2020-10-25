@@ -84,7 +84,6 @@ def resample(mode, ow, symbols):
 
 argp = argparse.ArgumentParser()
 argp.add_argument("symbol", nargs="+")
-argp.add_argument("--mode", type=str, default="1TO5", help="bar size")
 argp.add_argument("--overwrite", type=str, default="yes", help="bar size")
 args = argp.parse_args()
 

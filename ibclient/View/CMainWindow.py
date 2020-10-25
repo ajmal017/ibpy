@@ -45,6 +45,18 @@ class CMainWindow(QMainWindow):
         self.dock2.setObjectName("Table")
         self.dock2.DockWidgetVerticalTitleBar
         self.dock2.setWidget(self.cwidget)
+        # self.dock2.topLevelChanged.connect(lambda: self.dock2.setWindowFlags(Qt.CustomizeWindowHint|Qt.Window|Qt.WindowMaximizeButtonHint|Qt.WindowMinimizeButtonHint))
+
+        #
+        # # ticon = self.dock2.style().standardIcon(QStyle.SP_TitleBarMaxButton)
+        # # # ticon = self.dock2.style().standardIcon(QStyle.SP_TitleBarMaxButton, 0, self.dock2);
+        # self.titlebar = QWidget()
+        # titlebarLayout = QHBoxLayout()
+        # self.titlebar.setLayout(titlebarLayout)
+        # # ttlbtn = QPushButton(icon=ticon)
+        # ttlbtn = QPushButton()
+        # titlebarLayout.addWidget(ttlbtn)
+        # self.dock2.setTitleBarWidget(self.titlebar)
 
         self.dock1 = QDockWidget("Single Position Chart")
         self.dock1.setAllowedAreas(Qt.BottomDockWidgetArea)
@@ -53,6 +65,7 @@ class CMainWindow(QMainWindow):
         self.dock1.setAllowedAreas(Qt.RightDockWidgetArea)
         self.dock1.setObjectName("PositionChart")
         self.dock1.setWidget(self.positionViewer)
+        # self.dock1.topLevelChanged.connect(lambda: self.dock1.setWindowFlags(Qt.CustomizeWindowHint|Qt.Window|Qt.WindowMaximizeButtonHint|Qt.WindowMinimizeButtonHint))
 
         self.centerLayout.addWidget(self.dock2)
         self.centerLayout.addWidget(self.dock1)

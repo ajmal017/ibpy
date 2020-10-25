@@ -2,10 +2,12 @@ import os
 import xmltodict
 from datetime import datetime
 import pandas as pd
+import argparse
 
 from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5 import QtCore
+from PyQt5.QtWidgets import QMessageBox
 
 import matplotlib.dates as mdates
 
@@ -15,6 +17,9 @@ from Controller.covcall import covered_call
 from .BrkConnection import BrkConnection
 from .Account import Account
 from Color import PALETTES_NAMED, hex2rgb, rgb2hex
+from .download import DownloadApp, make_download_path
+from .resamplecsv import resample
+
 
 class Summary():
     def __init__(self):
@@ -108,6 +113,7 @@ class CMTModel(QAbstractTableModel):
     def __init__(self, *args):
         QAbstractTableModel.__init__(self, *args)
         self.account  = Account()
+        self.args = argparse.Namespace()
         self.bwl = {}
         self.includeZeroPositions = True
         self.summary = Summary()
@@ -147,10 +153,13 @@ class CMTModel(QAbstractTableModel):
         optQueryList = []
         optionQuery = {}
         raStart = {}
+        nowstr = datetime.strftime(datetime.now(), "%Y%m%d")
         raStart['to'] = cc.statData.buyWrite["option"]["@expiry"]
         raStart['strike'] = cc.statData.buyWrite["option"]["@strike"]
         raStart['sellprice'] = cc.statData.buyWrite["option"]["@price"]
+        ulsym = cc.statData.buyWrite["underlyer"]["@tickerSymbol"]
         dfDataList = []
+        contractsToDownload = []
 
         if os.path.exists(os.path.join(os.path.join(const.DATADIR,"STK_MIDPOINT"), self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"])):
             files = os.listdir(os.path.join(os.path.join(const.DATADIR,"STK_MIDPOINT"), self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"]))
@@ -165,6 +174,29 @@ class CMTModel(QAbstractTableModel):
                 dfDataList.append(tmpdf)
 
             stockData = pd.concat(dfDataList)
+        else:
+            ctrct = cc.underlyer()
+            self.args.base_directory = const.DATADIR
+            self.args.security_type = ctrct.secType
+            self.args.data_type = "MIDPOINT"
+            self.args.size = "1 min"
+            self.args.max_days = None
+            self.args.start_date = datetime.strptime("20200501","%Y%m%d")
+            self.args.end_date = datetime.today()
+            self.args.duration = "1 D"
+            self.args.port = self.controller.brokerPort
+            p = make_download_path(self.args,ctrct)
+            os.makedirs(p, exist_ok=True)
+            contractsToDownload.append(ctrct)
+            downApp = DownloadApp(contractsToDownload, self.args)
+            downApp.connect("127.0.0.1", self.controller.brokerPort, clientId=10)
+            msg = QMessageBox()
+            msg.setIcon(QMessageBox.Information)
+            msg.setText("This is a message box")
+            downApp.run()
+            resample("1TO5", "True", symbol)
+            # print('py Model\download.py --port "7495" --security-type "STK" --size "1 min"  --start-date 20200501 --end-date ' + nowstr + " --data-type MIDPOINT " + ulsym)
+            stockData = None
 
         if len(cc.statData.rollingActivity) == 0:
             optionQuery["Contract"] = cc.getInitialOption()
@@ -202,7 +234,7 @@ class CMTModel(QAbstractTableModel):
             symbol = optionContract["Contract"].symbol
             optionname= symbol+expiry+"C"+strike
             path = os.path.join(os.path.join(const.DATADIR,"OPT_MIDPOINT"),self.candleWidth,optionname)
-            if os.path.exists(path):
+            if os.path.exists(path) and len(os.listdir(path)) > 0:
                 files=os.listdir(path)
                 dfDataList = []
                 for file in files:
@@ -213,22 +245,41 @@ class CMTModel(QAbstractTableModel):
                     dfall = pd.concat(dfDataList)
                     optiondata[optionname] = dfall[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
             else:
-                print(path,"does not exist")
-        if len(optiondata) > 0:
-            cc.ophistData = pd.concat(optiondata)
+                ctrct = optionContract["Contract"]
+                self.args.base_directory = const.DATADIR
+                self.args.security_type = ctrct.secType
+                self.args.data_type = "MIDPOINT"
+                self.args.size = "1 min"
+                self.args.max_days = None
+                self.args.start_date = datetime.strptime("20200501", "%Y%m%d")
+                self.args.end_date = datetime.today()
+                self.args.duration = "1 D"
+                self.args.expiry =  expiry
+                self.args.strike = strike
+                self.args.port = self.controller.brokerPort
+                p = make_download_path(self.args, ctrct)
+                os.makedirs(p, exist_ok=True)
+                contractsToDownload.append(ctrct)
+                downApp = DownloadApp(contractsToDownload, self.args)
+                downApp.connect("127.0.0.1", self.controller.brokerPort, clientId=10)
+                downApp.run()
+                resample("1TO5", "True", symbol)
+                # print(path, 'py Model\download.py --port "7495" --security-type "OPT" --size "1 min"  --start-date 20200701 --end-date '+nowstr+ " --data-type MIDPOINT --expiry "+expiry+" --strike "+strike+" "+symbol)
+                optiondata = None
+
+        if optiondata is not None:
+            if len(optiondata) > 0:
+                cc.ophistData = pd.concat(optiondata)
+            else:
+                cc.ophistData = optiondata
         else:
-            cc.ophistData = optiondata
+            cc.ophistData = None
 
-        try:
+        if stockData is not None:
             cc.histData = stockData[cc.statData.enteringTime:]
-        except UnboundLocalError:
-            cols = ['date', 'open', 'high', 'low', 'close']
-            cc.histData = pd.DataFrame(columns=cols)
-            cc.histData.set_index('date')
-            cc.histData["19700101 00:00:00"] = [0,0,0,0]
-            print("no stockdata")
+        else:
+            cc.histData = None
 
-        #return the alines for the mplfinance plot
         return [(q["OpeningTime"], float(q["Contract"].strike)) for q in optQueryList]
 
     def startModelTimer(self):

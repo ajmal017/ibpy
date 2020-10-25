@@ -1,7 +1,7 @@
 <coveredCalls>
     <bw id="0" name="DEMO" enteringTime="20200825 18:04:34" enteringPrice="143.12" commission="1.48" quantity="1">
-        <underlyer type="STK" tickerSymbol="DEMO" price = "147.474" earningscall = "20201029"/>
-        <option expiry="20200918" strike="150" multiplier="100" price = "4.338"/>
+        <underlyer type="STK" tickerSymbol="DEMO" price = "147.474" earningscall = "20201029" beta="1"/>
+        <option expiry="20200918" strike="150" multiplier="100" price = "4.338" iv="0" hv="0"/>
         <rolling_activities>
             <rolled when="20200917 16:15:19" from="20200918" to="20201016" strike="150" buyprice = "0.3" sellprice="4.82" ulprice="145.35" commission = "1.27"/>
             <rolled when="20201006 20:52:55" from="20201016" to="20201120" strike="155" buyprice = "15.38" sellprice="17.50" ulprice="162.00" commission = "1.41"/>
@@ -11,7 +11,7 @@
     </bw>
 
     <bw id="1" name="AMD" enteringTime="20200806 00:00:00" enteringPrice="77.522" commission="" quantity="2">
-        <underlyer type="STK" tickerSymbol="AMD" price = "86.385" earningscall = "20201027"/>
+        <underlyer type="STK" tickerSymbol="AMD" price = "86.385" earningscall = "20201027" beta="1.18"/>
         <option expiry="20200821" strike="78" multiplier="100" price = "9.25"/>
         <rolling_activities>
             <rolled when="20200818 14:09:55" from="20200821" to="20200918" strike="75" buyprice = "4.25" sellprice="8.87" ulprice="82.70" commission = "3.02"/>
@@ -31,7 +31,7 @@
     </bw>
 
     <bw id="3" name="CHD" enteringTime="20200819 21:12:50" enteringPrice="93.075" commission="" quantity="1">
-        <underlyer type="STK" tickerSymbol="CHD" price = "96.434" earningscall = "20201030"/>
+        <underlyer type="STK" tickerSymbol="CHD" price = "96.434" earningscall = "20201030" annualDiv="0.96" divExDay="20200812"/>
         <option expiry="20200918" strike="95" multiplier="100" price = "3.358"/>
         <rolling_activities>
             <rolled when="20200918 20:29:58" from="20200918" to="20201016" strike="95" buyprice = "0.00" sellprice="0.90" ulprice="89.80" commission = "0.24"/>
@@ -40,7 +40,7 @@
     </bw>
 
     <bw id="4" name="DHI" enteringTime="20200806 20:15:00" enteringPrice="62.421" commission="" quantity="1">
-        <underlyer type="STK" tickerSymbol="DHI" price = "67.705" earningscall="20201027"/>
+        <underlyer type="STK" tickerSymbol="DHI" price = "67.705" earningscall="20201027" annualDiv="0.70" divExDay="20200811"/>
         <option expiry="20200918" strike="70" multiplier="100" price = "5.283"/>
         <rolling_activities>
             <rolled when="20200911 21:20:58" from="20200918" to="20201023" strike="69" buyprice = "2.21" sellprice="5.33" ulprice="71.15" commission = "1.28"/>
@@ -49,7 +49,7 @@
     </bw>
 
     <bw id="5" name="FIX" enteringTime="20200825 00:00:00" enteringPrice="51.873" commission="" quantity="2">
-        <underlyer type="STK" tickerSymbol="FIX" price = "53.245" earningscall = "20201026"/>
+        <underlyer type="STK" tickerSymbol="FIX" price = "53.245" earningscall = "20201026" annualDiv="0.80" divExDay="20200813"/>
         <option expiry="20200918" strike="55" multiplier="100" price = "1.372"/>
         <rolling_activities>
         </rolling_activities>
@@ -57,7 +57,7 @@
     </bw>
 
     <bw id="6" name="KL" enteringTime="20200818 00:00:00" enteringPrice="48.171" commission="" quantity="1">
-        <underlyer type="STK" tickerSymbol="KL" price = "53.904" earningscall = "20201029"/>
+        <underlyer type="STK" tickerSymbol="KL" price = "53.904" earningscall = "20201029" annualDiv="1.00" divExDay="20200929"/>
         <option expiry="20200918" strike="50" multiplier="100" price = "5.732"/>
         <rolling_activities>
             <rolled when="20200910 19:24:36" from="20200918" to="20201016" strike="55" buyprice = "4.65" sellprice="3.2" ulprice="54.10" commission = "1.38"/>
@@ -66,7 +66,7 @@
     </bw>
 
     <bw id="7" name="KLAC" enteringTime="20200807 21:48:00" enteringPrice="191.556" commission="" quantity="1">
-        <underlyer type="STK" tickerSymbol="KLAC" price = "211.854" earningscall = "20201102"/>
+        <underlyer type="STK" tickerSymbol="KLAC" price = "211.854" earningscall = "20201102" annualDiv="3.6" divExDay="20200813"/>
         <option expiry="20200918" strike="195" multiplier="100" price = "20.298"/>
         <rolling_activities>
             <rolled when="20200910 19:49:53" from="20200918" to="20201016" strike="200"  buyprice = "2.1" sellprice="4.5" ulprice="175.75" commission = "0.67"/>
@@ -95,7 +95,7 @@
         <closed exitingTime="20201007 17:59:19" exitingPrice="232.94" ulprice="290.06" optprice="57.00" commission = "1.33"/>
     </bw>
 
-    <bw id="10" name="" enteringTime="20200818 21:42:03" enteringPrice="117.416" commission="" quantity="1">
+    <bw id="10" name="SITE" enteringTime="20200818 21:42:03" enteringPrice="117.416" commission="" quantity="1">
         <underlyer type="STK" tickerSymbol="SITE" price = "128.305" earningscall = "20201028"/>
         <option expiry="20201016" strike="125" multiplier="100" price = "10.88"/>
         <rolling_activities>
@@ -131,7 +131,7 @@
     </bw>
 
     <bw id="14" name="VIRT" enteringTime="20200821 19:55:50" enteringPrice="24.2221" commission="" quantity="3">
-        <underlyer type="STK" tickerSymbol="VIRT" price = "25.095" earningscall = "20201106"/>
+        <underlyer type="STK" tickerSymbol="VIRT" price = "25.095" earningscall = "20201106" annualDiv="0.96" divExDay="20200830"/>
         <option expiry="20200918" strike="25" multiplier="100" price = "0.873"/>
         <rolling_activities>
             <rolled when="20200914 18:58:28" from="20200918" to="20201016" strike="30" buyprice = "2.93" sellprice="0.69" ulprice="27.89" commission = "1.27"/>
