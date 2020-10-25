@@ -160,8 +160,8 @@ class CMTModel(QAbstractTableModel):
         ulsym = cc.statData.buyWrite["underlyer"]["@tickerSymbol"]
         dfDataList = []
         contractsToDownload = []
-
-        if os.path.exists(os.path.join(os.path.join(const.DATADIR,"STK_MIDPOINT"), self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"])):
+        stockPath = os.path.join(os.path.join(const.DATADIR,"STK_MIDPOINT"), self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
+        if os.path.exists(stockPath) and len(os.listdir(stockPath)) > 0:
             files = os.listdir(os.path.join(os.path.join(const.DATADIR,"STK_MIDPOINT"), self.candleWidth ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"]))
             for file in files:
                 filetmp = os.path.join(os.path.join(const.DATADIR,"STK_MIDPOINT"),self.candleWidth,cc.statData.buyWrite["underlyer"]["@tickerSymbol"], file)
@@ -175,26 +175,28 @@ class CMTModel(QAbstractTableModel):
 
             stockData = pd.concat(dfDataList)
         else:
-            ctrct = cc.underlyer()
-            self.args.base_directory = const.DATADIR
-            self.args.security_type = ctrct.secType
-            self.args.data_type = "MIDPOINT"
-            self.args.size = "1 min"
-            self.args.max_days = None
-            self.args.start_date = datetime.strptime("20200501","%Y%m%d")
-            self.args.end_date = datetime.today()
-            self.args.duration = "1 D"
-            self.args.port = self.controller.brokerPort
-            p = make_download_path(self.args,ctrct)
-            os.makedirs(p, exist_ok=True)
-            contractsToDownload.append(ctrct)
-            downApp = DownloadApp(contractsToDownload, self.args)
-            downApp.connect("127.0.0.1", self.controller.brokerPort, clientId=10)
-            msg = QMessageBox()
-            msg.setIcon(QMessageBox.Information)
-            msg.setText("This is a message box")
-            downApp.run()
-            resample("1TO5", "True", symbol)
+            orgStockPath = os.path.join(os.path.join(const.DATADIR,"STK_MIDPOINT"), "1_min" ,cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
+            if not os.path.exists(orgStockPath) or len(os.listdir(orgStockPath)) == 0:
+                ctrct = cc.underlyer()
+                self.args.base_directory = const.DATADIR
+                self.args.security_type = ctrct.secType
+                self.args.data_type = "MIDPOINT"
+                self.args.size = "1 min"
+                self.args.max_days = None
+                self.args.start_date = datetime.strptime("20200501","%Y%m%d")
+                self.args.end_date = datetime.today()
+                self.args.duration = "1 D"
+                self.args.port = self.controller.brokerPort
+                p = make_download_path(self.args,ctrct)
+                os.makedirs(p, exist_ok=True)
+                contractsToDownload.append(ctrct)
+                downApp = DownloadApp(contractsToDownload, self.args)
+                downApp.connect("127.0.0.1", self.controller.brokerPort, clientId=10)
+                msg = QMessageBox()
+                msg.setIcon(QMessageBox.Information)
+                msg.setText("This is a message box")
+                downApp.run()
+            resample(False, cc.statData.buyWrite["underlyer"]["@tickerSymbol"])
             # print('py Model\download.py --port "7495" --security-type "STK" --size "1 min"  --start-date 20200501 --end-date ' + nowstr + " --data-type MIDPOINT " + ulsym)
             stockData = None
 
@@ -245,27 +247,31 @@ class CMTModel(QAbstractTableModel):
                     dfall = pd.concat(dfDataList)
                     optiondata[optionname] = dfall[optionContract["OpeningTime"]: optionContract["ClosingTime"]]
             else:
-                ctrct = optionContract["Contract"]
-                self.args.base_directory = const.DATADIR
-                self.args.security_type = ctrct.secType
-                self.args.data_type = "MIDPOINT"
-                self.args.size = "1 min"
-                self.args.max_days = None
-                self.args.start_date = datetime.strptime("20200501", "%Y%m%d")
-                self.args.end_date = datetime.today()
-                self.args.duration = "1 D"
-                self.args.expiry =  expiry
-                self.args.strike = strike
-                self.args.port = self.controller.brokerPort
-                p = make_download_path(self.args, ctrct)
-                os.makedirs(p, exist_ok=True)
-                contractsToDownload.append(ctrct)
-                downApp = DownloadApp(contractsToDownload, self.args)
-                downApp.connect("127.0.0.1", self.controller.brokerPort, clientId=10)
-                downApp.run()
-                resample("1TO5", "True", symbol)
-                # print(path, 'py Model\download.py --port "7495" --security-type "OPT" --size "1 min"  --start-date 20200701 --end-date '+nowstr+ " --data-type MIDPOINT --expiry "+expiry+" --strike "+strike+" "+symbol)
-                optiondata = None
+                orgpath = os.path.join(os.path.join(const.DATADIR,"OPT_MIDPOINT"),"1_min",optionname)
+                if not os.path.exists(orgpath) or len(os.listdir(orgpath)) == 0:
+                    if datetime.strptime(expiry,"%Y%m%d") > datetime.now():
+                        #IB speichert keine alten Optionsdaten
+                        ctrct = optionContract["Contract"]
+                        self.args.base_directory = const.DATADIR
+                        self.args.security_type = ctrct.secType
+                        self.args.data_type = "MIDPOINT"
+                        self.args.size = "1 min"
+                        self.args.max_days = None
+                        self.args.start_date = datetime.strptime("20200501", "%Y%m%d")
+                        self.args.end_date = datetime.today()
+                        self.args.duration = "1 D"
+                        self.args.expiry =  expiry
+                        self.args.strike = strike
+                        self.args.port = self.controller.brokerPort
+                        p = make_download_path(self.args, ctrct)
+                        os.makedirs(p, exist_ok=True)
+                        contractsToDownload.append(ctrct)
+                        downApp = DownloadApp(contractsToDownload, self.args)
+                        downApp.connect("127.0.0.1", self.controller.brokerPort, clientId=10)
+                        downApp.run()
+                    resample(False, symbol)
+                    # print(path, 'py Model\download.py --port "7495" --security-type "OPT" --size "1 min"  --start-date 20200701 --end-date '+nowstr+ " --data-type MIDPOINT --expiry "+expiry+" --strike "+strike+" "+symbol)
+                    #optiondata = None
 
         if optiondata is not None:
             if len(optiondata) > 0:

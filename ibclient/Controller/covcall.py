@@ -176,6 +176,10 @@ class covered_call():
             False, # globvars.header1['RLZD'       ] = "Realized from option buy back when rolling"
             False, # globvars.header1['UL-URPNL'   ] = "Unrealizerd PNL for Unterlyer"
             False, # globvars.header1['TOTAL'      ] = "Unrealizerd PNL for Unterlyer PLUS Realized from option buy back when rolling PLUS Accumulated timevalue profit of this position"
+            False,
+            False,
+            False,
+            False
         ]
 
     def get_ioa_now(self):
@@ -249,6 +253,13 @@ class covered_call():
             self.total = 0
             ulurpnl = 0
 
+
+            self.impvol     = 0
+            self.histvol    = 0
+            self.divyld     = 0
+            self.dexd       = 0
+
+
         beg1 = self.statData.buyWrite["@enteringTime"]
         try:
             beg = datetime.strptime(beg1, "%Y%m%d %H:%M:%S")
@@ -307,7 +318,11 @@ class covered_call():
             "{:.2f}".format(self.statData.itv() * self.statData.position * 100 - self.ctv()*self.statData.position*100),
             "{:.2f}".format(self.realized),
             "{:.2f}".format(ulurpnl),
-            "{:.2f}".format(self.total)
+            "{:.2f}".format(self.total),
+            "{:.2f}".format(self.impvol),
+            "{:.2f}".format(self.histvol),
+            "{:.2f}".format(self.divyld),
+            "{:.2f}".format(self.dexd)
         )
 
     def setOverallMarketValue(self,mv):

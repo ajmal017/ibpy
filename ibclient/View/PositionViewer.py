@@ -93,8 +93,11 @@ class PositionViewer(QWidget):
         dfop = cc.ophistData
 
         if dfsk is not None:
-            dfsk = dfsk[['open', 'high', 'low', 'close']]
-            dfop = dfop[['open', 'high', 'low', 'close']]
+            try:
+                dfsk = dfsk[['open', 'high', 'low', 'close']]
+                dfop = dfop[['open', 'high', 'low', 'close']]
+            except:
+                return
 
             dfsk.reset_index(inplace=True)
             dfop.reset_index(inplace=True)

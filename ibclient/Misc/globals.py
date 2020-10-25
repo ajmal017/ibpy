@@ -168,6 +168,10 @@ class globvars:
         globvars.header1['RLZD'       ] = "Realized from option buy back when rolling"
         globvars.header1['UL-URPNL'   ] = "Unrealizerd PNL for Unterlyer"
         globvars.header1['TOTAL'      ] = "Unrealizerd PNL for Unterlyer PLUS Realized from option buy back when rolling PLUS Accumulated timevalue profit of this position"
+        globvars.header1['IV'] = "Implied Volatility"
+        globvars.header1['HV'] = "Historic Volatility"
+        globvars.header1['Dyd'] = "Dividend yield (p.a.)"
+        globvars.header1['DExDt' ] = "Dividend Ex Date"
 
     def set_logger(logger):
         globvars.logger = logger

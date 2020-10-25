@@ -79,3 +79,7 @@ COL_ID                      =  38
 COL_REALIZED                =  39
 COL_ULUNREALIZED            =  40
 COL_TOTAL                   =  41
+COL_IMPLVOL                 =  42
+COL_HISTVOL                 =  43
+COL_DIVYIELD                =  44
+COL_DIVEXDATE               =  45
