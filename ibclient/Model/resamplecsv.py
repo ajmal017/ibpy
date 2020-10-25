@@ -3,7 +3,7 @@ import pandas as pd
 import datetime
 import argparse
 
-import  Misc.const
+import Misc.const
 
 def resample(ow, symbols):
 
@@ -84,16 +84,6 @@ def resample(ow, symbols):
                         dfout.to_csv(os.path.join(newdir,a), index=False)
 
 if __name__ == "__main__":
-    argp = argparse.ArgumentParser()
-    argp.add_argument("symbol", nargs="+")
-    argp.add_argument("--overwrite", type=str, default="yes", help="bar size")
-    args = argp.parse_args()
-
-    if args.overwrite=="yes":
-        ow = True
-    else:
-        ow = False
-
-    resample(ow, args.symbol)
+    resample(False, "ALL")
 
 

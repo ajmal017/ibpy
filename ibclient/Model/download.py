@@ -314,7 +314,7 @@ def main():
     argp.add_argument(
         "--base-directory",
         type=str,
-        default="data",
+        default="C:/importantData/data",
         help="base directory to write bar files",
     )
     argp.add_argument(

@@ -2,6 +2,8 @@ from datetime import date, datetime
 
 from ibapi.contract import Contract
 
+from Model.BlackScholes import implied_volatility
+
 class Security():
     def __init__(self):
         curbid = 0
@@ -116,6 +118,10 @@ class covered_call():
         self.uncertaintyFlag = False
         self.oplastcalculated = False
         self.overallMarketValue = 0
+        self.impvol = 0.0
+        self.histvol = 0.0
+        self.divyld = 0.0
+        self.dexd = 0.0
         self.calc_rlzd()
 
         self.dispData = self.table_data()
@@ -128,6 +134,32 @@ class covered_call():
 
     def updateData(self):
         self.dispData = self.table_data()
+
+        # strike
+        K = self.statData.strike
+
+        # last optionsprice
+        Price = self.tickData.oplst
+
+        # last Stockprice
+        S = self.tickData.ullst
+
+        # days between today and the expiration date
+        T = (datetime.strptime(self.statData.expiry, "%Y%m%d") - datetime.utcnow()).days / 365
+
+        # r = continuously compounding risk-free interest rate in percentage(%)
+        r = 1
+        if S != 0 and Price != 0 and T > 0:
+            self.impvol = 100 * implied_volatility(Price, S, K, T, r, 'C')
+            self.histvol = 0
+            self.divyld = 0
+            self.dexd = 0
+        else:
+            self.impvol = 0
+            self.histvol = 0
+            self.divyld = 0
+            self.dexd = 0
+
         pass
 
     @staticmethod
@@ -216,6 +248,7 @@ class covered_call():
                 if (a-b)/(a+b) < 0.3:
                     #Abweichung ask/bid nur 30%
                     self.oplastcalculated = True
+                    self.oplastcalculated = True
                     self.uncertaintyFlag = False
                 else:
 
@@ -252,12 +285,6 @@ class covered_call():
         else:
             self.total = 0
             ulurpnl = 0
-
-
-            self.impvol     = 0
-            self.histvol    = 0
-            self.divyld     = 0
-            self.dexd       = 0
 
 
         beg1 = self.statData.buyWrite["@enteringTime"]
@@ -316,12 +343,12 @@ class covered_call():
             "{:.2f}".format(self.upSidePotentPct),
             self.statData.buyWrite["@id"],
             "{:.2f}".format(self.statData.itv() * self.statData.position * 100 - self.ctv()*self.statData.position*100),
-            "{:.2f}".format(self.realized),
-            "{:.2f}".format(ulurpnl),
-            "{:.2f}".format(self.total),
-            "{:.2f}".format(self.impvol),
-            "{:.2f}".format(self.histvol),
-            "{:.2f}".format(self.divyld),
+            "{:.1f}".format(self.realized),
+            "{:.1f}".format(ulurpnl),
+            "{:.1f}".format(self.total),
+            "{:.1f}".format(self.impvol),
+            "{:.1f}".format(self.histvol),
+            "{:.1f}".format(self.divyld),
             "{:.2f}".format(self.dexd)
         )
 

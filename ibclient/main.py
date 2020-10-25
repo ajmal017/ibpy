@@ -16,6 +16,7 @@ from Controller.CMTController import  Controller
 from Model.CMTModel import CMTModel
 from Logs import logger as logger
 from Misc.globals import globvars
+from Model.resamplecsv import resample
 
 def handler(signum, frame):
     print('Signal handler called with signal', signum)
@@ -39,11 +40,15 @@ if __name__ == '__main__':
             """Parse the date."""
             setattr(namespace, self.dest, parse(value))
 
+
+
     globvars.init_globvars()
     capp = QApplication([])
 
+
     mainLogger = logger.initMainLogger()
     globvars.set_logger(mainLogger)
+
 
     model = CMTModel()
     controller = Controller(model)
@@ -52,6 +57,8 @@ if __name__ == '__main__':
     view = CMTWidget(model, controller)
     cmw = CMainWindow(view, controller, mainLogger)
     controller.initData(view)
+
+    resample(False, "ALL")
 
     cmw.initUI()
     cmw.show()

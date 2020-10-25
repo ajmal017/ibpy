@@ -269,7 +269,7 @@ class CMTModel(QAbstractTableModel):
                         downApp = DownloadApp(contractsToDownload, self.args)
                         downApp.connect("127.0.0.1", self.controller.brokerPort, clientId=10)
                         downApp.run()
-                    resample(False, symbol)
+                        resample(False, symbol)
                     # print(path, 'py Model\download.py --port "7495" --security-type "OPT" --size "1 min"  --start-date 20200701 --end-date '+nowstr+ " --data-type MIDPOINT --expiry "+expiry+" --strike "+strike+" "+symbol)
                     #optiondata = None
 
