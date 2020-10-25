@@ -82,17 +82,17 @@ def resample(mode, ow, symbols):
                             i = i + 1
                     dfout.to_csv(os.path.join(newdir,a), index=False)
 
-argp = argparse.ArgumentParser()
-argp.add_argument("symbol", nargs="+")
-argp.add_argument("--overwrite", type=str, default="yes", help="bar size")
-args = argp.parse_args()
-
-if args.overwrite=="yes":
-    ow = True
-else:
-    ow = False
-
-resample("1TO5", ow, args.symbol)
-resample("5TO12", ow, args.symbol)
-
-
+# argp = argparse.ArgumentParser()
+# argp.add_argument("symbol", nargs="+")
+# argp.add_argument("--overwrite", type=str, default="yes", help="bar size")
+# args = argp.parse_args()
+#
+# if args.overwrite=="yes":
+#     ow = True
+# else:
+#     ow = False
+#
+# resample("1TO5", ow, args.symbol)
+# resample("5TO12", ow, args.symbol)
+#
+#
