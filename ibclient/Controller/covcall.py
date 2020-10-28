@@ -2,6 +2,8 @@ from datetime import date, datetime
 
 from ibapi.contract import Contract
 
+from Model.BlackScholes import implied_volatility
+
 class Security():
     def __init__(self):
         curbid = 0
@@ -35,6 +37,13 @@ class StatData():
         self.inistkprice     = float(bw["underlyer"]["@price"])
         self.inioptprice     = float(bw["option"]["@price"])
         self.expiry          = bw["option"]["@expiry"]
+
+        if "closed" in bw:
+            self.exitingTime = bw["closed"]["@exitingTime"]
+            self.position = 0
+        else:
+            self.exitingTime = ""
+
         self.earningscall    = bw["underlyer"]["@earningscall"]
 
         if "rolling_activities" in bw:
@@ -66,6 +75,7 @@ class StatData():
                                 "ulprice":      bw["rolling_activities"]["rolled"]["@ulprice"]
                             }
                         )
+
 
     def get_ioa_initial(self):
         if (self.strike > self.inistkprice):
@@ -107,6 +117,11 @@ class covered_call():
         self.total = 0
         self.uncertaintyFlag = False
         self.oplastcalculated = False
+        self.overallMarketValue = 0
+        self.impvol = 0.0
+        self.histvol = 0.0
+        self.divyld = 0.0
+        self.dexd = 0.0
         self.calc_rlzd()
 
         self.dispData = self.table_data()
@@ -119,6 +134,32 @@ class covered_call():
 
     def updateData(self):
         self.dispData = self.table_data()
+
+        # strike
+        K = self.statData.strike
+
+        # last optionsprice
+        Price = self.tickData.oplst
+
+        # last Stockprice
+        S = self.tickData.ullst
+
+        # days between today and the expiration date
+        T = (datetime.strptime(self.statData.expiry, "%Y%m%d") - datetime.utcnow()).days / 365
+
+        # r = continuously compounding risk-free interest rate in percentage(%)
+        r = 1
+        if S != 0 and Price != 0 and T > 0:
+            self.impvol = 100 * implied_volatility(Price, S, K, T, r, 'C')
+            self.histvol = 0
+            self.divyld = 0
+            self.dexd = 0
+        else:
+            self.impvol = 0
+            self.histvol = 0
+            self.divyld = 0
+            self.dexd = 0
+
         pass
 
     @staticmethod
@@ -126,9 +167,10 @@ class covered_call():
         return [
             False,  #             globvars.header1['Id'         ] = "Unique Identifier"
             False, #             globvars.header1['Symbol'     ] = "Tickersymbol of underlyer"
+            False, #             globvars.header1['cap'     ] = "Marketshare"
             True,  #             globvars.header1['Industry'   ] = "Industry of Underlyer"
             False,  #             globvars.header1['Rolled'     ] = "How often this position was rolled"
-            True,  #             globvars.header1['Pos'        ] = "How many legs"
+            False,  #             globvars.header1['Pos'        ] = "How many legs"
             False, #             globvars.header1['Strike'     ] = "Duration"
             False, #             globvars.header1['Strike'     ] = "Strike"
             False, #             globvars.header1['Expiry'     ] = "Expiry"
@@ -166,6 +208,10 @@ class covered_call():
             False, # globvars.header1['RLZD'       ] = "Realized from option buy back when rolling"
             False, # globvars.header1['UL-URPNL'   ] = "Unrealizerd PNL for Unterlyer"
             False, # globvars.header1['TOTAL'      ] = "Unrealizerd PNL for Unterlyer PLUS Realized from option buy back when rolling PLUS Accumulated timevalue profit of this position"
+            False,
+            False,
+            False,
+            False
         ]
 
     def get_ioa_now(self):
@@ -202,6 +248,7 @@ class covered_call():
                 if (a-b)/(a+b) < 0.3:
                     #Abweichung ask/bid nur 30%
                     self.oplastcalculated = True
+                    self.oplastcalculated = True
                     self.uncertaintyFlag = False
                 else:
 
@@ -217,8 +264,6 @@ class covered_call():
                     self.oplastcalculated = True
 
             self.uncertaintyFlag = False
-
-
         try:
             pcttvloss = self.ctv()/self.statData.itv()
         except ZeroDivisionError:
@@ -241,9 +286,10 @@ class covered_call():
             self.total = 0
             ulurpnl = 0
 
+
         beg1 = self.statData.buyWrite["@enteringTime"]
         try:
-            beg = datetime.strptime(beg1, "%Y %b %d %H:%M:%S")
+            beg = datetime.strptime(beg1, "%Y%m%d %H:%M:%S")
             timePassed = datetime.now()-beg
             self.statData.duration = str(timePassed.days)
         except:
@@ -252,15 +298,21 @@ class covered_call():
         self.downSideProtPct = self.calcDownSideProtection()
         self.upSidePotentPct = self.calcUpSidePotential()
 
+        if self.overallMarketValue == 0:
+            self.marketShare = 0
+        else:
+            self.marketShare = 100*(self.currentMarketValue()/self.overallMarketValue)
+
         return (
-            self.statData.buyWrite["@id"],
+            "{:.2f}".format(100 * pcttvloss),
             self.statData.buyWrite["underlyer"]["@tickerSymbol"],
+            "{:.2f}".format(self.marketShare),
             self.statData.industry,
             len(self.statData.rollingActivity),
             self.statData.position,
             self.statData.duration,
             "{:.2f}".format(self.statData.strike),
-            self.statData.expiry,
+            datetime.strptime(self.statData.expiry, "%Y%m%d").strftime("%d.%m"),
             self.statData.earningscall,
             self.statData.get_ioa_initial() + "=>" + self.get_ioa_now(),
             "{:.2f}".format(self.statData.inistkprice),          #UL-Init
@@ -289,12 +341,19 @@ class covered_call():
             "{:.2f}".format(self.ctv()*self.statData.position*100),
             "{:.2f}".format(self.downSideProtPct),
             "{:.2f}".format(self.upSidePotentPct),
-            "{:.2f}".format(100*pcttvloss),
+            self.statData.buyWrite["@id"],
             "{:.2f}".format(self.statData.itv() * self.statData.position * 100 - self.ctv()*self.statData.position*100),
-            "{:.2f}".format(self.realized),
-            "{:.2f}".format(ulurpnl),
-            "{:.2f}".format(self.total)
+            "{:.1f}".format(self.realized),
+            "{:.1f}".format(ulurpnl),
+            "{:.1f}".format(self.total),
+            "{:.1f}".format(self.impvol),
+            "{:.1f}".format(self.histvol),
+            "{:.1f}".format(self.divyld),
+            "{:.2f}".format(self.dexd)
         )
+
+    def setOverallMarketValue(self,mv):
+        self.overallMarketValue = mv
 
     def ticker_id(self):
         return self.statData.tickerId
@@ -345,6 +404,9 @@ class covered_call():
                 self.ul_ts  = ra["when"]
                 self.statData.expiry = ra["to"]
 
+    def  currentMarketValue(self):
+        return (self.tickData.ullst - self.tickData.oplst) * self.statData.position
+
     def ctv(self):
         if self.tickData.ullst <= float(self.statData.strike):
             #OTM
@@ -381,6 +443,35 @@ class covered_call():
         underlyer.exchange = "SMART"
         underlyer.currency = "USD"
         return underlyer
+
+    def getRolledOption(self, r):
+        option = Contract()
+        option.symbol = self.statData.buyWrite["underlyer"]["@tickerSymbol"]
+        option.avPrice = r["sellprice"]
+        option.secType = "OPT"
+        option.exchange = "SMART"
+        option.currency = "USD"
+        option.lastTradeDateOrContractMonth = r['to']
+        option.strike = r['strike']
+        option.right = "Call"
+        option.multiplier = "100"
+
+        return option
+
+    def getInitialOption(self):
+        option = Contract()
+        option.symbol = self.statData.buyWrite["underlyer"]["@tickerSymbol"]
+        option.avPrice = self.statData.buyWrite["option"]["@price"]
+        option.secType = "OPT"
+        option.exchange = "SMART"
+        option.currency = "USD"
+        option.lastTradeDateOrContractMonth = self.statData.buyWrite["option"]["@expiry"]
+        option.strike = self.statData.buyWrite["option"]["@strike"]
+        option.right = "Call"
+        option.multiplier = "100"
+
+        return option
+
 
     def option(self):
         option = Contract()
